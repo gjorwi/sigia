@@ -84,7 +84,7 @@ const DashboardPage = () => {
                 <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
                   <h3 className="text-lg font-medium leading-6 text-gray-900">Acciones Rápidas</h3>
                 </div>
-                <div className="p-4 grid grid-cols-4 gap-4">
+                <div className="p-4 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
                   <button
                       type="button"
                       onClick={() => router.push('/administrador/insumos/nuevo')}
