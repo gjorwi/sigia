@@ -1,13 +1,14 @@
 'use client';
 import { inventActions } from '@/constantes/inventActions';
 import { useEffect, useState } from 'react';
-import { getUsers } from '@/servicios/users/get';
 import Modal from '@/components/Modal';
 import { useRouter } from 'next/navigation';
+import { Package } from 'lucide-react';
+import { getLote } from '@/servicios/lotes/get';
 
 export default function Inventario() {
   const router = useRouter();
-  const [users, setUsers] = useState([]);
+  const [lotes, setLotes] = useState([] );
   const [modal, setModal] = useState({
     isOpen: false,
     title: '',
@@ -17,7 +18,7 @@ export default function Inventario() {
   });
 
   useEffect(() => {
-    handleGetUsers();
+    handleGetLotes();
   }, []);
   
   const showMessage = (title, message, type = 'info', time = null) => {
@@ -28,15 +29,15 @@ export default function Inventario() {
     setModal(prev => ({ ...prev, isOpen: false }));
   };
   
-  const handleGetUsers = async () => {
-    const response = await getUsers();
+  const handleGetLotes = async () => {
+    const response = await getLote();
     if (!response.success) {
-      console.error('Error al obtener insumos:', response.message);
+      console.error('Error al obtener lotes:', response.message);
       showMessage('Error', response.message, 'error', 4000);
       return;
     }
     // showMessage('Éxito', response.message, 'success', 2000);
-    setUsers(response.data);
+    setLotes(response.data);
   };
 
   
@@ -90,30 +91,30 @@ export default function Inventario() {
           <div className="mt-8">
             <div className="bg-white shadow overflow-hidden sm:rounded-lg">
               <div className="px-4 py-5 sm:px-6">
-                <h3 className="text-lg font-medium leading-6 text-gray-900">Lista de Insumos</h3>
+                <h3 className="text-lg font-medium leading-6 text-gray-900">Lista de lotes de insumos</h3>
                 <p className="mt-1 text-sm text-gray-500">
-                  Vista previa de los insumos registrados en el sistema
+                  Vista previa de los lotes de insumos registrados en el sistema
                 </p>
               </div>
               <div className="border-t border-gray-200">
-                {users.length === 0 ? (
+                {lotes.length === 0 ? (
                   <div className="px-4 py-12 text-center">
                     <p className="text-sm text-gray-500">
-                      No hay insumos registrados
+                      No hay lotes registrados
                     </p>
                   </div>
                 ) : (
                   <div className="px-4 py-12 text-center">
-                    {users.map((user) => (
-                      <div key={user.id} className="px-4 py-5 sm:px-6">
+                    {lotes.map((lote) => (
+                      <div key={lote.id} className="px-4 py-5 sm:px-6">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
                             <div className="flex-shrink-0 h-12 w-12">
-                              <img className="h-12 w-12 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="" />
+                              <Package className='h-12 w-12 text-gray-600'/>
                             </div>
                             <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                              <div className="text-sm text-gray-500">{user.email}</div>
+                              <div className="text-sm font-medium text-gray-900">{lote.numeroLote}</div>
+                              <div className="text-sm text-gray-500">{lote.fechaVencimiento}</div>
                             </div>
                           </div>
                           <div className="ml-4 flex-shrink-0">

@@ -35,7 +35,8 @@ const nombreRutas = {
     '/administrador/mapa': 'Mapa Georeferenciado',
     '/administrador/solicitudes': 'Gestión de Solicitudes',
     '/administrador/logistica': 'Gestión de Logística',
-    '/administrador/configuracion': 'Configuración del Sistema'
+    '/administrador/configuracion': 'Configuración del Sistema',
+    '/administrador/perfil': 'Mi Perfil'
 };
 
 export default nombreRutas;

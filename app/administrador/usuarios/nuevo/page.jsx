@@ -49,7 +49,7 @@ export default function NuevoUsuario() {
             <div className="flex-1 min-w-0">
               <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate">
                 <button 
-                  onClick={() => router.replace('/usuarios')} 
+                  onClick={() => router.replace('/administrador/usuarios')} 
                   className="mr-3 text-gray-500 hover:text-gray-700"
                 >
                   <ArrowLeft className="h-6 w-6 inline" />
@@ -60,7 +60,7 @@ export default function NuevoUsuario() {
             <div className="mt-4 flex md:mt-0 md:ml-4">
               <button
                 type="button"
-                onClick={() => router.push('/usuarios')}
+                onClick={() => router.push('/administrador/usuarios')}
                 className="ml-3 inline-flex items-center px-5 py-2.5 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out"
               >
                 Cancelar

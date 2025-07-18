@@ -95,7 +95,7 @@ export default function Menu() {
     { name: 'Hospitales', icon: Hospital, href: '/administrador/hospitales', current: false },
     { name: 'Insumos', icon: Package, href: '/administrador/insumos', current: false },
     { name: 'Usuarios', icon: Users, href: '/administrador/usuarios', current: false },
-    { name: 'Configuración', icon: Settings, href: '/administrador/configuracion', current: false },
+    // { name: 'Configuración', icon: Settings, href: '/administrador/configuracion', current: false },
   ];
 
   const handleLogout = () => {
@@ -184,7 +184,7 @@ export default function Menu() {
               <button
                 type="button"
                 onClick={toggleNotifications}
-                className={`p-2 rounded-full text-gray-500 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/30 transition-colors duration-200 relative ${isNotificationsOpen ? 'bg-white/20' : ''}`}
+                className={`p-2 rounded-full text-white/80 md:text-gray-500 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/30 transition-colors duration-200 relative ${isNotificationsOpen ? 'bg-white/20' : ''}`}
                 aria-label="Ver notificaciones"
                 aria-haspopup="true"
                 aria-expanded={isNotificationsOpen}
@@ -192,7 +192,7 @@ export default function Menu() {
                 <Bell className="h-6 w-6" />
                 <span className="absolute -top-0 -right-0 h-4 w-4 rounded-full bg-blue-500 text-xs text-white flex items-center justify-center">1</span>
               </button>
-              {/* Dropdown panel - show/hide with state */}
+              {/* Dropdown panel - show/hide with state */} 
               <div className={`${isNotificationsOpen ? 'block' : 'hidden'} absolute right-0 mt-2 w-80 bg-white border-1 border-gray-300 rounded-md shadow-lg overflow-hidden z-50`}>
                 <div className="py-1">
                   <div className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 border-b border-gray-100">
@@ -249,15 +249,15 @@ export default function Menu() {
               <div className={`${isUserMenuOpen ? 'block' : 'hidden'} origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-gray-300 ring-opacity-5 focus:outline-none z-50`}>
                 <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
                   <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => router.push('/administrador/perfil')}
+                    className="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100"
                     role="menuitem"
                   >
                     Mi perfil
                   </a>
                   <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => router.push('/administrador/configuracion')}
+                    className="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100"
                     role="menuitem"
                   >
                     Configuración
@@ -265,7 +265,7 @@ export default function Menu() {
                   <div className="border-t border-gray-100"></div>
                   <a
                     onClick={handleLogout}
-                    className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    className="block px-4 py-2 text-sm text-red-600 cursor-pointer hover:bg-gray-100"
                     role="menuitem"
                   >
                     Cerrar sesión
