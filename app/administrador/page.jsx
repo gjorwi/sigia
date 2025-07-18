@@ -80,12 +80,12 @@ const DashboardPage = () => {
       {/* Main content */}
       <div className="md:ml-64 flex flex-col">
         <main className="flex-1">
-          <div className="py-6">
+          <div className="pb-6">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
               
               {/* Quick Actions */}
               <div className=" bg-white shadow rounded-lg overflow-hidden">
-                <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
+                <div className="px-4 py-3 sm:px-6 border-b border-gray-200">
                   <h3 className="text-lg font-medium leading-6 text-gray-900">Acciones Rápidas</h3>
                 </div>
                 <div className="p-4 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
@@ -126,7 +126,7 @@ const DashboardPage = () => {
               </div>
               {/* Main content */}
               <div className="mb-6">
-                <div className="grid grid-cols-3 gap-2 mt-4 w-full bg-white rounded-md">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-4 w-full bg-white rounded-md">
                   <button 
                     className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${
                       menuActivo === 'mapa' 
@@ -142,12 +142,6 @@ const DashboardPage = () => {
                     </div>
                     <span className="font-medium">Mapa</span>
                   </button>
-                  {/* <button
-                    onClick={() => setActiveTab('mapa')}
-                    className={`px-4 py-2 rounded-md ${activeTab === 'mapa' ? 'bg-sky-600 text-white border border-gray-200 shadow-sm' : 'bg-gray-50 hover:bg-gray-100 text-gray-500 font-medium shadow-sm border border-gray-200'}`}
-                  >
-                    Mapa
-                  </button> */}
                   <button 
                     className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${
                       menuActivo === 'analiticas' 
@@ -163,12 +157,6 @@ const DashboardPage = () => {
                     </div>
                     <span className="font-medium">Analíticas</span>
                   </button>
-                  {/* <button
-                    onClick={() => setActiveTab('analiticas')}
-                    className={`px-4 py-2 rounded-md ${activeTab === 'analiticas' ? 'bg-sky-600 text-white border border-gray-200 shadow-sm' : 'bg-gray-50 hover:bg-gray-100 text-gray-500 font-medium shadow-sm border border-gray-200'}`}
-                  >
-                    Analíticas
-                  </button> */}
                   <button 
                     className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${
                       menuActivo === 'despachos' 
@@ -184,18 +172,6 @@ const DashboardPage = () => {
                     </div>
                     <span className="font-medium">Despachos</span>
                   </button>
-                  {/* <button
-                    onClick={() => setActiveTab('deficiencias')}
-                    className={`px-4 py-2 rounded-md ${activeTab === 'deficiencias' ? 'bg-white text-black' : 'bg-gray-100 hover:bg-white text-gray-500 font-medium'}`}
-                  >
-                    Deficiencias
-                  </button> */}
-                  {/* <button
-                    onClick={() => setActiveTab('despachos')}
-                    className={`px-4 py-2 rounded-md ${activeTab === 'despachos' ? 'bg-sky-600 text-white border border-gray-200 shadow-sm' : 'bg-gray-50 hover:bg-gray-100 text-gray-500 font-medium shadow-sm border border-gray-200'}`}
-                  >
-                    Despachos
-                  </button> */}
                 </div>
                 
                 <div className="mt-4 bg-white rounded-lg shadow">

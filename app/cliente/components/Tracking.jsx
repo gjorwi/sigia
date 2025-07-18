@@ -129,7 +129,7 @@ const Tracking = () => {
     return (
       <>
         <div className="flex justify-start items-center mt-4">
-          <div className="relative flex gap-2">
+          <div className="relative flex flex-col md:flex-row gap-2">
             <span 
               onClick={() => handleVerInsumos(envio.id)} 
               className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium bg-teal-500 text-white hover:bg-teal-600 cursor-pointer transition-colors"
@@ -227,7 +227,7 @@ const Tracking = () => {
                 <div key={envio.id} className="bg-white rounded-lg p-4 border border-indigo-700">
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center space-x-3">
+                      <div className="flex flex-col md:flex-row items-start md:items-center space-x-3">
                         <h3 className="text-lg font-medium text-gray-800">Envío #{envio.id}</h3>
                         {getStatusBadge(envio.estado)}
                       </div>

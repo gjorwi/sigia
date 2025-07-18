@@ -160,7 +160,7 @@ const Recepcion = () => {
         </table>
       </div>
 
-      <div className="mt-4 flex justify-between items-center">
+      <div className="mt-4 flex flex-col md:flex-row justify-between items-center">
         <div className="text-sm text-gray-400">
           Mostrando <span className="font-medium">1</span> a <span className="font-medium">3</span> de{' '}
           <span className="font-medium">3</span> resultados
