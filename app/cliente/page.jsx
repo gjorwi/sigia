@@ -60,8 +60,8 @@ export default function ClientePage() {
   const stats = [
     { 
       id: 1, 
-      name: 'Despachos Pendientes', 
-      value: '3', 
+      name: 'Total de insumos', 
+      value: '3560', 
       icon: Package, 
       color: 'bg-indigo-500',
       trend: '12% más que el mes pasado',
@@ -69,7 +69,7 @@ export default function ClientePage() {
     },
     { 
       id: 2, 
-      name: 'En Tránsito', 
+      name: 'En transito', 
       value: '1', 
       icon: Truck, 
       color: 'bg-blue-500',
@@ -78,20 +78,20 @@ export default function ClientePage() {
     },
     { 
       id: 3, 
-      name: 'Completados', 
-      value: '12', 
-      icon: CheckCircle2, 
-      color: 'bg-green-500',
-      trend: '5% más que el mes pasado',
+      name: 'Insumos en falla', 
+      value: '3', 
+      icon: AlertCircle, 
+      color: 'bg-orange-500',
+      trend: '3 en falla',
       trendType: 'up'
     },
     { 
       id: 4, 
-      name: 'Incidencias', 
+      name: 'Solicitudes', 
       value: '2', 
       icon: AlertCircle, 
       color: 'bg-yellow-500',
-      trend: '1 sin resolver',
+      trend: '2 pendientes',
       trendType: 'warning'
     },
   ];
@@ -179,7 +179,7 @@ export default function ClientePage() {
               </div>
             </div>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 md:space-x-4">
               {/* Notificaciones */}
               <div className="relative" ref={notificationsRef}>
                 <button
@@ -188,11 +188,11 @@ export default function ClientePage() {
                     setNotificationsOpen(!notificationsOpen);
                     setUserMenuOpen(false);
                   }}
-                  className="relative rounded-full bg-white/10 p-1 text-gray-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600"
+                  className="relative rounded-full bg-white/10 p-1 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600"
                 >
                   <span className="sr-only">Ver notificaciones</span>
                   <Bell className="h-6 w-6" aria-hidden="true" />
-                  <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-xs text-white flex items-center justify-center">3</span>
+                  <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-blue-500 text-xs text-white flex items-center justify-center">3</span>
                 </button>
                 
                 {notificationsOpen && (
@@ -216,7 +216,7 @@ export default function ClientePage() {
               </div>
               
               {/* Menú de usuario */}
-              <div className="relative ml-3" ref={userMenuRef}>
+              <div className="relative" ref={userMenuRef}>
                 <div>
                   <button
                     type="button"

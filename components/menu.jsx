@@ -184,13 +184,13 @@ export default function Menu() {
               <button
                 type="button"
                 onClick={toggleNotifications}
-                className={`p-2 rounded-full text-gray-700 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/30 transition-colors duration-200 relative ${isNotificationsOpen ? 'bg-white/20' : ''}`}
+                className={`p-2 rounded-full text-gray-500 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/30 transition-colors duration-200 relative ${isNotificationsOpen ? 'bg-white/20' : ''}`}
                 aria-label="Ver notificaciones"
                 aria-haspopup="true"
                 aria-expanded={isNotificationsOpen}
               >
                 <Bell className="h-6 w-6" />
-                <span className="absolute top-1.5 right-1.5 block h-2.5 w-2.5 rounded-full bg-orange-500 ring-1 ring-gray-900"></span>
+                <span className="absolute -top-0 -right-0 h-4 w-4 rounded-full bg-blue-500 text-xs text-white flex items-center justify-center">1</span>
               </button>
               {/* Dropdown panel - show/hide with state */}
               <div className={`${isNotificationsOpen ? 'block' : 'hidden'} absolute right-0 mt-2 w-80 bg-white border-1 border-gray-300 rounded-md shadow-lg overflow-hidden z-50`}>

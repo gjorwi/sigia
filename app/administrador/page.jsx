@@ -11,6 +11,9 @@ const AlertCircle = dynamic(() => import('lucide-react').then(mod => mod.AlertCi
 const Truck = dynamic(() => import('lucide-react').then(mod => mod.Truck), { ssr: false });
 const PackagePlus = dynamic(() => import('lucide-react').then(mod => mod.PackagePlus), { ssr: false });
 const Warehouse = dynamic(() => import('lucide-react').then(mod => mod.Warehouse), { ssr: false });
+const MapPin = dynamic(() => import('lucide-react').then(mod => mod.MapPin), { ssr: false });
+const Activity = dynamic(() => import('lucide-react').then(mod => mod.Activity), { ssr: false });
+const Package = dynamic(() => import('lucide-react').then(mod => mod.Package), { ssr: false });
 
 // Dynamically import the WarehouseMap component to avoid SSR issues with Leaflet
 const WarehouseMap = dynamic(
@@ -20,6 +23,7 @@ const WarehouseMap = dynamic(
 
 const DashboardPage = () => {
   const [activeTab, setActiveTab] = useState('mapa');
+  const [menuActivo, setMenuActivo] = useState('mapa');
   const router = useRouter();
 
   const stats = [
@@ -85,6 +89,7 @@ const DashboardPage = () => {
                   <h3 className="text-lg font-medium leading-6 text-gray-900">Acciones Rápidas</h3>
                 </div>
                 <div className="p-4 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
+                  
                   <button
                       type="button"
                       onClick={() => router.push('/administrador/insumos/nuevo')}
@@ -121,37 +126,81 @@ const DashboardPage = () => {
               </div>
               {/* Main content */}
               <div className="mb-6">
-                <div className="grid grid-cols-3 gap-2 mt-4 w-full p-2 bg-white rounded-md">
-                  <button
+                <div className="grid grid-cols-3 gap-2 mt-4 w-full bg-white rounded-md">
+                  <button 
+                    className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${
+                      menuActivo === 'mapa' 
+                        ? 'bg-indigo-600 text-white' 
+                        : 'bg-indigo-500/15 text-gray-800 hover:bg-indigo-500/30'
+                    }`}
+                    onClick={() => setMenuActivo('mapa')}
+                  >
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      menuActivo === 'mapa' ? 'bg-white/20' : 'bg-indigo-500/90 text-white'
+                    }`}>
+                      <MapPin className="h-5 w-5" />
+                    </div>
+                    <span className="font-medium">Mapa</span>
+                  </button>
+                  {/* <button
                     onClick={() => setActiveTab('mapa')}
                     className={`px-4 py-2 rounded-md ${activeTab === 'mapa' ? 'bg-sky-600 text-white border border-gray-200 shadow-sm' : 'bg-gray-50 hover:bg-gray-100 text-gray-500 font-medium shadow-sm border border-gray-200'}`}
                   >
                     Mapa
+                  </button> */}
+                  <button 
+                    className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${
+                      menuActivo === 'analiticas' 
+                        ? 'bg-indigo-600 text-white' 
+                        : 'bg-indigo-500/15 text-gray-800 hover:bg-indigo-500/30'
+                    }`}
+                    onClick={() => setMenuActivo('analiticas')}
+                  >
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      menuActivo === 'analiticas' ? 'bg-white/20' : 'bg-indigo-500/90 text-white'
+                    }`}>
+                      <Activity className="h-5 w-5" />
+                    </div>
+                    <span className="font-medium">Analíticas</span>
                   </button>
-                  <button
+                  {/* <button
                     onClick={() => setActiveTab('analiticas')}
                     className={`px-4 py-2 rounded-md ${activeTab === 'analiticas' ? 'bg-sky-600 text-white border border-gray-200 shadow-sm' : 'bg-gray-50 hover:bg-gray-100 text-gray-500 font-medium shadow-sm border border-gray-200'}`}
                   >
                     Analíticas
+                  </button> */}
+                  <button 
+                    className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${
+                      menuActivo === 'despachos' 
+                        ? 'bg-indigo-600 text-white' 
+                        : 'bg-indigo-500/15 text-gray-800 hover:bg-indigo-500/30'
+                    }`}
+                    onClick={() => setMenuActivo('despachos')}
+                  >
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      menuActivo === 'despachos' ? 'bg-white/20' : 'bg-indigo-500/90 text-white'
+                    }`}>
+                      <Truck className="h-5 w-5" />
+                    </div>
+                    <span className="font-medium">Despachos</span>
                   </button>
-                  
                   {/* <button
                     onClick={() => setActiveTab('deficiencias')}
                     className={`px-4 py-2 rounded-md ${activeTab === 'deficiencias' ? 'bg-white text-black' : 'bg-gray-100 hover:bg-white text-gray-500 font-medium'}`}
                   >
                     Deficiencias
                   </button> */}
-                  <button
+                  {/* <button
                     onClick={() => setActiveTab('despachos')}
                     className={`px-4 py-2 rounded-md ${activeTab === 'despachos' ? 'bg-sky-600 text-white border border-gray-200 shadow-sm' : 'bg-gray-50 hover:bg-gray-100 text-gray-500 font-medium shadow-sm border border-gray-200'}`}
                   >
                     Despachos
-                  </button>
+                  </button> */}
                 </div>
                 
-                <div className="mt-4 p-4 bg-white rounded-lg shadow">
-                  {activeTab === 'analiticas' && (
-                    <div className="space-y-6">
+                <div className="mt-4 bg-white rounded-lg shadow">
+                  {menuActivo === 'analiticas' && (
+                    <div className="space-y-6 p-4">
                       {/* Stats */}
                       <div className="mt-2">
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -283,12 +332,12 @@ const DashboardPage = () => {
                       </div>
                     </div>
                   )}
-                  {activeTab === 'mapa' && (
+                  {menuActivo === 'mapa' && (
                     <div className="space-y-4">
-                      <div className="h-[500px] rounded-lg overflow-hidden border border-gray-200">
+                      <div className="rounded-lg overflow-hidden border border-gray-200">
                         <WarehouseMap />
                       </div>
-                      <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="bg-gray-50 rounded-lg">
                         <h4 className="font-medium text-gray-900 mb-2">Resumen de Almacenes</h4>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="bg-white p-3 rounded-lg shadow border border-green-100">
@@ -328,8 +377,8 @@ const DashboardPage = () => {
                       </div>
                     </div>
                   )}
-                  {activeTab === 'despachos' && (
-                    <div className="space-y-6">
+                  {menuActivo === 'despachos' && (
+                    <div className="p-4">
                       <div>
                         <h3 className="text-lg font-medium text-gray-900 mb-2">Gestión de Despachos</h3>
                         <p className="text-gray-500 mb-6">Seguimiento y control de despachos realizados</p>

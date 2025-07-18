@@ -28,7 +28,7 @@ export default function LoginPageVariant() {
   };
 
   return (
-    <div className={`relative min-h-screen flex px-2 items-center justify-center bg-gradient-to-br from-indigo-900 via-blue-800 to-purple-900 overflow-hidden ${isLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000`}>
+    <div className={`relative min-h-screen flex px-4 items-center justify-center bg-gradient-to-br from-indigo-900 via-blue-800 to-purple-900 overflow-hidden ${isLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000`}>
       {/* Fondo artístico con overlay y animación */}
       <div className="absolute inset-0 z-0">
         <Image
