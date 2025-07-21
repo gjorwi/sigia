@@ -127,9 +127,6 @@ export default function LoginPageVariant() {
             Iniciar sesión
           </button>
         </form>
-        <div className="mt-8 text-center text-white/70 text-sm">
-          ¿No tienes una cuenta? <a href="#" className="font-semibold text-fuchsia-200 hover:text-white transition">Solicita acceso</a>
-        </div>
         <div className="mt-6 text-xs text-white/50 text-center">
           © {new Date().getFullYear()} SIGIA. Todos los derechos reservados.
         </div>
