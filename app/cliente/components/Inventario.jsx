@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Search, Package, Filter, Download, Plus, AlertCircle } from 'lucide-react';
 
-const Inventario = () => {
+const Inventario = ({setMenuActivo}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('todos');
   const [selectedCategory, setSelectedCategory] = useState('todos');
@@ -133,7 +133,7 @@ const Inventario = () => {
             <p className="text-sm text-gray-300">Gestiona y consulta los artículos en inventario</p>
           </div>
           <div className="mt-4 md:mt-0 flex space-x-3">
-            <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <button onClick={() => setMenuActivo('registro')} className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
               <Plus className="h-4 w-4 mr-2" />
               Nuevo Artículo
             </button>

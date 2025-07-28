@@ -26,7 +26,9 @@ export const getInsumoById = async (id) => {
     try {
         // const response = await axios.get(`/api/insumos/${id}`);
         // const data = response.data;
+        console.log("id: "+id);
         const result = insumos.find(insumo => insumo.id == id);
+        console.log("Result: "+JSON.stringify(result,null,2));
         if (!result) {
             const errorData = {
                 success: true,

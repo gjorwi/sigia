@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { postLogin } from '@/servicios/login/post';
+import Modal from '@/components/Modal';
 
 export default function LoginPageVariant() {
   const [email, setEmail] = useState('');
@@ -9,25 +11,46 @@ export default function LoginPageVariant() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedRole, setSelectedRole] = useState('user'); // 'user' or 'admin'
   const router = useRouter();
+  const [modal, setModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info', // 'info', 'error', 'success', 'warning'
+    time: null
+  });
+
+  const showMessage = (title, message, type = 'info', time = null) => {
+    setModal({isOpen: true, title, message, type, time});
+  };
+
+  const closeModal = () => {
+    setModal(prev => ({ ...prev, isOpen: false }));
+  };
 
   useEffect(() => {
     setIsLoaded(true);
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const submitBtn = document.querySelector('button[type="submit"]');
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = 'Iniciando sesión...';
+    router.push(selectedRole === 'user' ? '/cliente' : '/administrador');
+    return;
+    const result = await postLogin({ email, password });
+    if (!result?.success) {
+      showMessage('Error', result.message, 'error', 4000);
+      return;
     }
-    
-    setTimeout(() => {
-      router.push(selectedRole === 'admin' ? '/administrador' : '/cliente');
-    }, 1000);
+    console.log("result: ",result);
+    if (result.data && result?.data?.user?.tipo === selectedRole) {
+      router.push(selectedRole === 'user' ? '/cliente' : '/administrador');
+    } else {
+      showMessage('Error', 'No tienes permiso para ingresar', 'error', 4000);
+    }
   };
 
   return (
+    <>
+    <Modal isOpen={modal.isOpen} onClose={closeModal} title={modal.title} message={modal.message} type={modal.type} time={modal.time} />
     <div className={`relative min-h-screen flex px-4 items-center justify-center bg-gradient-to-br from-indigo-900 via-blue-800 to-purple-900 overflow-hidden ${isLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000`}>
       {/* Fondo artístico con overlay y animación */}
       <div className="absolute inset-0 z-0">
@@ -155,5 +178,7 @@ export default function LoginPageVariant() {
         }
       `}</style>
     </div>
+    
+  </>
   );
 }

@@ -246,7 +246,7 @@ export default function Menu() {
                 </button>
               </div>
               {/* Dropdown menu - show/hide with state */}
-              <div className={`${isUserMenuOpen ? 'block' : 'hidden'} origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-gray-300 ring-opacity-5 focus:outline-none z-50`}>
+              <div className={`${isUserMenuOpen ? 'block' : 'hidden'} origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-gray-300 ring-opacity-5 focus:outline-none z-[60]`}>
                 <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
                   <a
                     onClick={() => router.push('/administrador/perfil')}
