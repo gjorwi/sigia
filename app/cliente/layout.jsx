@@ -38,7 +38,7 @@ export default function Layout({ children }) {
     
     const handleLogout = () => {
       // TODO: Implementar la lógica de cierre de sesión
-      router.push('/login');
+      router.push('/');
     };
     
     return <>
