@@ -70,7 +70,7 @@ export default function Modal({ isOpen, onClose, title, message, type, time = nu
   }
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div className="fixed inset-0 z-[10000] overflow-y-auto">
       {/* Backdrop */}
       <div 
         className="fixed inset-0 bg-black/50 bg-opacity-50 transition-opacity"
@@ -78,7 +78,7 @@ export default function Modal({ isOpen, onClose, title, message, type, time = nu
       />
 
       {/* Modal */}
-      <div className="flex min-h-screen items-center justify-center p-4 text-center">
+      <div className="flex min-h-screen md:ml-64 items-center justify-center p-4 text-center">
         <div 
           className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
           onClick={(e) => e.stopPropagation()}

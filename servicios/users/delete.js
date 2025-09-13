@@ -1,21 +1,18 @@
 import axios from 'axios';
-export const deleteUser = async (user) => {
+import config from '@/config';
+
+export const deleteUser = async (user, token) => {
     try {
-        // const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`);
-        // const data = await response.data;
-        const data = {
-            success: true,
-            message: "Usuario eliminado correctamente",
-            data: user
-        };
+        const response = await axios.delete(`${config.URL_API}users/${user.id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await response.data;
         return data;
     } catch (error) {
-        console.error('Error al eliminar el usuario:', error);
-        const errorData = {
-            success: false,
-            message: "Cliente->Server Error al eliminar el usuario",
-            data: null
-        }
-        return errorData;
+        console.log('Error al eliminar el usuario:', error);
+        return error;
     }
 };

@@ -5,10 +5,14 @@ import { getInsumos } from '@/servicios/insumos/get';
 import Modal from '@/components/Modal';
 import { useRouter } from 'next/navigation';
 import { Package } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function Insumos() {
   const router = useRouter();
+  const { user, logout, selectInsumo } = useAuth();
   const [insumos, setInsumos] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [modal, setModal] = useState({
     isOpen: false,
     title: '',
@@ -30,14 +34,24 @@ export default function Insumos() {
   };
   
   const handleGetInsumos = async () => {
-    const response = await getInsumos();
-    if (!response.success) {
-      console.error('Error al obtener usuarios:', response.message);
-      showMessage('Error', response.message, 'error', 4000);
+    setIsLoading(true);
+    const {token} = user;
+    const response = await getInsumos(token);
+    console.log("Response: "+JSON.stringify(response,null,2));
+    if (!response.status||response.status===500) {
+      setIsLoading(false);
+      if (response.autenticacion === 1 || response.autenticacion === 2) {
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        return;
+      }
+      showMessage('Error', response.mensaje||"Error en la solicitud", 'error', 4000);
       return;
     }
-    // showMessage('Éxito', response.message, 'success', 2000);
-    setInsumos(response.data);
+    setInsumos(response.data.data);
+    setIsLoading(false);
+    
   };
 
   
@@ -97,37 +111,47 @@ export default function Insumos() {
                 </p>
               </div>
               <div className="border-t border-gray-200">
-                {insumos.length === 0 ? (
-                  <div className="px-4 py-12 text-center">
-                    <p className="text-sm text-gray-500">
-                      No hay insumos registrados
-                    </p>
-                  </div>
+                {isLoading ? (
+                  <LoadingSpinner message="Cargando insumos..." />
                 ) : (
-                  <div className="px-4 py-12 text-center">
-                    {insumos.map((insumo) => (
-                      <div key={insumo.id} className="px-4 py-5 sm:px-6">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            <div className="flex-shrink-0 h-12 w-12 text-gray-900">
-                              <Package className="h-12 w-12 rounded-full" />
-                            </div>
-                            <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">{insumo.nombre}</div>
-                              <div className="text-sm text-gray-500">{insumo.descripcion}</div>
-                            </div>
-                          </div>
-                          <div className="ml-4 flex-shrink-0">
-                            <button
-                              type="button"
-                              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            >
-                              Detalle
-                            </button>
-                          </div>
-                        </div>
+                  <div>
+                    {insumos.length === 0 ? (
+                      <div className="px-4 py-12 text-center">
+                        <p className="text-sm text-gray-500">
+                          No hay insumos registrados
+                        </p>
                       </div>
-                    ))}
+                    ) : (
+                      <div className="px-4 py-12 text-center">
+                        {insumos.map((insumo) => (
+                          <div key={insumo.id} className="px-4 py-5 sm:px-6">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <div className="flex-shrink-0 h-12 w-12 text-gray-900">
+                                  <Package className="h-12 w-12 rounded-full" />
+                                </div>
+                                <div className="ml-4 flex flex-col items-start capitalize">
+                                  {/* <div className="text-sm font-medium text-gray-900">{insumo.id}</div> */}
+                                  <div className="text-sm font-medium text-gray-900">{insumo.codigo}</div>
+                                  <div className="text-sm font-medium text-gray-900">{insumo.nombre}</div>
+                                  <div className="text-sm text-gray-500">{insumo.unidad_medida}</div>
+                                  <div className="text-sm text-gray-500">{insumo.descripcion}</div>
+                                </div>
+                              </div>
+                              <div className="ml-4 flex-shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => { selectInsumo(insumo); router.push('/administrador/insumos/editar'); }}
+                                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                  Editar
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

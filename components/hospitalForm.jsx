@@ -3,29 +3,21 @@
 import { useState } from 'react';
 import { tipos } from '@/constantes/hospiTipos';
 import { useEffect } from 'react';
+import { dependencias } from '@/constantes/dependencias';
+import { provincias } from '@/constantes/provincias';
+import { municipios } from '@/constantes/municipios';
+import { parroquias } from '@/constantes/parroquias';
 
-export default function HospitalForm({ onSubmit, id, formData, onFormDataChange }) {
+
+export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,menu }) {
   const [errors, setErrors] = useState({});
-  const [initialized, setInitialized] = useState(false);
-  
-  // Handle initial data when component mounts
-  useEffect(() => {
-    if (formData && !initialized) {
-      onFormDataChange({
-        nombre: formData.nombre || '',
-        direccion: formData.direccion || '',
-        tipo: formData.tipo || '',
-        telefono: formData.telefono || '',
-        email: formData.email || '',
-        rif: formData.rif || '',
-        ubicacion: formData.ubicacion || { lat: '', lng: '' },
-      });
-      setInitialized(true);
-    }
-  }, [formData, initialized, onFormDataChange]);
+  const [filteredMunicipios, setFilteredMunicipios] = useState(municipios);
+  const [filteredParroquias, setFilteredParroquias] = useState(parroquias);
 
   const validateForm = () => {
     const newErrors = {};
+
+    if (!formData.rif.trim()) newErrors.rif = 'El rif es requerido';
     
     if (!formData.nombre.trim()) newErrors.nombre = 'El nombre es requerido';
     
@@ -47,6 +39,47 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange 
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  // Update filtered municipalities when province changes
+  useEffect(() => {
+    if (formData.estado) {
+      const filtered = municipios.filter(m => m.provinciaId === formData.estado);
+      setFilteredMunicipios(filtered);
+      // Reset municipio when province changes
+      
+    } else {
+      setFilteredMunicipios([]);
+    }
+  }, [formData.estado]);
+  
+  // Update filtered parroquias when municipality changes
+  useEffect(() => {
+    if (formData.municipio) {
+      // alert(formData.municipio);
+      const filtered = parroquias.filter(p => p.municipioId === formData.municipio);
+      setFilteredParroquias(filtered);
+    } else {
+      setFilteredParroquias([]);
+    }
+  }, [formData.municipio]);
+
+  const handleChangeEstado = (e) => {
+    const { value } = e.target;
+
+    onFormDataChange({
+      ...formData,
+      estado: value,
+      municipio: '',
+      parroquia: '' // Reset parroquia when municipio changes
+    });
+  };
+  const handleChangeMunicipio = (e) => {
+    const { value } = e.target;
+    onFormDataChange({
+      ...formData,
+      parroquia: '' // Reset parroquia when municipio changes
+    });
   };
 
   const handleChange = (e) => {
@@ -79,6 +112,54 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange 
     <form id={id} onSubmit={handleSubmit} className="divide-y divide-gray-200">
       <div className="px-4 py-5 sm:p-6">
         <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6 text-gray-700">
+          {/* Rif */}
+          <div className="sm:col-span-3">
+            <label htmlFor="rif" className="block text-sm font-medium text-gray-700">
+              Rif *
+            </label>
+            <div className="mt-1">
+              <input
+                type="text"
+                placeholder="Ej: V-12345678"
+                id="rif"
+                name="rif"
+                value={formData.rif||''}
+                onChange={handleChange}
+                className={`block w-full uppercase px-4 py-2 text-base border placeholder-gray-400 ${
+                  errors.rif 
+                    ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                    : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                } rounded-md shadow-sm transition duration-150 ease-in-out`}
+              />
+              {errors.rif && (
+                <p className="mt-1 text-sm text-red-600">{errors.rif}</p>
+              )}
+            </div>
+          </div>
+          {/* Codigo SICM */}
+          <div className="sm:col-span-3">
+            <label htmlFor="codigo_sicm" className="block text-sm font-medium text-gray-700">
+              Codigo SICM *
+            </label>
+            <div className="mt-1">
+              <input
+                type="text"
+                placeholder="Ej: 12345678"
+                id="cod_sicm"
+                name="cod_sicm"
+                value={formData.cod_sicm||''}
+                onChange={handleChange}
+                className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
+                  errors.cod_sicm 
+                    ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                    : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                } rounded-md shadow-sm transition duration-150 ease-in-out`}
+              />
+              {errors.cod_sicm && (
+                <p className="mt-1 text-sm text-red-600">{errors.cod_sicm}</p>
+              )}
+            </div>
+          </div>
           {/* Nombre */}
           <div className="sm:col-span-3">
             <label htmlFor="nombre" className="block text-sm font-medium text-gray-700">
@@ -87,10 +168,10 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange 
             <div className="mt-1">
               <input
                 type="text"
-                placeholder="Ej: Jose"
+                placeholder="Ej: Hospital General"
                 id="nombre"
                 name="nombre"
-                value={formData.nombre}
+                value={formData.nombre||''}
                 onChange={handleChange}
                 className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
                   errors.nombre 
@@ -106,14 +187,15 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange 
           {/* Tipo */}
           <div className="sm:col-span-3">
             <label htmlFor="tipo" className="block text-sm font-medium text-gray-700">
-              Tipo *
+              Tipo de hospital *
             </label>
+            <div className="mt-1">
             <select
               id="tipo"
               name="tipo"
-              value={formData.tipo}
+              value={formData.tipo||''}
               onChange={handleChange}
-              className={`block w-full px-4 capitalize py-2 text-gray-700 text-base border ${
+              className={`block w-full px-4 capitalize py-[11px] text-gray-700 text-base border ${
                 errors.tipo 
                   ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                   : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
@@ -121,7 +203,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange 
             >
               <option value="">Seleccione...</option>
               {tipos.map((tipo) => (
-                <option key={tipo.id} value={tipo.nombre}>
+                <option key={tipo.id} value={tipo.id}>
                   {tipo.nombre}
                 </option>
               ))}
@@ -129,8 +211,116 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange 
             {errors.tipo && (
               <p className="mt-1 text-sm text-red-600">{errors.tipo}</p>
             )}
+            </div>
           </div>
-
+          {/* Dependencia */}
+          <div className="sm:col-span-3">
+            <label htmlFor="dependencia" className="block text-sm font-medium text-gray-700">
+              Dependencia *
+            </label>
+            <select
+              id="dependencia"
+              name="dependencia"
+              value={formData.dependencia||''}
+              onChange={handleChange}
+              className={`block w-full px-4 capitalize py-2 text-gray-700 text-base border ${
+                errors.dependencia 
+                  ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                  : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+              } rounded-md shadow-sm transition duration-150 ease-in-out bg-white`}
+            >
+              <option value="">Seleccione...</option>
+              {dependencias.map((dependencia) => (
+                <option key={dependencia.id} value={dependencia.id}>
+                  {dependencia.nombre}
+                </option>
+              ))}
+            </select>
+            {errors.dependencia && (
+              <p className="mt-1 text-sm text-red-600">{errors.dependencia}</p>
+            )}
+          </div>
+          {/* Estado (Provincia)*/}
+          <div className="sm:col-span-3">
+            <label htmlFor="estado" className="block text-sm font-medium text-gray-700">
+              Estado *
+            </label>
+            <select
+              id="estado"
+              name="estado"
+              value={formData.estado||''}
+              onChange={(e)=>{handleChange(e);handleChangeEstado(e)}}
+              className={`block w-full px-4 capitalize py-2 text-gray-700 text-base border ${
+                errors.estado 
+                  ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                  : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+              } rounded-md shadow-sm transition duration-150 ease-in-out bg-white`}
+            >
+              <option value="">Seleccione...</option>
+              {provincias.map((provincia, index) => (
+                <option key={index} value={provincia.id}>
+                  {provincia.nombre}
+                </option>
+              ))}
+            </select>
+            {errors.estado && (
+              <p className="mt-1 text-sm text-red-600">{errors.estado}</p>
+            )}
+          </div>
+          {/* Municipio */}
+          <div className="sm:col-span-3">
+            <label htmlFor="municipio" className="block text-sm font-medium text-gray-700">
+              Municipio *
+            </label>
+            <select
+              id="municipio"
+              name="municipio"
+              value={formData.municipio||''}
+              onChange={handleChange}
+              className={`block w-full px-4 capitalize py-2 text-gray-700 text-base border ${
+                errors.municipio 
+                  ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                  : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+              } rounded-md shadow-sm transition duration-150 ease-in-out bg-white`}
+            >
+              <option value="">Seleccione...</option>
+              {filteredMunicipios.map((municipio) => (
+                <option key={municipio.id} value={municipio.id}>
+                  {municipio.nombre}
+                </option>
+              ))}
+            </select>
+            {errors.municipio && (
+              <p className="mt-1 text-sm text-red-600">{errors.municipio}</p>
+            )}
+          </div>
+          {/* parroquia */}
+          <div className="sm:col-span-3">
+            <label htmlFor="parroquia" className="block text-sm font-medium text-gray-700">
+              Parroquia *
+            </label>
+            <select
+              id="parroquia"
+              name="parroquia"
+              value={formData.parroquia||''}
+              onChange={handleChange}
+              className={`block w-full px-4 capitalize py-2 text-gray-700 text-base border ${
+                errors.parroquia 
+                  ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                  : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+              } rounded-md shadow-sm transition duration-150 ease-in-out bg-white`}
+            >
+              <option value="">Seleccione...</option>
+              {filteredParroquias.map((parroquia, index) => (
+                <option key={index+'parroquia'} value={parroquia.id}>
+                  {parroquia.nombre}
+                </option>
+              ))}
+            </select>
+            {errors.parroquia && (
+              <p className="mt-1 text-sm text-red-600">{errors.parroquia}</p>
+            )}
+          </div>
           {/* Email */}
           <div className="sm:col-span-3">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -142,7 +332,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange 
                 placeholder="Ej: camposjose@gmail.com"
                 id="email"
                 name="email"
-                value={formData.email}
+                value={formData.email||''}
                 onChange={handleChange}
                 className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
                   errors.email 
@@ -155,11 +345,59 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange 
               )}
             </div>
           </div>
+          {/* Nombre Contacto */}
+          <div className="sm:col-span-3">
+            <label htmlFor="nombre_contacto" className="block text-sm font-medium text-gray-700">
+              Nombre directivo *
+            </label>
+            <div className="mt-1">
+              <input
+                type="text"
+                placeholder="Ej: Campos José"
+                id="nombre_contacto"
+                name="nombre_contacto"
+                value={formData.nombre_contacto||''}
+                onChange={handleChange}
+                className={`block w-full px-4 capitalize py-2 text-base border placeholder-gray-400 ${
+                  errors.nombre_contacto 
+                    ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                    : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                } rounded-md shadow-sm transition duration-150 ease-in-out`}
+              />
+              {errors.nombre_contacto && (
+                <p className="mt-1 text-sm text-red-600">{errors.nombre_contacto}</p>
+              )}
+            </div>
+          </div>
+          {/* Email Contacto */}
+          <div className="sm:col-span-3">
+            <label htmlFor="email_contacto" className="block text-sm font-medium text-gray-700">
+              Correo electrónico directivo
+            </label>
+            <div className="mt-1">
+              <input
+                type="email"
+                placeholder="Ej: camposjose@gmail.com"
+                id="email_contacto"
+                name="email_contacto"
+                value={formData.email_contacto||''}
+                onChange={handleChange}
+                className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
+                  errors.email_contacto 
+                    ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                    : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                } rounded-md shadow-sm transition duration-150 ease-in-out`}
+              />
+              {errors.email_contacto && (
+                <p className="mt-1 text-sm text-red-600">{errors.email_contacto}</p>
+              )}
+            </div>
+          </div>
 
           {/* Teléfono */}
           <div className="sm:col-span-3">
             <label htmlFor="telefono" className="block text-sm font-medium text-gray-700">
-              Teléfono
+              Teléfono del directivo *
             </label>
             <div className="mt-1">
               <input
@@ -167,7 +405,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange 
                 placeholder="Ej: 0987654321"
                 id="telefono"
                 name="telefono"
-                value={formData.telefono}
+                value={formData.telefono||''}
                 onChange={handleChange}
                 className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
                   errors.telefono 
@@ -191,7 +429,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange 
                 placeholder="Ej: Calle 123"
                 id="direccion"
                 name="direccion"
-                value={formData.direccion}
+                value={formData.direccion||''}
                 onChange={handleChange}
                 className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
                   errors.direccion 
@@ -217,7 +455,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange 
                   placeholder="Latitud: -2.1700"
                   id="lat"
                   name="lat"
-                  value={formData.ubicacion.lat}
+                  value={formData.ubicacion?.lat ?? ''}
                   onChange={handleChange}
                   className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
                     errors.lat 
@@ -236,7 +474,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange 
                   placeholder="Longitud: -79.9000"
                   id="lng"
                   name="lng"
-                  value={formData.ubicacion.lng}
+                  value={formData.ubicacion?.lng ?? ''}
                   onChange={handleChange}
                   className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
                     errors.lng 

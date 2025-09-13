@@ -1,8 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import { useAuth } from '@/contexts/AuthContext';
+import Modal from '@/components/Modal';
+import { getHospitales } from '@/servicios/hospitales/get';
+import { getUsers } from '@/servicios/users/get';
+import { getInsumos } from '@/servicios/insumos/get';
+import { getSedes } from '@/servicios/sedes/get';
+import MapAlmacenes from '@/components/mapAlmacenes';
 
 // Importar íconos dinámicamente para evitar problemas de SSR
 const Users = dynamic(() => import('lucide-react').then(mod => mod.Users), { ssr: false });
@@ -22,40 +29,129 @@ const WarehouseMap = dynamic(
 );
 
 const DashboardPage = () => {
+  const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('mapa');
   const [menuActivo, setMenuActivo] = useState('mapa');
   const router = useRouter();
+  const [hospitales, setHospitales] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [insumos, setInsumos] = useState([]);
+  const [sedes, setSedes] = useState([]);
+  const [modal, setModal] = useState({isOpen: false, title: '', message: '', type: 'info', time: null});
+  
+  useEffect(() => {
+    if (user) {
+      handleGetResumen(user.token);
+    }
+  }, [user]);
+
+  const handleGetResumen = async (token) => {
+    const [hRes, uRes, iRes, sRes] = await Promise.allSettled([
+      getHospitales(token),
+      getUsers(token),
+      getInsumos(token),
+      getSedes(token)
+    ])
+
+    const msgs = []
+    console.log(JSON.stringify(hRes,null,2))
+    // Hospitales
+    if (hRes.status === 'fulfilled') {
+      const r = hRes.value
+      if (r?.autenticacion === 1 || r?.autenticacion === 2) {
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000)
+        logout()
+        router.replace('/')
+        return
+      }
+      if (r?.status && r?.status !== 500 && r?.data) {
+        setHospitales(r.data.data || [])
+      } else {
+        msgs.push(r?.mensaje || 'Error al cargar hospitales')
+      }
+    } else {
+      msgs.push('Error de red al cargar hospitales')
+    }
+
+    // Usuarios
+    if (uRes.status === 'fulfilled') {
+      const r = uRes.value
+      if (r?.status && r?.status !== 500 && r?.data) {
+        setUsers(r.data.data || [])
+      } else {
+        msgs.push(r?.mensaje || 'Error al cargar usuarios')
+      }
+    } else {
+      msgs.push('Error de red al cargar usuarios')
+    }
+
+    // Insumos
+    if (iRes.status === 'fulfilled') {
+      const r = iRes.value
+      if (r?.status && r?.status !== 500 && r?.data) {
+        setInsumos(r.data.data || [])
+      } else {
+        msgs.push(r?.mensaje || 'Error al cargar insumos')
+      }
+    } else {
+      msgs.push('Error de red al cargar insumos')
+    }
+
+    // Sedes
+    if (sRes.status === 'fulfilled') {
+      const r = sRes.value
+      if (r?.status && r?.status !== 500 && r?.data) {
+        setSedes(r.data.data || [])
+      } else {
+        msgs.push(r?.mensaje || 'Error al cargar sedes')
+      }
+    } else {
+      msgs.push('Error de red al cargar sedes')
+    }
+
+    if (msgs.length&&user.can_crud_user) {
+      showMessage('Aviso', msgs.join(' | '), 'warning', 5000)
+    }
+  };
+
+  const closeModal = () => {
+    setModal(prev => ({ ...prev, isOpen: false }));
+  };
+
+  const showMessage = (title, message, type = 'info', time = null) => {
+    setModal({isOpen: true, title, message, type, time});
+  };
 
   const stats = [
     { 
       name: 'Total Insumos', 
-      value: '2,685', 
+      value: insumos.length, 
       change: '+12% desde el mes pasado', 
       changeType: 'positive',
       color: '#10B981', // Verde
       icon: <Warehouse className="h-6 w-6" />
     },
     { 
-      name: 'Stock Crítico', 
-      value: '8', 
-      change: 'Requiere atención inmediata', 
-      changeType: 'negative',
-      color: '#EF4444', // Rojo
+      name: 'Sedes Registradas', 
+      value: sedes.length, 
+      change: '', 
+      changeType: 'neutral',
+      color: '#D946EF',
       icon: <AlertCircle className="h-6 w-6" />
     },
     { 
       name: 'Hospitales Activos', 
-      value: '15', 
-      change: 'Conectados al sistema', 
+      value: hospitales.length, 
+      change: 'Registrados en sistema', 
       changeType: 'positive',
       color: '#3B82F6', // Azul
       icon: <Hospital className="h-6 w-6" />
     },
     { 
-      name: 'Solicitudes Pendientes', 
-      value: '23', 
-      change: 'Esperando aprobación', 
-      changeType: 'negative',
+      name: 'Usuarios Activos', 
+      value: users.length, 
+      change: 'Registrados en sistema', 
+      changeType: 'neutral',
       color: '#F59E0B', // Ámbar
       icon: <Users className="h-6 w-6" />
     },
@@ -77,6 +173,14 @@ const DashboardPage = () => {
 
   return (
     <>
+      <Modal 
+        isOpen={modal.isOpen} 
+        onClose={closeModal} 
+        title={modal.title} 
+        message={modal.message} 
+        type={modal.type} 
+        time={modal.time}
+      />
       {/* Main content */}
       <div className="md:ml-64 flex flex-col">
         <main className="flex-1">
@@ -311,10 +415,11 @@ const DashboardPage = () => {
                   {menuActivo === 'mapa' && (
                     <div className="space-y-4">
                       <div className="rounded-lg overflow-hidden border border-gray-200">
-                        <WarehouseMap />
+                        <MapAlmacenes almacenes={hospitales}/>
+                        {/* <WarehouseMap /> */}
                       </div>
                       <div className="bg-gray-50 rounded-lg">
-                        <h4 className="font-medium text-gray-900 mb-2">Resumen de Almacenes</h4>
+                        <h4 onClick={() => handleGetResumen(user.token)} className="font-medium text-gray-900 mb-2">Resumen de Almacenes</h4>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="bg-white p-3 rounded-lg shadow border border-green-100">
                             <div className="flex items-center">

@@ -6,9 +6,40 @@ import UserForm from '@/components/userForm';
 import Modal from '@/components/Modal';
 import { getUserById } from '@/servicios/users/get';
 import { postUserRoles } from '@/servicios/roles/post';
+import { getHospitales } from '@/servicios/hospitales/get';
+import SelectHospiModal from '@/components/SelectHospiModal';
+import { useAuth } from '@/contexts/AuthContext';
+
+const initialFormData = {
+  cedula: '',
+  rol: '',
+  id_hospital: '',
+  id_sede: '',
+  permissions: {
+    leer: false,
+    crear: false,
+    actualizar: false,
+    eliminar: false
+  }
+};
+
+const permisos={
+  leer: false,
+  crear: false,
+  actualizar: false,
+  eliminar: false
+};
+
+const roles=[
+  {idType: 'admin', id: 'supervisor', nombre: 'Supervisor' },
+  {idType: 'cliente', id: 'almacenp', nombre: 'Almacén Principal' },
+  {idType: 'cliente', id: 'farmacia', nombre: 'Farmacia' },
+  {idType: 'cliente', id: 'minialmacen', nombre: 'Mini Almacén' },
+];
 
 export default function Roles() {
   const router = useRouter();
+  const {user,logout}=useAuth();
   const [loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,13 +47,11 @@ export default function Roles() {
   const [dataSetForm, setDataSetForm] = useState({});
   const [userFound, setUserFound] = useState(false);
   const [selectedRole, setSelectedRole] = useState('usuario');
-  const [permissions, setPermissions] = useState({
-    leer: false,
-    crear: false,
-    actualizar: false,
-    eliminar: false
-  });
+  const [permissions, setPermissions] = useState(permisos);
   const [isSaving, setIsSaving] = useState(false);
+  const [showHospitalModal, setShowHospitalModal] = useState(false);
+  const [hospitals, setHospitals] = useState([]);
+  const [selectedHospital, setSelectedHospital] = useState(null);
   const [modal, setModal] = useState({
     isOpen: false,
     title: '',
@@ -31,20 +60,36 @@ export default function Roles() {
     time: null
   });
 
-  // Actualizar el rol y permisos cuando se encuentra un usuario
+  // Cargar lista de hospitales al montar el componente
+  useEffect(() => {
+    const fetchHospitals = async () => {
+      try {
+        const response = await getHospitales(user.token);
+        // alert(JSON.stringify(response.data));
+        if (response.status && response.data) {
+          setHospitals(response.data);
+        }
+      } catch (error) {
+        console.error('Error al cargar hospitales:', error);
+      }
+    };
+    
+    fetchHospitals();
+  }, [user.token]);
+
+  // Actualizar el rol, hospital y permisos cuando se encuentra un usuario
   useEffect(() => {
     if (dataSetForm && dataSetForm.rol) {
-      setSelectedRole(dataSetForm.rol);
-      // Aquí podrías cargar los permisos existentes del usuario si los tienes
-      if(dataSetForm.permissions){
+      setSelectedRole(dataSetForm.rol);  
+      // Establecer el hospital seleccionado si existe en dataSetForm
+      if (dataSetForm.hospital) {
+        setSelectedHospital(dataSetForm.hospital);
+      }
+      // Cargar permisos existentes si los hay
+      if (dataSetForm.permissions) {
         setPermissions(dataSetForm.permissions);
-      }else{
-        setPermissions({
-          leer: false,
-          crear: false,
-          actualizar: false,
-          eliminar: false
-        });
+      } else {
+        setPermissions(permisos);
       }
     }
   }, [dataSetForm]);
@@ -65,20 +110,32 @@ export default function Roles() {
     }
     setSearching(true);
     setUserFound(false);
-    const result = await getUserById(searchTerm);
+    const {token} = user;
+    const result = await getUserById(searchTerm,token);
     
-    if (!result.success) {
-      showMessage('Error', 'No se encontró ningún usuario con esta cédula', 'error', 4000);
+    if (!result.status) {
+      if(result.autenticacion==1||result.autenticacion==2){
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        setSearching(false);
+        setLoading(false);
+        return;
+      }
+      setSearching(false);
+      setLoading(false);
+      showMessage('Error', result.mensaje, 'error', 4000);
       setDataSetForm({});
     }
     setDataSetForm(result.data);
     const type=result.data? 'success': 'info';
     const title=result.data? 'Éxito': 'Info';
-    showMessage(title, result.message, type, 2000);
+    showMessage(title, result.mensaje, type, 2000);
     if (result.data) {
       setUserFound(true);
     }
     setSearching(false);
+    setLoading(false);
   };
   
   const handleSearchChange = (e) => {
@@ -92,12 +149,7 @@ export default function Roles() {
     setDataSetForm({});
     setUserFound(false);
     setSelectedRole('usuario');
-    setPermissions({
-      leer: false,
-      crear: false,
-      actualizar: false,
-      eliminar: false
-    });
+    setPermissions(permisos);
   };
 
   const togglePermission = (permission) => {
@@ -126,14 +178,30 @@ export default function Roles() {
     setIsSaving(false);
   };
 
-  const handleSelectedRole=(role)=>{
+  const handleSelectedRole = (role) => {
     setDataSetForm({...dataSetForm, rol: role});
     setSelectedRole(role);
   };
 
+  const handleSelectHospital = (hospital) => {
+    setSelectedHospital(hospital);
+    setDataSetForm(prev => ({
+      ...prev,
+      hospital_id: hospital.id,
+      hospital_nombre: hospital.nombre,
+      hospital: hospital // Guardar el objeto completo por si se necesita
+    }));
+    setShowHospitalModal(false);
+  };
+
+  const openHospitalModal = () => {
+    setShowHospitalModal(true);
+  };
+
   return (
     <>
-      <div className="md:pl-64 flex flex-col">
+      
+      <div className="md:pl-64 mt-16 flex flex-col">
         {/* Modal de mensajes */}
         <Modal 
           isOpen={modal.isOpen} 
@@ -260,11 +328,42 @@ export default function Roles() {
                       Gestión de Roles y Permisos
                     </h3>
                     <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                      Cédula: {dataSetForm.cedula}
+                    </p>
+                    <p className="mt-1 max-w-2xl text-sm text-gray-500">
                       Usuario: {dataSetForm.nombre} {dataSetForm.apellido}
+                    </p>
+                    <p className="mt-1 max-w-2xl text-sm text-gray-500 capitalize">
+                      Tipo: {dataSetForm.tipo}
                     </p>
                   </div>
                   <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
                     <dl className="sm:divide-y sm:divide-gray-200">
+                      {/* Campo de selección de hospital */}
+                      <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt className="text-sm font-medium text-gray-500">
+                          Hospital
+                        </dt>
+                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                          <div onClick={openHospitalModal} className="flex cursor-pointer rounded-md shadow-sm">
+                            <input
+                              type="text"
+                              readOnly
+                              value={selectedHospital ? `${selectedHospital.nombre} (${selectedHospital.rif})` : ''}
+                              className="flex-1 min-w-0 block w-full px-3 py-2 cursor-pointer rounded-none rounded-l-md border border-gray-300 focus:outline-0 focus:ring-0 sm:text-sm"
+                              placeholder="Seleccionar hospital"
+                            />
+                            <button
+                              type="button"
+                              onClick={openHospitalModal}
+                              className="inline-flex items-center px-3 py-2 cursor-pointer border border-l-0 border-gray-300 bg-gray-50 text-gray-700 text-sm rounded-r-md hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                              <Search className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </dd>
+                      </div>
+                      
                       <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt className="text-sm font-medium text-gray-500">
                           Rol
@@ -275,8 +374,12 @@ export default function Roles() {
                             onChange={(e) => handleSelectedRole(e.target.value)}
                             className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
                           >
-                            <option value="user">Usuario</option>
-                            <option value="admin">Administrador</option>
+                            <option value="">Seleccionar rol</option>
+                            {roles.filter(role => role.idType === dataSetForm.tipo).map((role) => (
+                              <option key={role.id} value={role.id}>
+                                {role.nombre}
+                              </option>
+                            ))}
                           </select>
                         </dd>
                       </div>
@@ -312,6 +415,14 @@ export default function Roles() {
           </div>
         </div>
       </div>
+      
+      {/* Modal de selección de hospital */}
+      <SelectHospiModal
+        isOpen={showHospitalModal}
+        onClose={() => setShowHospitalModal(false)}
+        onSelect={handleSelectHospital}
+        hospitals={hospitals}
+      />
     </>
   );
 }

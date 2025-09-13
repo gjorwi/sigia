@@ -1,18 +1,19 @@
 import axios from 'axios';
-export const putHospital = async (formData) => {
+import config from '@/config';
+export const putHospital = async (formData, token) => {
   try {
-    // const response = await axios.put('/api/hospitales', formData);
-    // const result = response.data;
-    const result = {
-        success: true,
-        message: "Hospital actualizado correctamente",
-        data: formData
-    };
+    const response = await axios.put(`${config.URL_API}hospitales/rif/${formData.rif}`, formData, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    const result = response.data;
     return result;
   } catch (error) {
     console.log(error);
     const errorData = {
-      success: false,
+      status: false,
       message: 'Cliente-Server Error al actualizar el hospital',
       data: null
     }

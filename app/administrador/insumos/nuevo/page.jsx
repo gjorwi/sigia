@@ -6,18 +6,21 @@ import { UserPlus, ArrowLeft, Save, Loader2 } from 'lucide-react';
 import InsumoForm from '@/components/insumoForm';
 import { postInsumo } from '@/servicios/insumos/post';
 import Modal from '@/components/Modal';
+import { useAuth } from '@/contexts/AuthContext';
 
 const initialFormData = {
-  nombre: '',
-  descripcion: '',
   codigo: '',
+  nombre: '',
   tipo: '',
-  medida: '',
-  cantidadPorPaquete: 1,
+  presentacion: '',
+  unidad_medida: '',
+  cantidad_por_paquete: 1,
+  descripcion: ''
 };
 
 export default function NuevoInsumo() {
   const router = useRouter();
+  const {user,logout} = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
   const [modal, setModal] = useState({
@@ -37,15 +40,22 @@ export default function NuevoInsumo() {
 
   const handleSubmit = async (formData) => {
     setLoading(true);
+    const {token} = user;
     console.log('Datos del formulario:', formData);
-    const result = await postInsumo(formData);      
+    const result = await postInsumo(formData,token);      
     // Mostrar mensaje de éxito y redirigir
-    if (!result.success) {
-      showMessage('Error', result.message, 'error', 4000);
+    if (!result.status) {
+      if (result.autenticacion === 1 || result.autenticacion === 2) {
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        return;
+      }
+      showMessage('Error', result.mensaje, 'error', 4000);
       setLoading(false);
       return;
     }
-    showMessage('Éxito', result.message, 'success', 2000);
+    showMessage('Éxito', result.mensaje, 'success', 2000);
     // Redirigir a la lista de hospitales
     // router.push('/hospitales');
     setLoading(false);

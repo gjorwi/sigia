@@ -15,8 +15,10 @@ import Recepcion from './components/Recepcion';
 import Tracking from './components/Tracking';
 import Inventario from './components/Inventario';
 import Registro from './components/Registro';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function ClientePage() {
+  const {user} = useAuth();
   const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
   const [menuActivo, setMenuActivo] = useState('recepcion');
@@ -92,11 +94,15 @@ export default function ClientePage() {
 
   return (
     <>
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-white">Panel de Control</h2>
-        <p className="mt-1 text-indigo-100 mb-6">Bienvenido al módulo de cliente de SIGIA</p>
+      <div className="mb-4">
+        {/* <h2 className="text-2xl font-bold text-white">Panel de Control</h2> */}
+        <div className="flex items-center pl-6 py-2 mb-4 gap-2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg">
+          <span className="text-white text-sm mt-1 capitalize">{user?.hospital?.nombre}</span>
+          <span className="text-white bg-orange-500 w-fit px-2 rounded-full text-sm capitalize">{user?.sede?.nombre}</span>
+        </div>
+        
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-4">
           {stats.map((stat) => (
             <div key={stat.id} className="overflow-hidden rounded-2xl bg-white/10 backdrop-blur-lg border border-white/10 p-6 shadow-lg">
               <div className="flex items-center">
@@ -125,7 +131,7 @@ export default function ClientePage() {
           ))}
         </div>
         {/* Navegación entre secciones */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 p-2 bg-white backdrop-blur-lg border border-white/10 rounded-lg">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 p-2 bg-white backdrop-blur-lg border border-white/10 rounded-lg">
           <button 
             className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${
               menuActivo === 'recepcion' 
@@ -191,7 +197,7 @@ export default function ClientePage() {
           </button>
         </div>
       </div>
-      <div className="mt-6">
+      <div className="mt-2">
         {menuActivo === "recepcion" && <Recepcion />}
         {menuActivo === "tracking" && <Tracking />}
         {menuActivo === "inventario" && <Inventario setMenuActivo={setMenuActivo}/>}

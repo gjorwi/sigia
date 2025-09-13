@@ -5,41 +5,61 @@ import { insumoTipos } from '@/constantes/insumoTipos';
 import { insumoMedida } from '@/constantes/insumoMedida';
 import { useEffect } from 'react';
 
+const insumoPresentacionFarmaceutica = [
+  { id: 1, nombre: 'Ampolla' },
+  { id: 2, nombre: 'Botella' },
+  { id: 3, nombre: 'Jarabe' },
+  { id: 5, nombre: 'Tableta' },
+  { id: 6, nombre: 'Suspension' },
+  { id: 7, nombre: 'Vial' },
+  { id: 8, nombre: 'Inyeccion' },
+  { id: 9, nombre: 'Solucion acuosa' },
+  { id: 10, nombre: 'Solucion oral' }
+];
+const insumoPresentacionMedicaQuirurgica = [
+  { id: 1, nombre: 'Material' },
+  { id: 2, nombre: 'Equipo' }
+];
+
 export default function InsumoForm({ onSubmit, id, formData, onFormDataChange }) {
   const [errors, setErrors] = useState({});
-  const [initialized, setInitialized] = useState(false);
   const [showCantidadPorPaquete, setShowCantidadPorPaquete] = useState(false);
-
-  // Handle initial data when component mounts
-  useEffect(() => {
-    if (formData && !initialized) {
-      onFormDataChange({
-        nombre: formData.nombre || '',
-        descripcion: formData.descripcion || '',
-        codigo: formData.codigo || '',
-        tipo: formData.tipo || '',
-        medida: formData.medida || '',
-        cantidadPorPaquete: formData.cantidadPorPaquete || 1,
-      });
-      setInitialized(true);
+  // Presentaciones según tipo
+  const getPresentaciones = () => {
+    const tipo = (formData?.tipo || '').toLowerCase();
+    if (tipo === 'farmaceutico') {
+      return insumoPresentacionFarmaceutica;
     }
-  }, [formData, initialized, onFormDataChange]);
+    if (tipo === 'medico' || tipo === 'quirurgico') {
+      return insumoPresentacionMedicaQuirurgica;
+    }
+    return [];
+  };
+
+  // Al cambiar el tipo, si la presentación seleccionada no es válida, se limpia
+  useEffect(() => {
+    const opciones = getPresentaciones();
+    const valido = opciones.some(p => p.nombre === formData?.presentacion);
+    if (!valido && formData?.presentacion) {
+      onFormDataChange({...formData, presentacion: '' });
+    }
+  }, [formData?.tipo]);
 
   // Show/hide cantidad por paquete field based on medida
   useEffect(() => {
-    if (formData?.medida && (formData.medida.toLowerCase() === 'caja' || formData.medida.toLowerCase() === 'paquete')) {
+    if (formData?.unidad_medida && (formData.unidad_medida.toLowerCase() === 'caja' || formData.unidad_medida.toLowerCase() === 'paquete')) {
       setShowCantidadPorPaquete(true);
     } else {
       setShowCantidadPorPaquete(false);
       // Reset cantidadPorPaquete when medida changes to something else
-      if (formData?.cantidadPorPaquete) {
+      if (formData?.cantidad_por_paquete) {
         onFormDataChange({
           ...formData,
-          cantidadPorPaquete: 1
+          cantidad_por_paquete: 1
         });
       }
     }
-  }, [formData?.medida]);
+  }, [formData?.unidad_medida]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -52,10 +72,10 @@ export default function InsumoForm({ onSubmit, id, formData, onFormDataChange })
 
     if (!formData.tipo) newErrors.tipo = 'Seleccione un tipo';
 
-    if (!formData.medida) newErrors.medida = 'Seleccione una unidad de medida';
+    if (!formData.unidad_medida) newErrors.unidad_medida = 'Seleccione una unidad de medida';
 
-    if (showCantidadPorPaquete && !formData.cantidadPorPaquete) {
-      newErrors.cantidadPorPaquete = 'La cantidad por paquete es requerida';
+    if (showCantidadPorPaquete && !formData.cantidad_por_paquete) {
+      newErrors.cantidad_por_paquete = 'La cantidad por paquete es requerida';
     }
 
     setErrors(newErrors);
@@ -64,7 +84,7 @@ export default function InsumoForm({ onSubmit, id, formData, onFormDataChange })
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const newValue = name === 'cantidadPorPaquete' ? parseInt(value) || 1 : value;
+    const newValue = name === 'cantidad_por_paquete' ? parseInt(value) : value;
 
     onFormDataChange({
       ...formData,
@@ -94,7 +114,7 @@ export default function InsumoForm({ onSubmit, id, formData, onFormDataChange })
                 placeholder="Ej: camposjose@gmail.com"
                 id="codigo"
                 name="codigo"
-                value={formData?.codigo}
+                value={formData?.codigo||''}
                 onChange={handleChange}
                 className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
                   errors.codigo
@@ -118,7 +138,7 @@ export default function InsumoForm({ onSubmit, id, formData, onFormDataChange })
                 placeholder="Ej: Jose"
                 id="nombre"
                 name="nombre"
-                value={formData?.nombre}
+                value={formData?.nombre||''}
                 onChange={handleChange}
                 className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
                   errors.nombre
@@ -139,7 +159,7 @@ export default function InsumoForm({ onSubmit, id, formData, onFormDataChange })
             <select
               id="tipo"
               name="tipo"
-              value={formData?.tipo}
+              value={formData?.tipo||''}
               onChange={handleChange}
               className={`block w-full px-4 capitalize py-2 text-gray-700 text-base border ${
                 errors.tipo
@@ -158,18 +178,45 @@ export default function InsumoForm({ onSubmit, id, formData, onFormDataChange })
               <p className="mt-1 text-sm text-red-600">{errors.tipo}</p>
             )}
           </div>
+          {/* Presentacion */}
+          <div className="sm:col-span-3">
+            <label htmlFor="presentacion" className="block text-sm font-medium text-gray-700">
+              Presentacion *
+            </label>
+            <select
+              id="presentacion"
+              name="presentacion"
+              value={formData?.presentacion||''}
+              onChange={handleChange}
+              className={`block w-full px-4 capitalize py-2 text-gray-700 text-base border ${
+                errors.presentacion
+                  ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
+                  : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+              } rounded-md shadow-sm transition duration-150 ease-in-out bg-white`}
+            >
+              <option value="">Seleccione...</option>
+              {getPresentaciones().map((presentacion) => (
+                <option key={presentacion.id} value={presentacion.nombre} className="capitalize">
+                  {presentacion.nombre}
+                </option>
+              ))}
+            </select>
+            {errors.presentacion && (
+              <p className="mt-1 text-sm text-red-600">{errors.presentacion}</p>
+            )}
+          </div>
           {/* Medida */}
           <div className="sm:col-span-3">
-            <label htmlFor="medida" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="unidad_medida" className="block text-sm font-medium text-gray-700">
               Unidad de Medida *
             </label>
             <select
-              id="medida"
-              name="medida"
-              value={formData?.medida}
+              id="unidad_medida"
+              name="unidad_medida"
+              value={formData?.unidad_medida||''}
               onChange={handleChange}
-              className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
-                errors.medida
+              className={`block w-full px-4 py-2 text-base border capitalize placeholder-gray-400 ${
+                errors.unidad_medida
                   ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
                   : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
               } rounded-md shadow-sm transition duration-150 ease-in-out`}
@@ -181,43 +228,33 @@ export default function InsumoForm({ onSubmit, id, formData, onFormDataChange })
                 </option>
               ))}
             </select>
-            {errors.medida && (
-              <p className="mt-1 text-sm text-red-600">{errors.medida}</p>
+            {errors.unidad_medida && (
+              <p className="mt-1 text-sm text-red-600">{errors.unidad_medida}</p>
             )}
           </div>
           {/* Cantidad por paquete (solo visible para caja/paquete) */}
           {showCantidadPorPaquete && (
             <div className="sm:col-span-3">
               <label htmlFor="cantidadPorPaquete" className="block text-sm font-medium text-gray-700">
-                Cantidad por {formData.medida.toLowerCase()}
+                Cantidad por {formData.unidad_medida?.toLowerCase()}
               </label>
               <input
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9]*"
                 id="cantidadPorPaquete"
-                name="cantidadPorPaquete"
-                value={formData?.cantidadPorPaquete || ''}
-                placeholder="1"
-                onChange={(e) => {
-                  // Solo permite números
-                  if (e.target.value === '' || /^\d+$/.test(e.target.value)) {
-                    handleChange({
-                      target: {
-                        name: 'cantidadPorPaquete',
-                        value: e.target.value === '' ? '' : parseInt(e.target.value, 10)
-                      }
-                    });
-                  }
-                }}
+                name="cantidad_por_paquete"
+                value={formData?.cantidad_por_paquete || ''}
+                placeholder="Agregar cantidad"
+                onChange={handleChange}
                 className={`mt-1 block w-full px-3 py-2 border text-left ${
-                  errors.cantidadPorPaquete
+                  errors.cantidad_por_paquete
                     ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
                     : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                 } rounded-md shadow-sm`}
               />
-              {errors.cantidadPorPaquete && (
-                <p className="mt-1 text-sm text-red-600">{errors.cantidadPorPaquete}</p>
+              {errors.cantidad_por_paquete && (
+                <p className="mt-1 text-sm text-red-600">{errors.cantidad_por_paquete}</p>
               )}
             </div>
           )}
@@ -231,7 +268,7 @@ export default function InsumoForm({ onSubmit, id, formData, onFormDataChange })
                 placeholder="Ej: Jose"
                 id="descripcion"
                 name="descripcion"
-                value={formData?.descripcion}
+                value={formData?.descripcion||''}
                 onChange={handleChange}
                 className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
                   errors.descripcion 

@@ -5,9 +5,11 @@ import { ArrowLeft, Save, Loader2, Search, UserSearch } from 'lucide-react';
 import Modal from '@/components/Modal';
 import { getInsumoById } from '@/servicios/insumos/get';
 import { putInsumo } from '@/servicios/insumos/put';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Activar() {
   const router = useRouter();
+  const { user, logout } = useAuth();
   const [searching, setSearching] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchError, setSearchError] = useState('');
@@ -31,27 +33,37 @@ export default function Activar() {
   };
 
   const handleSearch = async (e) => {
+    const { token } = user;
     e?.preventDefault();
     if (!searchTerm.trim()) {
       showMessage('Error', 'Por favor ingrese un código de insumo', 'error', 4000);
       return;
     }
+
+    const codigoToSearch = searchTerm.trim();
     setSearching(true);
     setInsumoFound(false);
-    const result = await getInsumoById(searchTerm);
+    const result = await getInsumoById(codigoToSearch, token);
     
-    if (!result.success) {
-      showMessage('Error', 'No se encontró ningún insumo con este código', 'error', 4000);
-      setDataSetForm({});
+    if (!result.status) {
+      if(result.autenticacion==1||result.autenticacion==2){
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        return;
+      }
+      showMessage('Error', result.mensaje, 'error', 4000);
+      setSearching(false);
+      return;
     }
     setDataSetForm(result.data);
     const type=result.data? 'success': 'info';
-    const title=result.data? 'Éxito': 'Info';
-    showMessage(title, result.message, type, 2000);
+    showMessage('Info', result.mensaje, type, 2000);
     if (result.data) {
       setInsumoFound(true);
     }
     setSearching(false);
+    
   };
   
   const handleSearchChange = (e) => {
@@ -66,18 +78,29 @@ export default function Activar() {
     setInsumoFound(false);
   };
 
-  const handleSavePermissions = async () => {
+  const handleSaveStatus = async () => {
     if (!insumoFound) return;
     setIsSaving(true);
-    const result = await putHospital(dataSetForm);
-    if (!result.success) {
-      showMessage('Error', result.message, 'error', 4000);
+    const {token} = user;
+    const data={
+      id:dataSetForm.id,
+      status:dataSetForm.status
+    }
+    const result = await putInsumo(data,token);
+    if (!result.status) {
+      if(result.autenticacion==1||result.autenticacion==2){
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        return;
+      }
+      showMessage('Error', result.mensaje, 'error', 4000);
       setIsSaving(false);
       return;
     }
     showMessage(
       'Éxito', 
-      result.message, 
+      result.mensaje, 
       'success', 
       2000
     );
@@ -86,7 +109,7 @@ export default function Activar() {
   };
 
   const handleSelectedState=(state)=>{
-    setDataSetForm({...dataSetForm, estado: state});
+    setDataSetForm({...dataSetForm, status: state});
   };
 
   return (
@@ -125,7 +148,7 @@ export default function Activar() {
                 </button>
                 <button
                   type="button"
-                  onClick={handleSavePermissions}
+                  onClick={handleSaveStatus}
                   disabled={isSaving}
                   className="ml-3 inline-flex items-center px-6 py-2.5 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out"
                 >
@@ -232,12 +255,12 @@ export default function Activar() {
                         </dt>
                         <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                           <select
-                            value={dataSetForm?.estado}
+                            value={dataSetForm?.status}
                             onChange={(e) => handleSelectedState(e.target.value)}
                             className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
                           >
-                            <option value={true}>Activo</option>
-                            <option value={false}>Inactivo</option>
+                            <option value={'activo'}>Activo</option>
+                            <option value={'inactivo'}>Inactivo</option>
                           </select>
                         </dd>
                       </div>

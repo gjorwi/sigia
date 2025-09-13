@@ -6,15 +6,52 @@ import UserForm from '@/components/userForm';
 import Modal from '@/components/Modal';
 import { getUserById } from '@/servicios/users/get';
 import { putUser } from '@/servicios/users/put';
+import { useAuth } from '@/contexts/AuthContext';
+import SelectHospiModal from '@/components/SelectHospiModal';
+import SelectSedeModal from '@/components/SelectSedeModal';
+import { getHospitales } from '@/servicios/hospitales/get';
+import { getSedeByHospitalId } from '@/servicios/sedes/get';
+import { useEffect } from 'react';
+
+const initialFormData = {
+  cedula: '',
+  nombre: '',
+  apellido: '',
+  genero: '',
+  email: '',
+  telefono: '',
+  direccion: '',
+  tipo: '',
+  hospital_id: '',
+  hospital_nombre: '',
+  hospital: null,
+  sede_id: '',
+  sede_nombre: '',
+  sede: null,
+  rol: '',
+  is_root: false,
+  can_view: false,
+  can_create: false,
+  can_update: false,
+  can_delete: false,
+  can_crud_user: false,
+};
 
 export default function EditarUsuario() {
   const router = useRouter();
+  const {user, selectUser, logout, selectedUser, clearSelectedUser} = useAuth();
   const [loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchError, setSearchError] = useState('');
-  const [dataSetForm, setDataSetForm] = useState({});
+  const [dataSetForm, setDataSetForm] = useState(initialFormData);
   const [userFound, setUserFound] = useState(false);
+  const [showHospitalModal, setShowHospitalModal] = useState(false);
+  const [showSedeModal, setShowSedeModal] = useState(false);
+  const [selectedHospital, setSelectedHospital] = useState(null);
+  const [selectedSede, setSelectedSede] = useState(null);
+  const [hospitals, setHospitals] = useState([]);
+  const [allSedes, setAllSedes] = useState([]);
   const [modal, setModal] = useState({
     isOpen: false,
     title: '',
@@ -22,6 +59,37 @@ export default function EditarUsuario() {
     type: 'info', // 'info', 'error', 'success', 'warning'
     time: null
   });
+  // Cargar automáticamente los datos del hospital si hay uno seleccionado
+  useEffect(() => {
+    if (selectedUser) {
+      setSearchTerm(selectedUser.cedula);
+      handleSearch(null, true);
+    }
+    
+    // Limpiar el hospital seleccionado al desmontar el componente
+    return () => {
+      clearSelectedUser();
+    };
+  }, [selectedUser]);
+
+  // Cargar lista de hospitales al montar el componente
+  useEffect(() => {
+    if (!user?.token) return;
+    const fetchHospitals = async () => {
+      try {
+        const response = await getHospitales(user?.token);
+        console.log('response.data: ' + JSON.stringify(response.data,null,2));
+        if (response.data&&response.data.data) {
+          setHospitals(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error al cargar hospitales:', error);
+      }
+    };
+    
+    fetchHospitals();
+  }, [user?.token]);
+
   const showMessage = (title, message, type = 'info', time = null) => {
     setModal({isOpen: true, title, message, type, time});
   };
@@ -35,44 +103,82 @@ export default function EditarUsuario() {
       setSearchError('Por favor busque un usuario primero');
       return;
     }
+    console.log('Datos del formulario: ' + JSON.stringify(formData, null, 2));
     setLoading(true);
-    const result = await putUser(formData);
-    if (!result.success) {
-      showMessage('Error', result.message, 'error', 4000);
+    const {token} = user;
+    const result = await putUser(formData, token);
+    if (!result.status || result?.name==='AxiosError') {
+      if(result.autenticacion==1||result.autenticacion==2){
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        setLoading(false);
+        return;
+      }
+      showMessage('Error', result.mensaje||'Error de servidor', 'error', 4000);
       setLoading(false);
       return;
     }
-    showMessage('Éxito', result.message, 'success', 2000);
-    // router.push('/usuarios');
+    console.log('Resultado: ' + JSON.stringify(result, null, 2));
+    showMessage('Éxito', result.mensaje, 'success', 2000);
     setLoading(false);
     clearSearch();
   };
 
-  const handleSearch = async (e) => {
+  const handleSearch = async (e, skipValidation = false) => {
     e?.preventDefault();
-    if (!searchTerm.trim()) {
+    if (!skipValidation && !searchTerm.trim()) {
       showMessage('Error', 'Por favor ingrese un número de cédula', 'error', 4000);
       return;
     }
+    const {token} = user;
+
+    const cedulaToSearch = skipValidation ? selectedUser.cedula : searchTerm.trim();
+
     setSearching(true);
     setUserFound(false);
-    const result = await getUserById(searchTerm);
-    
-    if (!result.success) {
-      showMessage('Error', 'No se encontró ningún usuario con esta cédula', 'error', 4000);
-      setDataSetForm({});
+    const result = await getUserById(cedulaToSearch, token);
+    if (!result.status) {
+      if(result.autenticacion==1||result.autenticacion==2){
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        setSearching(false);
+        setLoading(false);
+        return;
+      }
+      showMessage('Error', result.mensaje, 'error', 4000);
+      setDataSetForm(initialFormData);
+      setSearching(false);
       setLoading(false);
       return;
     }
+    console.log('Usuario encontrado: '+JSON.stringify(result.data,null,2));
     setDataSetForm(result.data);
     const type=result.data? 'success': 'info';
-    showMessage('Info', result.message, type, 2000);
+    const title=result.data? 'Éxito': 'Información';
+    showMessage(title, result.mensaje, type, 2000);
     if (result.data) {
       setUserFound(true);
+      setDataSetForm(prev => ({
+        ...prev,
+        hospital_id: result.data?.hospital?.id,
+        hospital_nombre: result.data?.hospital?.nombre,
+        hospital: result.data?.hospital,
+        sede_id: result.data?.sede?.id,
+        sede_nombre: result.data?.sede?.nombre,
+        sede: result.data?.sede,
+      }));
+      if(result.data?.hospital&&result.data?.hospital?.id){
+        setSelectedHospital(result.data?.hospital);
+        handleSede(result.data?.hospital?.id);
+      }
+      if(result.data?.sede&&result.data?.sede?.id){
+        setSelectedSede(result.data?.sede);
+      }
     }
     setSearching(false);
     setLoading(false);
-    
   };
   
   const handleSearchChange = (e) => {
@@ -83,8 +189,60 @@ export default function EditarUsuario() {
   const clearSearch = () => {
     setSearchTerm('');
     setSearchError('');
-    setDataSetForm({});
+    setDataSetForm(initialFormData);
     setUserFound(false);
+  };
+  const openHospitalModal = () => {
+    setShowHospitalModal(true);
+  };
+
+  const openSedeModal = () => {
+    setShowSedeModal(true);
+  };
+
+  const handleSelectHospital = (hospital) => {
+    setSelectedHospital(hospital);
+    setSelectedSede('');
+    setDataSetForm(prev => ({
+      ...prev,
+      hospital_id: hospital.id,
+      hospital_nombre: hospital.nombre,
+      hospital: hospital,
+      sede_id: '',
+      sede_nombre: '',
+      sede: null,
+    }));
+    handleSede(hospital.id);
+    setShowHospitalModal(false);
+  };
+
+  const handleSelectSede = (sede) => {
+    setSelectedSede(sede);
+    setDataSetForm(prev => ({
+      ...prev,
+      sede_id: sede.id,
+      sede_nombre: sede.nombre,
+      sede: sede,
+    }));
+    setShowSedeModal(false);
+  };
+  const handleSede = async (hospitalId) => {
+    const {token} = user;
+    const sede = await getSedeByHospitalId(hospitalId,token);
+    // alert(JSON.stringify(sede));
+    if (!sede.status) {
+      if (sede.autenticacion === 1 || sede.autenticacion === 2) {
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        return;
+      }
+      showMessage('Error', sede.mensaje, 'error', 4000);
+      setLoading(false);
+      return;   
+    }
+    console.log('sede.data: ' + JSON.stringify(sede.data,null,2));
+    setAllSedes(sede?.data?.data);
   };
 
   return (
@@ -214,13 +372,35 @@ export default function EditarUsuario() {
                   id="user-form" 
                   onSubmit={handleSubmit} 
                   loading={loading}
-                  dataSetForm={dataSetForm}
+                  formData={dataSetForm}
+                  onFormDataChange={setDataSetForm}
+                  openHospitalModal={openHospitalModal}
+                  selectedHospital={selectedHospital}
+                  openSedeModal={openSedeModal}
+                  selectedSede={selectedSede}
+                  setSelectedHospital={setSelectedHospital}
+                  setSelectedSede={setSelectedSede}
+                  setAllSedes={setAllSedes}
+                  menu="editar"
                 />
               )}
             </div>
           </div>
         </div>
       </div>
+      <SelectHospiModal
+        isOpen={showHospitalModal}
+        onClose={() => setShowHospitalModal(false)}
+        onSelect={handleSelectHospital}
+        hospitals={hospitals}
+        tipo={dataSetForm?.tipo}
+      />
+      <SelectSedeModal
+        isOpen={showSedeModal}
+        onClose={() => setShowSedeModal(false)}
+        onSelect={handleSelectSede}
+        sedes={allSedes}
+      />
     </>
   );
 }

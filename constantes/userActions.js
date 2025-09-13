@@ -17,13 +17,6 @@ export const userActions = [
       href: '/administrador/usuarios/editar'
     },
     { 
-      title: 'Asignar Roles', 
-      description: 'Gestionar permisos y roles de usuario',
-      icon: <Users className="h-6 w-6 text-indigo-600" />,
-      color: 'bg-indigo-600/20 hover:bg-indigo-700/20 focus:ring-indigo-500 border-indigo-600',
-      href: '/administrador/usuarios/roles'
-    },
-    { 
       title: 'Activar/Desactivar', 
       description: 'Habilitar o deshabilitar cuentas de usuario',
       icon: <UserCheck className="h-6 w-6 text-green-600" />,

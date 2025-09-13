@@ -1,5 +1,5 @@
 import axios from "axios";
-import config from "../../config";
+import config from "@/config";
 
 export const postLogin = async (data) => {
   try {
@@ -10,6 +10,7 @@ export const postLogin = async (data) => {
     });
     return response.data;
   } catch (error) {
+    console.log('Error al iniciar sesión: '+ error);
     throw error;
   }
 };

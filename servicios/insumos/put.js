@@ -1,22 +1,32 @@
 import axios from 'axios';
-
-export const putInsumo = async (insumo) => {
+import config from '@/config';
+export const putInsumo = async (insumo,token) => {
+    console.log("insumo: "+JSON.stringify(insumo));
     try {
-        // const response = await axios.put(`/api/insumos/${insumo.id}`, insumo);
-        // const data = response.data;
-        const data = {
-            success: true,
-            message: "Insumo se actualizó correctamente",
-            data: insumo
-        };
-        return data;
+        const response = await axios.put(`${config.URL_API}insumos/${insumo.id}`, insumo, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
     } catch (error) {
         console.error('Error al actualizar el insumo:', error);
-        const errorData = {
-            success: false,
-            message: "Cliente->Server Error al actualizar el insumo",
-            data: null
-        }
-        return errorData;
+        return error;
+    }
+};
+export const putInsumoByCodigo = async (insumo,token) => {
+    console.log("insumo: "+JSON.stringify(insumo));
+    try {
+        const response = await axios.put(`${config.URL_API}insumos/codigo/${insumo.codigo}`, insumo, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error al actualizar el insumo:', error);
+        return error;
     }
 };

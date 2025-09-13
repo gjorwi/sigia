@@ -5,6 +5,7 @@ import { ArrowLeft, Save, Loader2, Search, Plus, X, UserSearch } from 'lucide-re
 import Modal from '@/components/Modal';
 import { getHospitalById } from '@/servicios/hospitales/get';
 import { postFicha } from '@/servicios/fichas/post';
+import { useAuth } from '@/contexts/AuthContext';
 const initialFormData = {
   nombre: '',
   direccion: '',
@@ -19,6 +20,7 @@ const initialFormData = {
 
 export default function EditarUsuario() {
   const router = useRouter();
+  const {user,logout} = useAuth();
   const [loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -70,16 +72,23 @@ export default function EditarUsuario() {
 
   const handleSearch = async (e) => {
     e?.preventDefault();
+    const {token} = user;
     if (!searchTerm.trim()) {
       showMessage('Error', 'Por favor ingrese un número de rif', 'error', 4000);
       return;
     }
     setSearching(true);
     setHospitalFound(false);
-    const result = await getHospitalById(searchTerm);
+    const result = await getHospitalById(searchTerm,token);
     
-    if (!result.success) {
-      showMessage('Error', 'No se encontró ningún hospital con este rif', 'error', 4000);
+    if (!result.status) {
+      if(result.autenticacion==1||result.autenticacion==2){
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        return;
+      }
+      showMessage('Error', result.mensaje, 'error', 4000);
       setDataSetForm(initialFormData);
       setLoading(false);
       return;
@@ -87,7 +96,7 @@ export default function EditarUsuario() {
     setDataSetForm(result.data);
     const type=result.data? 'success': 'info';
     const title=result.data? 'Éxito': 'Información';
-    showMessage(title, result.message, type, 2000);
+    showMessage(title, result.mensaje, type, 2000);
     if (result.data) {
       setHospitalFound(true);
     }
@@ -184,7 +193,7 @@ export default function EditarUsuario() {
                   ) : (
                     <Save className="-ml-1 mr-2 h-5 w-5" />
                   )}
-                  Actualizar
+                  Guardar
                 </button>
               </div>
             </div>

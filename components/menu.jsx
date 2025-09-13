@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   LayoutDashboard,
   Package,
@@ -16,19 +17,28 @@ import {
   FileText,
   Warehouse,
   User,
-  ChevronDown
+  ChevronDown,
+  House
 } from 'lucide-react';
 import nombreRutas from '@/constantes/nombreRutas';
 
 export default function Menu() {
+  const pathname = usePathname();
   const router = useRouter();
+  const { user, logout } = useAuth();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const dropdownRef = useRef(null);
   const notificationsRef = useRef(null);
+  const [canCrudUser, setCanCrudUser] = useState(false);
+  const [userNameFormated, setUserNameFormated] = useState('');
 
   // Close dropdown when clicking outside
   useEffect(() => {
+    if(user){
+      setCanCrudUser(user.can_crud_user);
+      setUserNameFormated((user?.nombre.split(' ').length > 1 ? user?.nombre.split(' ')[0]:user?.nombre) + ' ' + (user?.apellido.split(' ').length > 1 ? user?.apellido.split(' ')[0]:user?.apellido));
+    }
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsUserMenuOpen(false);
@@ -44,7 +54,7 @@ export default function Menu() {
       // Clean up the event listener when component unmounts
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [user]);
 
   const toggleUserMenu = () => {
     setIsUserMenuOpen(!isUserMenuOpen);
@@ -57,9 +67,9 @@ export default function Menu() {
     // Close user menu if open
     if (isUserMenuOpen) setIsUserMenuOpen(false);
   };
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const pathname = usePathname();
 
   // Check if the screen is mobile/tablet size
   useEffect(() => {
@@ -85,24 +95,24 @@ export default function Menu() {
       setSidebarOpen(false);
     }
   }, [pathname, isMobile]);
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  };
   const navigation = [
     { name: 'Panel de Control', icon: LayoutDashboard, href: '/administrador', current: true },
     { name: 'Despachos', icon: Package, href: '/administrador/despachos', current: false },
     { name: 'Inventario', icon: Warehouse, href: '/administrador/inventario', current: false },
-    { name: 'Mapa', icon: MapPin, href: '/administrador/mapa', current: false },
+    // { name: 'Mapa', icon: MapPin, href: '/administrador/mapa', current: false },
     { name: 'Solicitudes', icon: FileText, href: '/administrador/solicitudes', current: false },
     { name: 'Logística', icon: Truck, href: '/administrador/logistica', current: false },
+    { name: 'Sedes', icon: House, href: '/administrador/sedes', current: false },
     { name: 'Hospitales', icon: Hospital, href: '/administrador/hospitales', current: false },
     { name: 'Insumos', icon: Package, href: '/administrador/insumos', current: false },
     { name: 'Usuarios', icon: Users, href: '/administrador/usuarios', current: false },
     // { name: 'Configuración', icon: Settings, href: '/administrador/configuracion', current: false },
   ];
-
-  const handleLogout = () => {
-    // Implementar la lógica de cierre de sesión
-    router.push('/');
-    console.log('Cerrar sesión');
-  };
 
   // Update active state based on current path
   const updatedNavigation = navigation.map(item => ({
@@ -115,11 +125,12 @@ export default function Menu() {
   
   // Always show sidebar on desktop, respect sidebarOpen state on mobile
   const shouldShowSidebar = showMenu && (sidebarOpen || !isMobile);
-  
+
   return (
     <>
+      {/* <header className="flex"> */}
     {shouldShowSidebar && (
-      <div className="fixed bg-gradient-to-br from-indigo-900/90 via-blue-800/90 to-purple-900/90 inset-y-0 left-0 transform translate-x-0 transition-all duration-200 ease-in-out z-40 w-64 bg-white/10 backdrop-blur-xl border-r border-white/10 shadow-2xl text-white">
+      <div className="fixed h-screen bg-gradient-to-br from-indigo-900/90 via-blue-800/90 to-purple-900/90 inset-y-0 left-0 transform translate-x-0 transition-all duration-200 ease-in-out z-20 w-64 bg-white/10 backdrop-blur-xl border-r border-white/10 shadow-2xl text-white">
         <div className="flex items-center justify-between h-18 border-b border-white/20">
           <div className="flex items-center w-full p-4">
             <div className="h-8 w-8 flex items-center justify-center bg-white/10 rounded-lg p-1.5 border border-white/20">
@@ -137,33 +148,35 @@ export default function Menu() {
           </button>
         </div>
         <nav className="mt-6 flex-1 px-3 space-y-1">
-          {updatedNavigation.map((item) => (
-            <a
-              key={item.name}
-              href={item.href}
-              className={`group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg mx-2 transition-all duration-200 ${
-                item.current 
-                  ? 'bg-white/20 text-white shadow-lg' 
-                  : 'text-white/90 hover:bg-white/10 hover:text-white'
-              }`}
-            >
-              <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
-              <span className="truncate">{item.name}</span>
-              {item.current && (
-                <span className="ml-auto h-2 w-2 rounded-full bg-white/80"></span>
-              )}
-            </a>
-          ))}
+          {updatedNavigation
+            .filter(item => item.name !== 'Usuarios' || canCrudUser)
+            .map((item) => (
+              <a
+                key={item.name}
+                href={item.href}
+                className={`group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg mx-2 transition-all duration-200 ${
+                  item.current 
+                    ? 'bg-white/20 text-white shadow-lg' 
+                    : 'text-white/90 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
+                <span className="truncate">{item.name}</span>
+                {item.current && (
+                  <span className="ml-auto h-2 w-2 rounded-full bg-white/80"></span>
+                )}
+              </a>
+            ))}
         </nav>
       </div>
     )}
     {/* Top navigation - hidden on home page, visible on all other routes */}
     {showMenu && (
-      <div className={`sticky top-0 flex flex-shrink-0 h-18 bg-gradient-to-br from-indigo-900/90 via-blue-800/90 to-purple-900/90 md:from-gray-900/5 md:via-gray-900/5 md:to-gray-900/5 backdrop-blur-lg border-b border-gray-200 transition-all duration-200 ease-in-out ${sidebarOpen ? 'md:ml-64' : 'ml-0'}`}>
+      <div className={`fixed top-0 z-20 left-0 right-0 flex items-center  bg-gradient-to-br from-indigo-900/90 via-blue-800/90 to-purple-900/90 border-b border-gray/20 py-4 md:bg-gradient-to-br md:from-white md:via-white md:to-white ${sidebarOpen ? 'md:ml-64' : 'ml-0'}`}>
         <button
           type="button"
           className="px-4 border-r border-white/20 text-white hover:text-white md:text-gray-700 md:hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-white/30 lg:hidden"
-          onClick={() => setSidebarOpen(true)}
+          onClick={() => setSidebarOpen(true)} 
         >
           <span className="sr-only">Abrir menú</span>
           <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -225,7 +238,7 @@ export default function Menu() {
             </div>
 
             {/* Profile dropdown */}
-            <div className="ml-4 relative" ref={dropdownRef}>
+            <div className="ml-4 relative z-20" ref={dropdownRef}>
               <div>
                 <button
                   type="button"
@@ -240,7 +253,7 @@ export default function Menu() {
                     <User className="h-5 w-5" />
                   </div>
                   <span className="hidden md:block ml-2 text-sm font-medium text-white md:text-gray-700">
-                    Admin User
+                    {userNameFormated}
                   </span>
                   <ChevronDown className="hidden md:block ml-1 h-4 w-4 text-gray-400" />
                 </button>
@@ -248,7 +261,15 @@ export default function Menu() {
               {/* Dropdown menu - show/hide with state */}
               <div className={`${isUserMenuOpen ? 'block' : 'hidden'} origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-gray-300 ring-opacity-5 focus:outline-none z-[60]`}>
                 <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
-                  <a
+                  
+                  {/* <div className="mt-3 space-y-1 px-2"> */}
+                    {user && (
+                      <div className="px-3 py-2 text-sm text-gray-700">
+                        <div className="font-medium">{userNameFormated}</div>
+                        <div className="text-gray-500">{user.email}</div>
+                      </div>
+                    )}
+                    <a
                     onClick={() => router.push('/administrador/perfil')}
                     className="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100"
                     role="menuitem"
@@ -262,14 +283,13 @@ export default function Menu() {
                   >
                     Configuración
                   </a>
-                  <div className="border-t border-gray-100"></div>
-                  <a
-                    onClick={handleLogout}
-                    className="block px-4 py-2 text-sm text-red-600 cursor-pointer hover:bg-gray-100"
-                    role="menuitem"
-                  >
-                    Cerrar sesión
-                  </a>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                    >
+                      Cerrar sesión
+                    </button>
+                  {/* </div> */}
                 </div>
               </div>
             </div>
@@ -277,6 +297,7 @@ export default function Menu() {
         </div>
       </div>
     )}
+    {/* </header> */}
   </>
   );
 }

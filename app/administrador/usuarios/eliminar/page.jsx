@@ -5,9 +5,11 @@ import { ArrowLeft, Save, Loader2, Search, UserSearch } from 'lucide-react';
 import Modal from '@/components/Modal';
 import { getUserById } from '@/servicios/users/get';
 import { deleteUser } from '@/servicios/users/delete';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Eliminar() {
   const router = useRouter();
+  const {user, logout} = useAuth();
   const [searching, setSearching] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchError, setSearchError] = useState('');
@@ -41,18 +43,26 @@ export default function Eliminar() {
       showMessage('Error', 'Por favor ingrese un número de cédula', 'error', 4000);
       return;
     }
+    const {token} = user;
     setSearching(true);
     setUserFound(false);
-    const result = await getUserById(searchTerm);
-    
-    if (!result.success) {
-      showMessage('Error', 'No se encontró ningún usuario con esta cédula', 'error', 4000);
-      setDataSetForm({});
+    const result = await getUserById(searchTerm, token);
+    if (!result.status) {
+      if (result.autenticacion === 1 || result.autenticacion === 2) {
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        setSearching(false);
+        return;
+      }
+      showMessage('Error', result.mensaje, 'error', 4000);
+      setSearching(false);
+      return;   
     }
     setDataSetForm(result.data);
     const type=result.data? 'success': 'info';
     const title=result.data? 'Éxito': 'Info';
-    showMessage(title, result.message, type, 2000);
+    showMessage(title, result.mensaje, type, 2000);
     if (result.data) {
       setUserFound(true);
     }
@@ -80,15 +90,23 @@ export default function Eliminar() {
       setIsSaving(false);
       return;
     }
-    const result = await deleteUser(dataSetForm);
-    if (!result.success) {
-      showMessage('Error', result.message, 'error', 4000);
+    const {token} = user;
+    const result = await deleteUser(dataSetForm, token);
+    if (!result.status) {
+      if (result.autenticacion === 1 || result.autenticacion === 2) {
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        setIsSaving(false);
+        return;
+      }
+      showMessage('Error', result.mensaje, 'error', 4000);
       setIsSaving(false);
       return;
     }
     showMessage(
       'Éxito', 
-      result.message, 
+      result.mensaje, 
       'success', 
       2000
     );

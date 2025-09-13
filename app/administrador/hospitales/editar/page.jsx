@@ -1,15 +1,16 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Save, Loader2, Search, UserSearch } from 'lucide-react';
 import HospitalForm from '@/components/hospitalForm';
 import Modal from '@/components/Modal';
 import { getHospitalById } from '@/servicios/hospitales/get';
 import { putHospital } from '@/servicios/hospitales/put';
+import { useAuth } from '@/contexts/AuthContext';
 
 const initialFormData = {
-  nombre: '',
   rif: '',
+  nombre: '',
   direccion: '',
   tipo: '',
   telefono: '',
@@ -18,16 +19,37 @@ const initialFormData = {
     lat: '',
     lng: '',
   },
+  cod_sicm: '',
+  dependencia: '',
+  provincia: '',
+  municipio: '',
+  parroquia: '',
+  email_contacto: '',
+  nombre_contacto: ''
 };
 
 export default function EditarUsuario() {
   const router = useRouter();
+  const { user, logout, selectedHospital, clearSelectedHospital } = useAuth();
   const [loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchError, setSearchError] = useState('');
-  const [dataSetForm, setDataSetForm] = useState(initialFormData);
   const [hospitalFound, setHospitalFound] = useState(false);
+  const [dataSetForm, setDataSetForm] = useState(initialFormData);
+
+  // Cargar automáticamente los datos del hospital si hay uno seleccionado
+  useEffect(() => {
+    if (selectedHospital) {
+      setSearchTerm(selectedHospital.rif);
+      handleSearch(null, true);
+    }
+    
+    // Limpiar el hospital seleccionado al desmontar el componente
+    return () => {
+      clearSelectedHospital();
+    };
+  }, [selectedHospital]);
   const [modal, setModal] = useState({
     isOpen: false,
     title: '',
@@ -44,48 +66,69 @@ export default function EditarUsuario() {
   };
 
   const handleSubmit = async (formData) => {
+    const {token} = user;
     if (!hospitalFound) {
       setSearchError('Por favor busque un hospital primero');
       return;
     }
     setLoading(true);
-    const result = await putHospital(formData);
-    if (!result.success) {
-      showMessage('Error', result.message, 'error', 4000);
+    const result = await putHospital(formData,token);
+    if (!result.status) {
+      if(result.autenticacion==1||result.autenticacion==2){
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        return;
+      }
+      showMessage('Error', result.mensaje, 'error', 4000);
       setLoading(false);
       return;
     }
-    showMessage('Éxito', result.message, 'success', 2000);
+    showMessage('Éxito', result.mensaje, 'success', 2000);
     // router.push('/usuarios');
     setLoading(false);
     clearSearch();
   };
 
-  const handleSearch = async (e) => {
+  const handleSearch = async (e, skipValidation = false) => {
+    const { token } = user;
     e?.preventDefault();
-    if (!searchTerm.trim()) {
+    
+    if (!skipValidation && !searchTerm.trim()) {
       showMessage('Error', 'Por favor ingrese un número de rif', 'error', 4000);
       return;
     }
+    
+    const rifToSearch = skipValidation ? selectedHospital.rif : searchTerm.trim();
+    
     setSearching(true);
     setHospitalFound(false);
-    const result = await getHospitalById(searchTerm);
     
-    if (!result.success) {
-      showMessage('Error', 'No se encontró ningún hospital con este rif', 'error', 4000);
+    const result = await getHospitalById(rifToSearch, token);
+    
+    if (!result.status) {
+      if(result.autenticacion==1||result.autenticacion==2){
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        return;
+      }
+      showMessage('Error', result.mensaje, 'error', 4000);
       setDataSetForm(initialFormData);
+      setSearching(false);
       setLoading(false);
       return;
     }
     setDataSetForm(result.data);
+    console.log(JSON.stringify(result.data,null,2));
     const type=result.data? 'success': 'info';
-    showMessage('Info', result.message, type, 2000);
+    const title=result.data? 'Éxito': 'Información';
+    showMessage(title, result.mensaje, type, 2000);
     if (result.data) {
       setHospitalFound(true);
     }
     setSearching(false);
     setLoading(false);
-    
   };
   
   const handleSearchChange = (e) => {
@@ -229,6 +272,7 @@ export default function EditarUsuario() {
                   loading={loading}
                   formData={dataSetForm}
                   onFormDataChange={setDataSetForm}
+                  menu="editar"
                 />
               )}
             </div>

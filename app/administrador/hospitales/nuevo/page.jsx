@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { UserPlus, ArrowLeft, Save, Loader2 } from 'lucide-react';
 import HospitalForm from '@/components/hospitalForm';
 import { postHospital } from '@/servicios/hospitales/post';
 import Modal from '@/components/Modal';
+import {useAuth} from '@/contexts/AuthContext';
 
 const initialFormData = {
+  rif: '',
   nombre: '',
   direccion: '',
   tipo: '',
@@ -17,9 +19,17 @@ const initialFormData = {
     lat: '',
     lng: '',
   },
+  cod_sicm: '',
+  dependencia: '',
+  provincia: '',
+  municipio: '',
+  parroquia: '',
+  email_contacto: '',
+  nombre_contacto: ''
 };
 
 export default function NuevoHospital() {
+  const {user, getUser} = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
@@ -40,15 +50,16 @@ export default function NuevoHospital() {
 
   const handleSubmit = async (formData) => {
     setLoading(true);
-    console.log('Datos del formulario:', formData);
-    const result = await postHospital(formData);      
+    const {token} = user;
+    console.log('Data envio: '+JSON.stringify(formData,null,2));
+    const result = await postHospital(formData,token);  
     // Mostrar mensaje de éxito y redirigir
-    if (!result.success) {
-      showMessage('Error', result.message, 'error', 4000);
+    if (!result.status) {
+      showMessage('Error', result.mensaje, 'error', 4000);
       setLoading(false);
       return;
     }
-    showMessage('Éxito', result.message, 'success', 2000);
+    showMessage('Éxito', result.mensaje, 'success', 2000);
     // Redirigir a la lista de hospitales
     // router.push('/hospitales');
     setLoading(false);
@@ -124,6 +135,7 @@ export default function NuevoHospital() {
               loading={loading}
               formData={formData}
               onFormDataChange={setFormData}
+              menu="nuevo"
             />
           </div>
         </div>

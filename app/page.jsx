@@ -1,16 +1,20 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { postLogin } from '@/servicios/login/post';
 import Modal from '@/components/Modal';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPageVariant() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [selectedRole, setSelectedRole] = useState('cliente'); 
   const [isLoaded, setIsLoaded] = useState(false);
-  const [selectedRole, setSelectedRole] = useState('user'); // 'user' or 'admin'
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { login } = useAuth();
   const [modal, setModal] = useState({
     isOpen: false,
     title: '',
@@ -33,18 +37,34 @@ export default function LoginPageVariant() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    router.push(selectedRole === 'user' ? '/cliente' : '/administrador');
-    return;
-    const result = await postLogin({ email, password });
-    if (!result?.success) {
-      showMessage('Error', result.message, 'error', 4000);
-      return;
-    }
-    console.log("result: ",result);
-    if (result.data && result?.data?.user?.tipo === selectedRole) {
-      router.push(selectedRole === 'user' ? '/cliente' : '/administrador');
-    } else {
-      showMessage('Error', 'No tienes permiso para ingresar', 'error', 4000);
+    
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    
+    try {
+      const result = await postLogin({ email, password });
+      
+      if (!result?.status) {
+        showMessage('Error', result?.mensaje || 'Error al iniciar sesión', 'error', 4000);
+        return;
+      }
+      if (result.data && result.data.user?.tipo === selectedRole) {
+        // Save user data in context and localStorage
+        login({
+          ...result.data.user,
+          token: result.data.token
+        });
+        
+        // Redirect based on user role
+        router.push(selectedRole === 'cliente' ? '/cliente' : '/administrador');
+      } else {
+        showMessage('Error', 'No tienes permiso para ingresar a este módulo', 'error', 4000);
+      }
+    } catch (error) {
+      console.log('Login error:', error);
+      showMessage('Error', 'Ocurrió un error al intentar iniciar sesión', 'error', 4000);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -77,20 +97,20 @@ export default function LoginPageVariant() {
           <div className="flex space-x-4 justify-center">
             <button
               type="button"
-              onClick={() => setSelectedRole('user')}
+              onClick={() => setSelectedRole('cliente')}
               className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                selectedRole === 'user'
+                selectedRole === 'cliente'
                   ? 'bg-white text-indigo-700 shadow-lg shadow-indigo-500/20'
                   : 'bg-white/10 text-white/80 hover:bg-white/20 border border-white/20'
               }`}
             >
-              Usuario
+              Cliente
             </button>
             <button
               type="button"
-              onClick={() => setSelectedRole('admin')}
+              onClick={() => setSelectedRole('administrador')}
               className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                selectedRole === 'admin'
+                selectedRole === 'administrador'
                   ? 'bg-white text-indigo-700 shadow-lg shadow-indigo-500/20'
                   : 'bg-white/10 text-white/80 hover:bg-white/20 border border-white/20'
               }`}
@@ -114,7 +134,7 @@ export default function LoginPageVariant() {
                 type="email"
                 autoComplete="email"
                 required
-                className="block w-full pl-10 pr-4 py-2 rounded-xl bg-white/20 border border-white/30 text-white placeholder-indigo-100 focus:outline-none focus:ring-2 focus:ring-fuchsia-400 focus:border-transparent transition shadow-md backdrop-blur-sm"
+                className="block w-full pl-10 pr-4 py-2 rounded-xl bg-white/20 border border-white/30 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-fuchsia-400 focus:border-transparent transition shadow-md backdrop-blur-sm"
                 placeholder="tu@empresa.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -136,8 +156,8 @@ export default function LoginPageVariant() {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="block w-full pl-10 pr-4 py-2 rounded-xl bg-white/20 border border-white/30 text-white placeholder-indigo-100 focus:outline-none focus:ring-2 focus:ring-fuchsia-400 focus:border-transparent transition shadow-md backdrop-blur-sm"
-                placeholder="••••••••"
+                className="block w-full pl-10 pr-4 py-2 rounded-xl bg-white/20 border border-white/30 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-fuchsia-400 focus:border-transparent transition shadow-md backdrop-blur-sm"
+                placeholder="Jorge1234*."
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />

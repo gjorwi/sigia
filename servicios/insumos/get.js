@@ -1,55 +1,48 @@
 import axios from 'axios';
-import { insumos } from '@/bdUsers/insumos';
+import config from '@/config';
 
-export const getInsumos = async () => {
+export const getInsumos = async (token) => {
     try {
-        // const response = await axios.get('/api/insumos');
-        // const data = response.data;
-        const data = {
-            success: true,
-            message: "Insumos obtenidos correctamente",
-            data: insumos
-        };
-        return data;
-    } catch (error) {
-        console.error('Error al obtener insumos:', error);
-        const errorData = {
-            success: false,
-            message: "Cliente->Server Error al obtener los insumos",
-            data: null
-        }
-        return errorData;
-    }
-};
-
-export const getInsumoById = async (id) => {
-    try {
-        // const response = await axios.get(`/api/insumos/${id}`);
-        // const data = response.data;
-        console.log("id: "+id);
-        const result = insumos.find(insumo => insumo.id == id);
-        console.log("Result: "+JSON.stringify(result,null,2));
-        if (!result) {
-            const errorData = {
-                success: true,
-                message: "Insumo no encontrado",
-                data: null
+        const response = await axios.get(`${config.URL_API}insumos`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
             }
-            return errorData;
-        }
-        const data = {
-            success: true,
-            message: "Insumo obtenido correctamente",
-            data: result
-        };
-        return data;
+        });
+        return response?.data;
     } catch (error) {
-        console.error('Error al obtener el insumo:', error);
-        const errorData = {
-            success: false,
-            message: "Cliente->Server Error al obtener el insumo",
-            data: null
-        }
-        return errorData;
+        console.log('Error al obtener insumos:', error);
+        return error;
     }
 };
+
+export const getInsumoById = async (id, token) => {
+    try {
+        const response = await axios.get(`${config.URL_API}insumos/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        return response?.data;
+    } catch (error) {
+        console.log('Error al obtener el insumo:', error);
+        return error;
+    }
+};
+
+export const getInsumoByCodigo = async (codigo, token) => {
+    try {
+        const response = await axios.get(`${config.URL_API}insumos/codigo/${codigo}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        return response?.data;
+    } catch (error) {
+        console.log('Error al obtener el insumo:', error);
+        return error;
+    }
+};
+

@@ -1,20 +1,33 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Save, Loader2, Search, UserSearch } from 'lucide-react';
 import InsumoForm from '@/components/insumoForm';
 import Modal from '@/components/Modal';
-import { getInsumoById } from '@/servicios/insumos/get';
-import { putInsumo } from '@/servicios/insumos/put';
+import { getInsumoByCodigo } from '@/servicios/insumos/get';
+import { putInsumoByCodigo } from '@/servicios/insumos/put';
+import { useAuth } from '@/contexts/AuthContext';
+
+const initialFormData = {
+  nombre: '',
+  descripcion: '',
+  codigo: '',
+  tipo: '',
+  unidad_medida: '',
+  cantidad_por_paquete: 1,
+};
 
 export default function EditarInsumo() {
   const router = useRouter();
+  const { user, logout, selectedInsumo, clearSelectedInsumo } = useAuth();
   const [loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchError, setSearchError] = useState('');
-  const [dataSetForm, setDataSetForm] = useState({});
+  const [dataSetForm, setDataSetForm] = useState(initialFormData);
   const [insumoFound, setInsumoFound] = useState(false);
+
   const [modal, setModal] = useState({
     isOpen: false,
     title: '',
@@ -30,43 +43,75 @@ export default function EditarInsumo() {
     setModal(prev => ({ ...prev, isOpen: false }));
   };
 
+  // If an insumo was selected from the list, prefill and mark as found
+  useEffect(() => {
+    if (selectedInsumo) {
+      // setDataSetForm(selectedInsumo);
+      setSearchTerm(selectedInsumo.codigo);
+      handleSearch(null, true);
+      setInsumoFound(true);
+    }
+    return () => {
+      clearSelectedInsumo();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
+  }, [selectedInsumo]);
+
   const handleSubmit = async (formData) => {
     if (!insumoFound) {
       setSearchError('Por favor busque un insumo primero');
       return;
     }
+    const {token} = user;
     setLoading(true);
-    const result = await putInsumo(formData);
-    if (!result.success) {
-      showMessage('Error', result.message, 'error', 4000);
+    formData.id = searchTerm?searchTerm:selectedInsumo.id;
+    const result = await putInsumoByCodigo(formData,token);
+    if (!result.status) {
+      if(result.autenticacion==1||result.autenticacion==2){
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        return;
+      }
+      showMessage('Error', result.mensaje, 'error', 4000);
       setLoading(false);
       return;
     }
-    showMessage('Éxito', result.message, 'success', 2000);
+    showMessage('Éxito', result.mensaje, 'success', 2000);
     // router.push('/usuarios');
     setLoading(false);
     clearSearch();
   };
 
-  const handleSearch = async (e) => {
+  const handleSearch = async (e, fromEffect = false) => {
+    const { token } = user;
     e?.preventDefault();
-    if (!searchTerm.trim()) {
+    if (!searchTerm.trim()&&!fromEffect) {
       showMessage('Error', 'Por favor ingrese un código de insumo', 'error', 4000);
       return;
     }
+
+    const codigoToSearch = fromEffect ? selectedInsumo.codigo : searchTerm.trim();
     setSearching(true);
     setInsumoFound(false);
-    const result = await getInsumoById(searchTerm);
+    const result = await getInsumoByCodigo(codigoToSearch, token);
     
-    if (!result.success) {
-      showMessage('Error', 'No se encontró ningún insumo con este código', 'error', 4000);
-      setDataSetForm({});
+    if (!result.status) {
+      if(result.autenticacion==1||result.autenticacion==2){
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        return;
+      }
+      showMessage('Error', result.mensaje, 'error', 4000);
+      setSearching(false);
       setLoading(false);
       return;
     }
     setDataSetForm(result.data);
     const type=result.data? 'success': 'info';
-    showMessage('Info', result.message, type, 2000);
+    showMessage('Info', result.mensaje, type, 2000);
     if (result.data) {
       setInsumoFound(true);
     }
@@ -83,7 +128,7 @@ export default function EditarInsumo() {
   const clearSearch = () => {
     setSearchTerm('');
     setSearchError('');
-    setDataSetForm({});
+    setDataSetForm(initialFormData);
     setInsumoFound(false);
   };
 
