@@ -4,24 +4,29 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { UserPlus, ArrowLeft, Save, Loader2 } from 'lucide-react';
 import LoteForm from '@/components/loteForm';
-import { postLote } from '@/servicios/lotes/post';
+import { postInventario } from '@/servicios/inventario/post';
 import Modal from '@/components/Modal';
+import { getInsumos } from '@/servicios/insumos/get';
+import { useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const initialFormData = {
-  insumoId: '',
-  nombre: '',
-  codigo: '',
-  numeroLote: '',
-  fechaVencimiento: '',
+  insumo_id: '',
+  lote_cod: '',
+  fecha_vencimiento: '',
   cantidad: '',
-  fechaIngreso: '',
+  fecha_ingreso: '',
+  hospital_id: '',
+  sede_id: ''
 };
 
 export default function NuevoLote() {
+  const { user, logout } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
   const [selectedInsumo, setSelectedInsumo] = useState(null);
+  const [allInsumos, setAllInsumos] = useState([]);
   const [modal, setModal] = useState({
     isOpen: false,
     title: '',
@@ -29,6 +34,30 @@ export default function NuevoLote() {
     type: 'info', // 'info', 'error', 'success', 'warning'
     time: null
   });
+
+  useEffect(() => {
+      handleGetInsumos();
+    }, []);
+  
+    const handleGetInsumos = async () => {
+      const { token } = user;
+      const result = await getInsumos(token);
+      if (!result.status) {
+        if(result.autenticacion==1||result.autenticacion==2){
+          showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+          logout();
+          router.replace('/');
+          return;
+        }
+        showMessage('Error', result.mensaje, 'error', 4000);
+        return;
+      }
+      console.log('insumos:result.data: ' + JSON.stringify(result.data,null,2));
+      if(result.data&&result.data.data){
+        setAllInsumos(result.data.data);
+      }
+    };  
+
   const showMessage = (title, message, type = 'info', time = null) => {
     setModal({isOpen: true, title, message, type, time});
   };
@@ -40,18 +69,28 @@ export default function NuevoLote() {
   const handleSubmit = async (formData) => {
     setLoading(true);
     console.log('Datos del formulario:', formData);
-    const result = await postLote(formData);      
+    const { token } = user;
+    // console.log('user: ' + JSON.stringify(user,null,2));
+    // delete formData.codigo;
+    // delete formData.nombre;
+    formData.hospital_id = user.hospital_id;
+    formData.sede_id = user.sede_id;
+    formData.almacen_tipo = user.sede.tipo_almacen;
+    const result = await postInventario(formData,token); 
+    console.log('result: ' + JSON.stringify(result,null,2));     
     // Mostrar mensaje de éxito y redirigir
-    if (!result.success) {
-      showMessage('Error', result.message, 'error', 4000);
+    if (!result.status) {
+      if(result.autenticacion==1||result.autenticacion==2){
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        return;
+      }
+      showMessage('Error', result.mensaje||'Error en la solicitud', 'error', 4000);
       setLoading(false);
       return;
     }
-    showMessage('Éxito', result.message, 'success', 2000);
-    // // Redirigir a la lista de inventario después de 2 segundos
-    // setTimeout(() => {
-    //   router.push('/administrador/inventario');
-    // }, 2000);
+    showMessage('Éxito', result.mensaje, 'success', 2000);
     setLoading(false);
     clearForm();
   };
@@ -125,6 +164,7 @@ export default function NuevoLote() {
               onSubmit={handleSubmit} 
               loading={loading}
               formData={formData}
+              insumos={allInsumos}
               onFormDataChange={setFormData}
               selectedInsumo={selectedInsumo}
               onSelectedInsumoChange={setSelectedInsumo}

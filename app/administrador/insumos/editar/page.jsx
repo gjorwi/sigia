@@ -6,7 +6,7 @@ import { ArrowLeft, Save, Loader2, Search, UserSearch } from 'lucide-react';
 import InsumoForm from '@/components/insumoForm';
 import Modal from '@/components/Modal';
 import { getInsumoByCodigo } from '@/servicios/insumos/get';
-import { putInsumoByCodigo } from '@/servicios/insumos/put';
+import { putInsumo } from '@/servicios/insumos/put';
 import { useAuth } from '@/contexts/AuthContext';
 
 const initialFormData = {
@@ -14,6 +14,7 @@ const initialFormData = {
   descripcion: '',
   codigo: '',
   tipo: '',
+  presentacion: '',
   unidad_medida: '',
   cantidad_por_paquete: 1,
 };
@@ -63,10 +64,11 @@ export default function EditarInsumo() {
       setSearchError('Por favor busque un insumo primero');
       return;
     }
+    // alert('Enviando datos...'+JSON.stringify(formData));
     const {token} = user;
     setLoading(true);
     formData.id = searchTerm?searchTerm:selectedInsumo.id;
-    const result = await putInsumoByCodigo(formData,token);
+    const result = await putInsumo(formData,token);
     if (!result.status) {
       if(result.autenticacion==1||result.autenticacion==2){
         showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
@@ -109,6 +111,7 @@ export default function EditarInsumo() {
       setLoading(false);
       return;
     }
+    console.log('result.data: ' + JSON.stringify(result.data,null,2));
     setDataSetForm(result.data);
     const type=result.data? 'success': 'info';
     showMessage('Info', result.mensaje, type, 2000);

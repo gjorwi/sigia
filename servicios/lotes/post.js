@@ -1,22 +1,17 @@
 import axios from 'axios';
+import config from '@/config';
 
-export const postLote = async (lote) => {
+export const postLote = async (lote,token) => {
     try {
-        // const response = await axios.post('/api/lotes', lote);
-        // const data = response.data;
-        const data = {
-            success: true,
-            message: "Lote guardado correctamente",
-            data: lote
-        };
+        const response = await axios.post(`${config.URL_API}/lotes`, lote, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        const data = response.data;
         return data;
     } catch (error) {
-        console.error('Error al crear el lote:', error);
-        const errorData = {
-            success: false,
-            message: 'Cliente-Server Error al crear el lote',
-            data: null
-        }
-        return errorData;
+        console.log('Error al crear el lote:', error);
+        return error;
     }
 };

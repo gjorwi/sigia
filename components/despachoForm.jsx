@@ -1,401 +1,246 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Search, Package, X, Plus, Minus } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import { Package } from 'lucide-react';
+import { X } from 'lucide-react';
+import InsumoSelectionModalOne from './modalInsumoOne';
 
-export default function DespachoForm({ onSubmit, id, formData, onFormDataChange, loading = false }) {
+export default function DespachoForm({ onSubmit, insumos, id, formData, onFormDataChange, onOpenSedeModal }) {
   const [errors, setErrors] = useState({});
-  const [insumos, setInsumos] = useState(formData?.insumos || []);
-  const [suggestedQuantities, setSuggestedQuantities] = useState({});
-  const [expandedInsumos, setExpandedInsumos] = useState({});
-  const [insumoMetrics, setInsumoMetrics] = useState({});
-  const [warnings, setWarnings] = useState({});
-
-  useEffect(() => {
-    if (formData.hospitalId && formData.insumos?.length > 0) {
-      const suggestions = {};
-      const newWarnings = {};
-      
-      formData.insumos.forEach(insumo => {
-        const availableStock = insumo.lotes.reduce((total, lot) => total + lot.cantidad, 0);
-        const hospitalRequirement = insumo.cantidadDespacho || 0;
-        const suggestedQty = Math.min(
-          Math.floor(availableStock * 0.8),
-          hospitalRequirement
-        );
-        
-        suggestions[insumo.id] = suggestedQty;
-        
-        // Configurar mensaje de advertencia si es necesario
-        if (suggestedQty < hospitalRequirement) {
-          if (suggestedQty < availableStock) {
-            newWarnings[insumo.id] = `Se sugiere ${suggestedQty} (80% del stock disponible).`;
-          } else {
-            newWarnings[insumo.id] = `Stock insuficiente. Solo hay ${availableStock} unidades disponibles.`;
-          }
-        } else {
-          newWarnings[insumo.id] = '';
-        }
-        
-        // Inicializar métricas si no existen
-        if (!insumoMetrics[insumo.id]) {
-          setInsumoMetrics(prev => ({
-            ...prev,
-            [insumo.id]: {
-              cantidadRequerida: hospitalRequirement,
-              cantidadDisponible: availableStock,
-              cantidadADespachar: suggestedQty,
-              lotesADespachar: calculateLotesADespachar(insumo, suggestedQty)
-            }
-          }));
-        }
-      });
-      setSuggestedQuantities(suggestions);
-      setWarnings(newWarnings);
-    }
-  }, [formData.hospitalId, formData.insumos]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
+      console.log('handleSubmit: ' + JSON.stringify(formData,null,2));
       onSubmit(formData);
     }
+  };
+  useEffect(() => {
+    console.log('insumos: ' + JSON.stringify(insumos,null,2));
+  }, [insumos]);
+
+  const handleAddInsumo = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleRemoveInsumo = (id, idx) => {
+    const current = Array.isArray(formData.insumos) ? formData.insumos : [];
+    const newInsumos = id != null
+      ? current.filter((i) => i.id !== id)
+      : current.filter((_, i) => i !== idx);
+    onFormDataChange({ ...formData, insumos: newInsumos });
+  };
+
+  const handleSelectInsumo = (insumoOrList) => {
+    const current = Array.isArray(formData.insumos) ? [...formData.insumos] : [];
+    const items = Array.isArray(insumoOrList) ? insumoOrList : [insumoOrList];
+    const byId = new Map(current.map((i) => [i.id, { ...i }]));
+    for (const it of items) {
+      const prev = byId.get(it.id);
+      // console.log('prev: ' + JSON.stringify(prev,null,2));
+      console.log('it: ' + JSON.stringify(it,null,2));
+      if (prev) {
+        // Actualizar insumo existente
+        byId.set(it.id, {
+          ...prev,
+          id: it.id,
+          nombre: it.nombre || it?.inventario?.insumo?.nombre || prev.nombre || 'Insumo',
+          cantidad: it.cantidad ?? prev.cantidad ?? 1,
+          // Actualizar distribución de lotes si existe
+          // distribucion_lotes: it.distribucion_lotes ?? prev.distribucion_lotes ?? [],
+          lotes: it.distribucion_lotes ? it.distribucion_lotes.map(lote => ({
+            lote_id: lote.lote_id,
+            numero_lote: lote.numero_lote,
+            cantidad: lote.cantidad,
+            fecha_vencimiento: lote.fecha_vencimiento
+          })) : (prev.lotes ?? [])
+        });
+      } else {
+        // Nuevo insumo
+        const nuevoInsumo = {
+          id: it.id,
+          nombre: it.nombre || it?.inventario?.insumo?.nombre || 'Insumo',
+          cantidad: it.cantidad ?? 1
+        };
+
+        // Agregar información de lotes si existe
+        if (it.distribucion_lotes && it.distribucion_lotes.length > 0) {
+          nuevoInsumo.lotes = it.distribucion_lotes.map(lote => ({
+            lote_id: lote.lote_id,
+            numero_lote: lote.numero_lote,
+            cantidad: lote.cantidad,
+            fecha_vencimiento: lote.fecha_vencimiento
+          }));
+        } else {
+          nuevoInsumo.lotes = [];
+        }
+
+        byId.set(it.id, nuevoInsumo);
+      }
+    }
+    const newInsumos = Array.from(byId.values());
+    console.log('newInsumos: ' + JSON.stringify(newInsumos,null,2));
+    onFormDataChange({ ...formData, insumos: newInsumos });
+    setIsModalOpen(false);
+    setSearchTerm('');
   };
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.hospitalId) newErrors.hospitalId = 'Seleccione un hospital';
-    if (!formData.fechaDespacho) newErrors.fechaDespacho = 'Seleccione la fecha de despacho';
+    if (!formData.hospital_id_desde) newErrors.hospital_id_desde = 'Origen no seleccionado';
+    if (!formData.hospital_id_hasta) newErrors.hospital_id_hasta = 'Destino no ha sido seleccionado';
+    if (!formData.sede_id) newErrors.sede_id = 'Debe seleccionar una sede';
+    if (!formData.tipo_movimiento) newErrors.tipo_movimiento = 'Tipo de movimiento no seleccionado';
+    if (!formData.fecha_despacho) newErrors.fecha_despacho = 'Fecha de despacho no ha sido seleccionada';
     
     // Validate at least one insumo with quantity > 0
-    const hasInsumos = formData.insumos && 
-      Object.values(formData.insumos).some(qty => qty > 0);
+    const hasInsumos = Array.isArray(formData.insumos) &&
+      formData.insumos.some((i) => (i.cantidad ?? 0) > 0);
     if (!hasInsumos) newErrors.insumos = 'Debe seleccionar al menos un insumo';
-    
+    console.log('newErrors: ' + JSON.stringify(newErrors,null,2));
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleAddInsumo = (insumo) => {
-    if (!insumo) return;
-    
-    const availableStock = insumo.lotes.reduce((total, lot) => total + lot.cantidad, 0);
-    const suggestedQty = Math.min(
-      Math.floor(availableStock * 0.8),
-      insumo.cantidadDespacho || 0
-    );
-    
-    // Actualizar el formulario principal
-    const updatedInsumos = [...(formData.insumos || [])];
-    if (!updatedInsumos.some(item => item.id === insumo.id)) {
-      updatedInsumos.push({
-        ...insumo,
-        cantidadDespacho: suggestedQty + 10 // Mantener la lógica de +10
-      });
-      
-      onFormDataChange({
-        ...formData,
-        insumos: updatedInsumos
-      });
-      
-      // Actualizar métricas
-      setInsumoMetrics(prev => ({
-        ...prev,
-        [insumo.id]: {
-          cantidadRequerida: insumo.cantidadDespacho || 0,
-          cantidadDisponible: availableStock,
-          cantidadADespachar: suggestedQty,
-          lotesADespachar: calculateLotesADespachar(insumo, suggestedQty)
-        }
-      }));
-    }
-  };
-
-  const handleRemoveInsumo = (e, insumoId) => {
-    e.stopPropagation();
-    const newInsumos = { ...formData.insumos };
-    delete newInsumos[insumoId];
-    onFormDataChange({
-      ...formData,
-      insumos: newInsumos
-    });
-  };
-
-  const toggleInsumoDetails = (insumoId) => {
-    setExpandedInsumos(prev => ({
-      ...prev,
-      [insumoId]: !prev[insumoId]
-    }));
-  };
-
-  const handleQuantityChange = (insumo, newQuantity) => {
-    const quantity = Math.max(0, parseInt(newQuantity) || 0);
-    const availableStock = insumo.lotes.reduce((total, lot) => total + lot.cantidad, 0);
-    
-    // Actualizar las métricas con el nuevo valor manual
-    setInsumoMetrics(prev => ({
-      ...prev,
-      [insumo.id]: {
-        ...prev[insumo.id],
-        cantidadADespachar: Math.min(quantity, availableStock), // No permitir más del stock disponible
-        lotesADespachar: calculateLotesADespachar(insumo, Math.min(quantity, availableStock))
-      }
-    }));
-    
-    // Actualizar el formulario principal
-    const updatedInsumos = formData.insumos.map(item => 
-      item.id === insumo.id 
-        ? { 
-            ...item, 
-            cantidadDespacho: Math.min(quantity, availableStock) + 10 // Mantener la lógica de +10 si es necesario
-          } 
-        : item
-    );
-    
-    onFormDataChange({
-      ...formData,
-      insumos: updatedInsumos
-    });
-    
-    // Actualizar advertencias
-    updateWarnings(insumo, Math.min(quantity, availableStock), availableStock);
-  };
-
-  const getAvailableInsumos = () => {
-    if (!formData.insumos || !Array.isArray(formData.insumos)) return [...insumos];
-    return insumos.filter(insumo => 
-      !formData.insumos.some(addedInsumo => addedInsumo.id === insumo.id)
-    );
-  };
-
-  // Inicializar métricas cuando se cargan los insumos
-  useEffect(() => {
-    if (formData?.insumos?.length > 0 && Object.keys(insumoMetrics).length === 0) {
-      const initialMetrics = {};
-      formData.insumos.forEach(insumo => {
-        initialMetrics[insumo.id] = {
-          cantidadRequerida: insumo.cantidadDespacho,
-          cantidadDisponible: insumo.lotes.reduce((total, lot) => total + lot.cantidad, 0),
-          cantidadADespachar: insumo.cantidadDespacho - 10, // Valor inicial
-          lotesADespachar: calculateLotesADespachar(insumo, insumo.cantidadDespacho - 10)
-        };
-      });
-      setInsumoMetrics(initialMetrics);
-    }
-  }, [formData?.insumos]);
-
-  const calculateLotesADespachar = (insumo, cantidadDeseada) => {
-    let cantidadRestante = cantidadDeseada;
-    const lotesADespachar = [];
-    
-    // Ordenar lotes por fecha de vencimiento (más próximos a vencer primero)
-    const lotesOrdenados = [...insumo.lotes].sort((a, b) => 
-      new Date(a.fechaVencimiento) - new Date(b.fechaVencimiento)
-    );
-
-    for (const lote of lotesOrdenados) {
-      if (cantidadRestante <= 0) break;
-      
-      const cantidadATomar = Math.min(lote.cantidad, cantidadRestante);
-      if (cantidadATomar > 0) {
-        lotesADespachar.push({
-          lote: lote.numeroLote,
-          cantidad: cantidadATomar,
-          vencimiento: lote.fechaVencimiento
-        });
-        cantidadRestante -= cantidadATomar;
-      }
-    }
-
-    return lotesADespachar;
-  };
-
-  const updateWarnings = (insumo, cantidad, availableStock) => {
-    const hospitalRequirement = insumo.cantidadDespacho || 0;
-    
-    if (cantidad < hospitalRequirement) {
-      if (cantidad < availableStock) {
-        setWarnings(prev => ({
-          ...prev,
-          [insumo.id]: `Se sugiere ${cantidad} (valor ingresado manualmente).`
-        }));
-      } else {
-        setWarnings(prev => ({
-          ...prev,
-          [insumo.id]: `Stock insuficiente. Solo hay ${availableStock} unidades disponibles.`
-        }));
-      }
-    } else {
-      setWarnings(prev => ({
-        ...prev,
-        [insumo.id]: ''
-      }));
-    }
-  };
-
   return (
-    <form onSubmit={handleSubmit} id={id} className="space-y-6">
-      <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6 space-y-6">
-
-        {/* Fecha de Despacho */}
-        <div>
-          <label htmlFor="fechaDespacho" className="block text-sm font-medium text-gray-700 mb-1">
-            Fecha de Despacho
+    <form onSubmit={handleSubmit} id={id} className="">
+      <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6">
+        {/* Sede */}
+        <div className="mb-2">
+          <label htmlFor="sede" className="block text-sm font-medium text-gray-700 mb-1">
+            Sede Destino
           </label>
-          <input
-            type="date"
-            id="fechaDespacho"
-            name="fechaDespacho"
-            value={formData.fechaDespacho || ''}
-            onChange={(e) => onFormDataChange({ ...formData, fechaDespacho: e.target.value })}
-            className="mt-1 block pl-3 pr-2 py-2 text-base border border-gray-300 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
-            min={new Date().toISOString().split('T')[0]}
-          />
-          {errors.fechaDespacho && (
-            <p className="mt-1 text-sm text-red-600">{errors.fechaDespacho}</p>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              id="sede"
+              name="sede"
+              value={formData.sede_nombre || ''}
+              readOnly
+              placeholder="Seleccione una sede"
+              className={`mt-1 block w-full pl-3 pr-2 py-2 text-base border ${errors.sede_id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} text-gray-900 focus:outline-none sm:text-sm rounded-md`}
+            />
+            <button
+              type="button"
+              onClick={onOpenSedeModal}
+              className="mt-1 inline-flex items-center px-3 py-2 border border-gray-300 text-sm rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Seleccionar
+            </button>
+          </div>
+          {errors.sede_id && (
+            <p className="mt-1 text-sm text-red-600">{errors.sede_id}</p>
           )}
         </div>
-
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Fecha de Despacho */}
+          <div>
+            <label htmlFor="fecha_despacho" className="block text-sm font-medium text-gray-700 mb-1">
+              Fecha de Despacho
+            </label>
+            <input
+              type="date"
+              id="fecha_despacho"
+              name="fecha_despacho"
+              value={formData.fecha_despacho || ''}
+              onChange={(e) => onFormDataChange({ ...formData, fecha_despacho: e.target.value })}
+              className="mt-1 block pl-3 pr-2 py-2 text-base border border-gray-300 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+              min={new Date().toISOString().split('T')[0]}
+            />
+            {errors.fecha_despacho && (
+              <p className="mt-1 text-sm text-red-600">{errors.fecha_despacho}</p>
+            )}
+          </div>
+          {/* tipo de movimiento */}
+          <div>
+            <label htmlFor="tipo_movimiento" className="block text-sm font-medium text-gray-700 mb-1">
+              Tipo de Movimiento
+            </label>
+            <select
+              id="tipo_movimiento"
+              name="tipo_movimiento"
+              value={formData.tipo_movimiento || ''}
+              onChange={(e) => onFormDataChange({ ...formData, tipo_movimiento: e.target.value })}
+              className="mt-1 block pl-3 pr-2 py-2 text-base border border-gray-300 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+            >
+              <option value="">Seleccione...</option>
+              <option value="ingreso">Ingreso</option>
+              <option value="despacho">Despacho</option>
+              <option value="redistribucion">Redistribución</option>
+            </select>
+            {errors.tipo_movimiento && (
+              <p className="mt-1 text-sm text-red-600">{errors.tipo_movimiento}</p>
+            )}
+          </div>
+        </div>
         {/* Insumos */}
         <div>
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex justify-between items-center mb-2 mt-4">
             <label className="block text-sm font-medium text-gray-700">
               Insumos a Despachar
             </label>
-            {/* {getAvailableInsumos().length > 0 && ( */}
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const available = getAvailableInsumos();
-                    if (available.length === 1) {
-                      handleAddInsumo(available[0]);
-                    } else if (available.length > 1) {
-                      // Mostrar menú desplegable con los insumos disponibles
-                      const selected = prompt(
-                        `Seleccione un insumo:\n${
-                          available.map((insumo, index) => 
-                            `${index + 1}. ${insumo.nombre} (${insumo.codigo})`
-                          ).join('\n')
-                        }`
-                      );
-                      const index = parseInt(selected) - 1;
-                      if (!isNaN(index) && index >= 0 && index < available.length) {
-                        handleAddInsumo(available[index]);
-                      }
-                    }
-                  }}
-                  className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  <Plus className="h-3 w-3 mr-1" /> Agregar Insumo
-                </button>
-              </div>
-            {/* )} */}
+              {Array.isArray(formData.insumos) && formData.insumos.length > 0 && (
+                <div className="relative">
+                  <div
+                    onClick={(e) => { handleAddInsumo(); }}
+                    className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    <Plus className="h-3 w-3 mr-1" /> Agregar Insumo
+                  </div>
+                </div>
+              )}
           </div>
           
-          {formData?.insumos?.length > 0 ? (
-            <div className="space-y-4">
-              {formData.insumos.map((insumo) => {
-                const lotesADespachar = calculateLotesADespachar(insumo);
-                const totalDisponible = insumo.lotes.reduce((total, lot) => total + lot.cantidad, 0);
-                const cantidadADespachar = insumo.cantidadDespacho - 10;
-                
-                return (
-                  <div 
-                    key={insumo.id} 
-                    className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden cursor-pointer hover:bg-gray-50 transition-colors"
-                    onClick={() => toggleInsumoDetails(insumo.id)}
-                  >
-                    <div className="p-4">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h4 className="text-sm font-medium text-gray-900">{insumo.nombre}</h4>
-                              <p className="text-xs text-gray-500">Código: {insumo.codigo}</p>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-xs text-gray-500">
-                                <span className="font-medium">A despachar: </span>
-                                <span className="text-green-600">{cantidadADespachar} unidades</span>
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                <span className="font-medium">Disponible: </span>
-                                <span className={totalDisponible >= cantidadADespachar ? 'text-blue-600' : 'text-red-600'}>
-                                  {totalDisponible} unidades
-                                </span>
-                              </p>
-                            </div>
-                          </div>
-                          
-                          {expandedInsumos[insumo.id] && (
-                            <div className="mt-3 pt-3 border-t border-gray-100">
-                              <div className="grid grid-cols-2 gap-2 text-xs">
-                                <div className="bg-yellow-50 p-2 rounded">
-                                  <p className="font-medium text-gray-700">Requerido</p>
-                                  <p className="text-yellow-700">{insumoMetrics[insumo.id]?.cantidadRequerida || 0} unidades</p>
-                                </div>
-                                <div className="bg-blue-50 p-2 rounded">
-                                  <p className="font-medium text-gray-700">Disponible</p>
-                                  <p className="text-blue-700">{insumoMetrics[insumo.id]?.cantidadDisponible || 0} unidades</p>
-                                </div>
-                                <div className="bg-green-50 p-2 rounded">
-                                  <p className="font-medium text-gray-700">A despachar</p>
-                                  <p className="text-green-700">{insumoMetrics[insumo.id]?.cantidadADespachar || 0} unidades</p>
-                                </div>
-                                <div className="bg-red-50 p-2 rounded">
-                                  <p className="font-medium text-gray-700">Lotes</p>
-                                  <div className="flex flex-wrap gap-1">
-                                    {(insumoMetrics[insumo.id]?.lotesADespachar || []).map((lote, index, array) => (
-                                      <span key={lote.lote} className="text-red-700">
-                                        {lote.lote} ({lote.cantidad}u){index < array.length - 1 ? ',' : ''}
-                                      </span>
-                                    ))}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
+          
+          {Array.isArray(formData.insumos) && formData.insumos.length > 0 ? (
+            <div className="border border-gray-200 rounded-lg bg-white">
+              <ul className="divide-y divide-gray-200">
+                {formData.insumos.map((item, idx) => (
+                  <li key={item.id ?? idx} className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-gray-900 truncate">{item.nombre ?? 'Insumo'}</div>
+                        <div className="text-sm font-semibold text-indigo-600 mt-1">
+                          Cantidad total: {item.cantidad} unidades
                         </div>
                         
-                        <div className="ml-4 flex flex-col items-end space-y-2">
-                          <div className="flex flex-col items-end">
-                            <div className="flex items-center border rounded-md bg-white mb-1" onClick={e => e.stopPropagation()}>
-                              <input
-                                type="number"
-                                min="0"
-                                max={insumo.lotes.reduce((total, lot) => total + lot.cantidad, 0) || 0}
-                                value={insumoMetrics[insumo.id]?.cantidadADespachar || 0}
-                                onChange={(e) => handleQuantityChange(insumo, e.target.value)}
-                                onBlur={(e) => {
-                                  // Asegurar que el valor no sea mayor al disponible
-                                  const availableStock = insumo.lotes.reduce((total, lot) => total + lot.cantidad, 0);
-                                  const value = Math.min(parseInt(e.target.value) || 0, availableStock);
-                                  handleQuantityChange(insumo, value);
-                                }}
-                                onClick={e => e.stopPropagation()}
-                                className="w-20 text-center text-gray-900 border-0 focus:ring-1 focus:ring-blue-500 focus:outline-none rounded-md"
-                              />
+                        {/* Mostrar distribución de lotes si existe */}
+                        {item.lotes && item.lotes.length > 0 && (
+                          <div className="mt-3 p-3 bg-blue-50 rounded-md">
+                            <h6 className="text-xs font-medium text-blue-900 mb-2">Distribución por lotes:</h6>
+                            <div className="space-y-1">
+                              {item.lotes.map((lote, loteIdx) => (
+                                <div key={loteIdx} className="flex justify-between text-xs text-blue-800">
+                                  <span className="font-medium">
+                                    {lote.numero_lote ? `Lote ${lote.numero_lote}` : 'Lote General'}
+                                  </span>
+                                  <span className="font-semibold">{lote.cantidad} unidades</span>
+                                  {lote.fecha_vencimiento && (
+                                    <span className="text-blue-600">
+                                      Vence: {new Date(lote.fecha_vencimiento).toLocaleDateString()}
+                                    </span>
+                                  )}
+                                </div>
+                              ))}
                             </div>
-                            {warnings[insumo.id] && (
-                              <div className="text-xs text-yellow-600 bg-yellow-50 px-2 py-1 rounded">
-                                {warnings[insumo.id]}
-                              </div>
-                            )}
                           </div>
-                          <button
-                            type="button"
-                            onClick={(e) => handleRemoveInsumo(e, insumo.id)}
-                            className="inline-flex items-center px-2 py-1 text-xs text-red-600 hover:text-red-800 hover:bg-red-50 rounded"
-                          >
-                            <X className="h-3 w-3 mr-1" /> Quitar
-                          </button>
-                        </div>
+                        )}
                       </div>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveInsumo(item.id, idx)}
+                        className="ml-4 inline-flex items-center justify-center h-8 w-8 rounded-full text-gray-500 hover:text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-500"
+                        aria-label="Eliminar insumo"
+                        title="Eliminar insumo"
+                      >
+                        <X className="h-5 w-5" />
+                      </button>
                     </div>
-                  </div>
-                );
-              })}
+                  </li>
+                ))}
+              </ul>
             </div>
           ) : (
             <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
@@ -404,26 +249,24 @@ export default function DespachoForm({ onSubmit, id, formData, onFormDataChange,
               <p className="mt-1 text-sm text-gray-500 max-w-xs mx-auto">
                 Comience agregando insumos para realizar el despacho
               </p>
-              {getAvailableInsumos().length > 0 && (
-                <div className="mt-4">
-                  <button
-                    type="button"
-                    onClick={() => handleAddInsumo(getAvailableInsumos()[0])}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                  >
-                    <Plus className="h-4 w-4 mr-2" /> Agregar primer insumo
-                  </button>
+              <div className="mt-4 cursor-pointer">
+                <div
+                  onClick={() => handleAddInsumo()}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                >
+                  <Plus className="h-4 w-4 mr-2" /> Agregar primer insumo
                 </div>
-              )}
+              </div>
             </div>
           )}
+          
           {errors.insumos && (
             <p className="mt-1 text-sm text-red-600">{errors.insumos}</p>
           )}
         </div>
 
         {/* Observaciones */}
-        <div>
+        <div className="mt-2">
           <label htmlFor="observaciones" className="block text-sm font-medium text-gray-700 mb-1">
             Observaciones (Opcional)
           </label>
@@ -433,11 +276,22 @@ export default function DespachoForm({ onSubmit, id, formData, onFormDataChange,
             rows={3}
             value={formData.observaciones || ''}
             onChange={(e) => onFormDataChange({ ...formData, observaciones: e.target.value })}
-            className="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
+            className="shadow-sm focus:ring-blue-500 text-gray-700 px-2 focus:border-blue-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
             placeholder="Notas adicionales sobre el despacho"
           />
         </div>
+
+        {/* Modal para seleccionar Insumo */}
+        <InsumoSelectionModalOne
+          isOpen={isModalOpen}
+          onClose={() => { setIsModalOpen(false); setSearchTerm(''); }}
+          onSelectInsumo={handleSelectInsumo}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          insumos={insumos}
+        />
       </div>
     </form>
   );
 }
+

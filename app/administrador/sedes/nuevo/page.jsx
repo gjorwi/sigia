@@ -6,25 +6,14 @@ import Modal from '@/components/Modal';
 import { getHospitalById } from '@/servicios/hospitales/get';
 import { postSede } from '@/servicios/sedes/post';
 import { useAuth } from '@/contexts/AuthContext';
+import { tipoAlmacenes } from '@/constantes/tipoAlmacenes';
 
 const initialFormData = {
   nombre: '',
   tipo_almacen:'',
   hospital_id: '',
 };
-const tipo=[
-  {idSede:'almacenp',nombre:'Alamacen Principal'},
-  {idSede:'farmacia',nombre:'Farmacia'},
-  {idSede:'minialmacen',nombre:'Mini Almacén'},
-]
-const tipoAlmacenes=[
-  {idTipo:'almacenCent',nombre:'Alamacen Central',tipo:'interno'},
-  {idTipo:'almacenPrin',nombre:'Alamacen Principal',tipo:'externo'},
-  {idTipo:'almacenFarm',nombre:'Almacen Farmacia',tipo:'externo'},
-  {idTipo:'almacenPar',nombre:'Almacen Paralelo',tipo:'externo'},
-  {idTipo:'almacenServAtenciones',nombre:'Almacen Servicios de Atenciones',tipo:'externo'},
-  {idTipo:'almacenServApoyo',nombre:'Almacen Servicios de Apoyo',tipo:'externo'},
-]
+
 export default function Sede() {
   const router = useRouter();
   const {user,logout}=useAuth();

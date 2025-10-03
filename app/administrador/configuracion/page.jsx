@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Settings, Save, Clock, Bell, Mail, Lock, Globe, Database, User, Shield, AlertCircle, CheckCircle } from 'lucide-react';
+import { Settings, Save, Clock, Bell, Mail, Lock, Globe, Database, User, Shield, AlertCircle, CheckCircle, TrendingUp } from 'lucide-react';
 
 // Mock data - replace with actual API calls
 const initialSettings = {
@@ -12,42 +12,20 @@ const initialSettings = {
     zonaHoraria: 'America/Lima',
     itemsPorPagina: 25,
   },
-  seguridad: {
-    intentosMaximos: 5,
-    tiempoBloqueo: 30, // minutos
-    longitudMinimaClave: 8,
-    requiereMayusculas: true,
-    requiereNumeros: true,
-    requiereCaracteresEspeciales: true,
-    expiracionClave: 90, // días
-  },
-  notificaciones: {
-    correoSistemas: 'sistemas@empresa.com',
-    notificarNuevoUsuario: true,
-    notificarDespachoPendiente: true,
-    notificarDespachoEnCamino: true,
-    notificarDespachoEntregado: true,
-    notificarBajoStock: true,
-    notificarStockCritico: true,
-  },
-  correo: {
-    servidor: 'smtp.empresa.com',
-    puerto: 587,
-    usuario: 'notificaciones@empresa.com',
-    requiereAutenticacion: true,
-    usarSSL: true,
-  },
-  backup: {
-    frecuencia: 'diario',
-    horaProgramada: '02:00',
-    mantenerUltimos: 30, // días
-    notificarEnError: true,
-    correoNotificacion: 'sistemas@empresa.com',
+  distribucion: {
+    hospitalTipo1: 0.11,
+    hospitalTipo2: 0.21,
+    hospitalTipo3: 0.54,
+    hospitalTipo4: 1.74,
+    cantidadTipo1: 10,
+    cantidadTipo2: 15,
+    cantidadTipo3: 25,
+    cantidadTipo4: 8,
   },
 };
 
 const ConfiguracionesPage = () => {
-  const [activeTab, setActiveTab] = useState('general');
+  const [activeTab, setActiveTab] = useState('distribucion');
   const [settings, setSettings] = useState(initialSettings);
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState({ type: '', message: '' });
@@ -156,11 +134,12 @@ const ConfiguracionesPage = () => {
   };
 
   const tabs = [
-    { id: 'general', name: 'General', icon: <Settings className="h-5 w-5" /> },
-    { id: 'seguridad', name: 'Seguridad', icon: <Shield className="h-5 w-5" /> },
-    { id: 'notificaciones', name: 'Notificaciones', icon: <Bell className="h-5 w-5" /> },
-    { id: 'correo', name: 'Correo Electrónico', icon: <Mail className="h-5 w-5" /> },
-    { id: 'backup', name: 'Respaldo', icon: <Database className="h-5 w-5" /> },
+    // { id: 'general', name: 'General', icon: <Settings className="h-5 w-5" /> },
+    { id: 'distribucion', name: 'Distribución', icon: <TrendingUp className="h-5 w-5" /> },
+    // { id: 'seguridad', name: 'Seguridad', icon: <Shield className="h-5 w-5" /> },
+    // { id: 'notificaciones', name: 'Notificaciones', icon: <Bell className="h-5 w-5" /> },
+    // { id: 'correo', name: 'Correo Electrónico', icon: <Mail className="h-5 w-5" /> },
+    // { id: 'backup', name: 'Respaldo', icon: <Database className="h-5 w-5" /> },
   ];
 
   const renderTabContent = () => {
@@ -239,6 +218,207 @@ const ConfiguracionesPage = () => {
                         <option value={50}>50 ítems</option>
                         <option value={100}>100 ítems</option>
                       </select>
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+          </div>
+        );
+      
+      case 'distribucion':
+        return (
+          <div className="space-y-6">
+            <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+              <div className="px-4 py-5 sm:px-6">
+                <h3 className="text-lg leading-6 font-medium text-gray-900">Distribución de Insumos por Tipo de Hospital</h3>
+                <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                  Configure los porcentajes de distribución de insumos según la clasificación de hospitales.
+                </p>
+              </div>
+              <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
+                <dl className="sm:divide-y sm:divide-gray-200">
+                  <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt className="text-sm font-medium text-gray-500">Hospital Tipo 1</dt>
+                    <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Cantidad</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={settings.distribucion.cantidadTipo1}
+                            onChange={(e) => handleChange('distribucion', 'cantidadTipo1', parseInt(e.target.value) || 0)}
+                            className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Porcentaje (%)</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            max="100"
+                            value={settings.distribucion.hospitalTipo1}
+                            onChange={(e) => handleChange('distribucion', 'hospitalTipo1', parseFloat(e.target.value) || 0)}
+                            className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Distribución(%)</label>
+                          <div className="bg-gray-50 border border-gray-200 rounded-md py-2 px-3 text-sm font-medium text-gray-700">
+                            {(settings.distribucion.cantidadTipo1 * settings.distribucion.hospitalTipo1).toFixed(2)}
+                          </div>
+                        </div>
+                      </div>
+                      <p className="mt-2 text-xs text-gray-500">Cantidad × Porcentaje = Distribución de insumos para hospitales tipo 1.</p>
+                    </dd>
+                  </div>
+                  <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt className="text-sm font-medium text-gray-500">Hospital Tipo 2</dt>
+                    <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Cantidad</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={settings.distribucion.cantidadTipo2}
+                            onChange={(e) => handleChange('distribucion', 'cantidadTipo2', parseInt(e.target.value) || 0)}
+                            className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Porcentaje (%)</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            max="100"
+                            value={settings.distribucion.hospitalTipo2}
+                            onChange={(e) => handleChange('distribucion', 'hospitalTipo2', parseFloat(e.target.value) || 0)}
+                            className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Distribución(%)</label>
+                          <div className="bg-gray-50 border border-gray-200 rounded-md py-2 px-3 text-sm font-medium text-gray-700">
+                            {(settings.distribucion.cantidadTipo2 * settings.distribucion.hospitalTipo2).toFixed(2)}
+                          </div>
+                        </div>
+                      </div>
+                      <p className="mt-2 text-xs text-gray-500">Cantidad × Porcentaje = Distribución de insumos para hospitales tipo 2.</p>
+                    </dd>
+                  </div>
+                  <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt className="text-sm font-medium text-gray-500">Hospital Tipo 3</dt>
+                    <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Cantidad</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={settings.distribucion.cantidadTipo3}
+                            onChange={(e) => handleChange('distribucion', 'cantidadTipo3', parseInt(e.target.value) || 0)}
+                            className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Porcentaje (%)</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            max="100"
+                            value={settings.distribucion.hospitalTipo3}
+                            onChange={(e) => handleChange('distribucion', 'hospitalTipo3', parseFloat(e.target.value) || 0)}
+                            className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Distribución(%)</label>
+                          <div className="bg-gray-50 border border-gray-200 rounded-md py-2 px-3 text-sm font-medium text-gray-700">
+                            {(settings.distribucion.cantidadTipo3 * settings.distribucion.hospitalTipo3).toFixed(2)}
+                          </div>
+                        </div>
+                      </div>
+                      <p className="mt-2 text-xs text-gray-500">Cantidad × Porcentaje = Distribución de insumos para hospitales tipo 3.</p>
+                    </dd>
+                  </div>
+                  <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt className="text-sm font-medium text-gray-500">Hospital Tipo 4</dt>
+                    <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Cantidad</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={settings.distribucion.cantidadTipo4}
+                            onChange={(e) => handleChange('distribucion', 'cantidadTipo4', parseInt(e.target.value) || 0)}
+                            className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Porcentaje (%)</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            max="100"
+                            value={settings.distribucion.hospitalTipo4}
+                            onChange={(e) => handleChange('distribucion', 'hospitalTipo4', parseFloat(e.target.value) || 0)}
+                            className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Distribución(%)</label>
+                          <div className="bg-gray-50 border border-gray-200 rounded-md py-2 px-3 text-sm font-medium text-gray-700">
+                            {(settings.distribucion.cantidadTipo4 * settings.distribucion.hospitalTipo4).toFixed(2)}
+                          </div>
+                        </div>
+                      </div>
+                      <p className="mt-2 text-xs text-gray-500">Cantidad × Porcentaje = Distribución de insumos para hospitales tipo 4.</p>
+                    </dd>
+                  </div>
+                  <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 bg-gray-50">
+                    <dt className="text-sm font-medium text-gray-700">Totales</dt>
+                    <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Total Hospitales</label>
+                          <div className="bg-white border border-gray-200 rounded-md py-2 px-3 text-sm font-semibold text-gray-800">
+                            {settings.distribucion.cantidadTipo1 + settings.distribucion.cantidadTipo2 + 
+                             settings.distribucion.cantidadTipo3 + settings.distribucion.cantidadTipo4}
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Total Porcentajes</label>
+                          <div className={`border border-gray-200 rounded-md py-2 px-3 text-sm font-semibold ${
+                            Math.abs((settings.distribucion.hospitalTipo1 + settings.distribucion.hospitalTipo2 + 
+                                     settings.distribucion.hospitalTipo3 + settings.distribucion.hospitalTipo4) - 100) < 0.01
+                              ? 'bg-green-50 text-green-700' 
+                              : 'bg-red-50 text-red-700'
+                          }`}>
+                            {(settings.distribucion.hospitalTipo1 + settings.distribucion.hospitalTipo2 + 
+                              settings.distribucion.hospitalTipo3 + settings.distribucion.hospitalTipo4).toFixed(2)}%
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-500 mb-1">Total Distribución(%)</label>
+                          <div className="bg-indigo-50 border border-indigo-200 rounded-md py-2 px-3 text-sm font-semibold text-indigo-800">
+                            {((settings.distribucion.cantidadTipo1 * settings.distribucion.hospitalTipo1) +
+                              (settings.distribucion.cantidadTipo2 * settings.distribucion.hospitalTipo2) +
+                              (settings.distribucion.cantidadTipo3 * settings.distribucion.hospitalTipo3) +
+                              (settings.distribucion.cantidadTipo4 * settings.distribucion.hospitalTipo4)).toFixed(2)}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <p className="mt-2 text-xs text-gray-500">
+                        La distribución total se calcula sumando (Cantidad × Porcentaje) de cada tipo de hospital.
+                      </p>
                     </dd>
                   </div>
                 </dl>

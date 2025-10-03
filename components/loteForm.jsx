@@ -1,72 +1,53 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import InsumoSelectionModal from './modalInsumo';
+import InsumoSelectionModalOne from './modalInsumo';
 import { Package, X } from 'lucide-react';
 
-export default function LoteForm({ onSubmit, id, formData, onFormDataChange, selectedInsumo, onSelectedInsumoChange }) {
+export default function LoteForm({ onSubmit, id, formData, onFormDataChange, selectedInsumo, onSelectedInsumoChange,insumos }) {
   const [errors, setErrors] = useState({});
-  const [initialized, setInitialized] = useState(false);
   const [showInsumoModal, setShowInsumoModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  
-
-  const [insumos, setInsumos] = useState([
-    { id: 1, nombre: 'Paracetamol 500mg', codigo: 'PARA500' },
-    { id: 2, nombre: 'Ibuprofeno 400mg', codigo: 'IBU400' },
-    { id: 3, nombre: 'Amoxicilina 500mg', codigo: 'AMOX500' },
-    { id: 4, nombre: 'Loratadina 10mg', codigo: 'LORA010' },
-    { id: 5, nombre: 'Omeprazol 20mg', codigo: 'OMEP020' },
-  ]);
-
-  useEffect(() => {
-    if (formData && !initialized) {
-      console.log(JSON.stringify(formData,null,2));
-      onFormDataChange({
-        codigo: formData.codigo ?? '',
-        nombre: formData.nombre ?? '',
-        insumoId: formData.insumoId ?? '',
-        numeroLote: formData.numeroLote ?? '',
-        fechaVencimiento: formData.fechaVencimiento ?? '',
-        cantidad: formData.cantidad ?? '',
-        fechaIngreso: formData.fechaIngreso ?? '',
-      });
-      onSelectedInsumoChange(formData);
-      setInitialized(true);
-    }
-  }, [formData, initialized, onFormDataChange]);
 
   const validateForm = () => {
     const newErrors = {};
 
     // Check if insumoId exists and is not empty (works for both string and number)
-    if (!formData?.insumoId && formData?.insumoId !== 0) {
-      newErrors.insumoId = 'El insumo es requerido';
+    if (!formData?.insumo_id && formData?.insumo_id !== 0) {
+      newErrors.insumo_id = 'El insumo es requerido';
     }
-
     // Check other fields with string validation
-    if (typeof formData?.numeroLote === 'string' && !formData.numeroLote.trim()) {
-      newErrors.numeroLote = 'El numero de lote es requerido';
-    } else if (!formData?.numeroLote) {
-      newErrors.numeroLote = 'El numero de lote es requerido';
+    if (typeof formData?.lote_cod === 'string' && !formData.lote_cod.trim()) {
+      newErrors.lote_cod = 'El numero de lote es requerido';
+    } else if (!formData?.lote_cod) {
+      newErrors.lote_cod = 'El numero de lote es requerido';
     }
 
-    if (typeof formData?.fechaVencimiento === 'string' && !formData.fechaVencimiento.trim()) {
-      newErrors.fechaVencimiento = 'La fecha de vencimiento es requerida';
-    } else if (!formData?.fechaVencimiento) {
-      newErrors.fechaVencimiento = 'La fecha de vencimiento es requerida';
+    if (typeof formData?.fecha_vencimiento === 'string' && !formData.fecha_vencimiento.trim()) {
+      newErrors.fecha_vencimiento = 'La fecha de vencimiento es requerida';
+    } else if (!formData?.fecha_vencimiento) {
+      newErrors.fecha_vencimiento = 'La fecha de vencimiento es requerida';
     }
-
     if (typeof formData?.cantidad === 'string' && !formData.cantidad.trim()) {
       newErrors.cantidad = 'La cantidad es requerida';
     } else if (!formData?.cantidad && formData?.cantidad !== 0) {
       newErrors.cantidad = 'La cantidad es requerida';
+    } else if (formData?.cantidad && isNaN(Number(formData.cantidad))) {
+      newErrors.cantidad = 'La cantidad debe ser un número válido';
+    } else if (formData?.cantidad && Number(formData.cantidad) < 0) {
+      newErrors.cantidad = 'La cantidad debe ser un número positivo';
+    } else if (formData?.cantidad && !isNaN(Number(formData.cantidad))) {
+      // Si la conversión a número es válida, convertir automáticamente
+      const numericValue = Number(formData.cantidad);
+      if (formData.cantidad !== numericValue) {
+        onFormDataChange({ ...formData, cantidad: numericValue });
+      }
     }
 
-    if (typeof formData?.fechaIngreso === 'string' && !formData.fechaIngreso.trim()) {
-      newErrors.fechaIngreso = 'La fecha de ingreso es requerida';
-    } else if (!formData?.fechaIngreso) {
-      newErrors.fechaIngreso = 'La fecha de ingreso es requerida';
+    if (typeof formData?.fecha_ingreso === 'string' && !formData.fecha_ingreso.trim()) {
+      newErrors.fecha_ingreso = 'La fecha de ingreso es requerida';
+    } else if (!formData?.fecha_ingreso) {
+      newErrors.fecha_ingreso = 'La fecha de ingreso es requerida';
     }
 
     setErrors(newErrors);
@@ -82,7 +63,7 @@ export default function LoteForm({ onSubmit, id, formData, onFormDataChange, sel
     onSelectedInsumoChange(insumo);
     onFormDataChange({ 
       ...formData, 
-      insumoId: insumo.id,
+      insumo_id: insumo.id,
       nombre: insumo.nombre,
       codigo: insumo.codigo
     });
@@ -94,7 +75,7 @@ export default function LoteForm({ onSubmit, id, formData, onFormDataChange, sel
     onSelectedInsumoChange(null);
     onFormDataChange({ 
       ...formData, 
-      insumoId: '',
+      insumo_id: '',
       nombre: '',
       codigo: ''
     });
@@ -151,8 +132,8 @@ export default function LoteForm({ onSubmit, id, formData, onFormDataChange, sel
                   </button>
                 )}
               </div>
-              {errors.insumoId && (
-                <p className="mt-1 text-sm text-red-600">{errors.insumoId}</p>
+              {errors.insumo_id && (
+                <p className="mt-1 text-sm text-red-600">{errors.insumo_id}</p>
               )}
             </div>
             {/* Codigo */}
@@ -166,7 +147,7 @@ export default function LoteForm({ onSubmit, id, formData, onFormDataChange, sel
                   placeholder="Ej: camposjose@gmail.com"
                   id="codigo"
                   name="codigo"
-                  value={formData?.insumoId}
+                  value={formData?.insumo_id}
                   onChange={handleChange}
                   className={`block w-full px-4 py-2 text-gray-900 text-base border placeholder-gray-400 ${
                     errors.codigo
@@ -188,40 +169,40 @@ export default function LoteForm({ onSubmit, id, formData, onFormDataChange, sel
                 <input
                   type="text"
                   placeholder="Ej: 123456789"
-                  id="numeroLote"
-                  name="numeroLote"
-                  value={formData?.numeroLote}
+                  id="lote_cod"
+                  name="lote_cod"
+                  value={formData?.lote_cod}
                   onChange={handleChange}
                   className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
-                    errors.numeroLote
+                    errors.lote_cod
                       ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
                       : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                   } rounded-md shadow-sm transition duration-150 ease-in-out`}
                 />
-                {errors.numeroLote && (
-                  <p className="mt-1 text-sm text-red-600">{errors.numeroLote}</p>
+                {errors.lote_cod && (
+                  <p className="mt-1 text-sm text-red-600">{errors.lote_cod}</p>
                 )}
               </div>
             </div>
             {/* fecha de vencimiento */}
             <div className="sm:col-span-3">
-              <label htmlFor="fechaVencimiento" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="fecha_vencimiento" className="block text-sm font-medium text-gray-700">
                 Fecha de Vencimiento *
               </label>
               <input
-                id="fechaVencimiento"
-                name="fechaVencimiento"
+                id="fecha_vencimiento"
+                name="fecha_vencimiento"
                 type="date"
-                value={formData?.fechaVencimiento}
+                value={formData?.fecha_vencimiento}
                 onChange={handleChange}
                 className={`block w-full px-4 py-2 text-gray-900 text-base border placeholder-gray-400 ${
-                  errors.fechaVencimiento
+                  errors.fecha_vencimiento
                     ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
                     : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                 } rounded-md shadow-sm transition duration-150 ease-in-out bg-white`}
               />
-              {errors.fechaVencimiento && (
-                <p className="mt-1 text-sm text-red-600">{errors.fechaVencimiento}</p>
+              {errors.fecha_vencimiento && (
+                <p className="mt-1 text-sm text-red-600">{errors.fecha_vencimiento}</p>
               )}
             </div>
             {/* Cantidad */}
@@ -248,30 +229,30 @@ export default function LoteForm({ onSubmit, id, formData, onFormDataChange, sel
             </div>
             {/* fecha de ingreso */}
             <div className="sm:col-span-3">
-              <label htmlFor="fechaIngreso" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="fecha_ingreso" className="block text-sm font-medium text-gray-700">
                 Fecha de Ingreso *
               </label>
               <input
-                id="fechaIngreso"
-                name="fechaIngreso"
+                id="fecha_ingreso"
+                name="fecha_ingreso"
                 type="date"
-                value={formData?.fechaIngreso}
+                value={formData?.fecha_ingreso}
                 onChange={handleChange}
                 className={`block w-full px-4 py-2 text-gray-900 text-base border placeholder-gray-400 ${
-                  errors.fechaIngreso
+                  errors.fecha_ingreso
                     ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
                     : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                 } rounded-md shadow-sm transition duration-150 ease-in-out bg-white`}
               />
-              {errors.fechaIngreso && (
-                <p className="mt-1 text-sm text-red-600">{errors.fechaIngreso}</p>
+              {errors.fecha_ingreso && (
+                <p className="mt-1 text-sm text-red-600">{errors.fecha_ingreso}</p>
               )}
             </div>
           </div>
         </div>
       </form>
 
-      <InsumoSelectionModal
+      <InsumoSelectionModalOne
         isOpen={showInsumoModal}
         onClose={() => {
           setShowInsumoModal(false);

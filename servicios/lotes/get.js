@@ -1,24 +1,19 @@
 import axios from 'axios';
+import config from '@/config';
 import {lotes} from '@/bdUsers/lotes';
 
-export const getLote = async () => {
+export const getLote = async (token) => {
     try {
-        // const response = await axios.get(`/api/lotes`);
-        // const data = response.data;
-        const data = {
-            success: true,
-            message: "Lotes obtenidos correctamente",
-            data: lotes
-        };
+        const response = await axios.get(`${config.URL_API}/lotes`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        const data = response.data;
         return data;
     } catch (error) {
-        console.error('Error al obtener el lote:', error);
-        const errorData = {
-            success: false,
-            message: "Cliente-Server Error al obtener los lotes",
-            data: null
-        }
-        return errorData;
+        console.log('Error al obtener el lote:', error);
+        return error;
     }
 }
 export const getLoteById = async (id) => {

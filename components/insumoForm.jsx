@@ -6,19 +6,19 @@ import { insumoMedida } from '@/constantes/insumoMedida';
 import { useEffect } from 'react';
 
 const insumoPresentacionFarmaceutica = [
-  { id: 1, nombre: 'Ampolla' },
-  { id: 2, nombre: 'Botella' },
-  { id: 3, nombre: 'Jarabe' },
-  { id: 5, nombre: 'Tableta' },
-  { id: 6, nombre: 'Suspension' },
-  { id: 7, nombre: 'Vial' },
-  { id: 8, nombre: 'Inyeccion' },
-  { id: 9, nombre: 'Solucion acuosa' },
-  { id: 10, nombre: 'Solucion oral' }
+  { id: 1, idPresentacion: 'ampolla', nombre: 'Ampolla' },
+  { id: 2, idPresentacion: 'botella', nombre: 'Botella' },
+  { id: 3, idPresentacion: 'jarabe', nombre: 'Jarabe' },
+  { id: 5, idPresentacion: 'tableta', nombre: 'Tableta' },
+  { id: 6, idPresentacion: 'suspension', nombre: 'Suspension' },
+  { id: 7, idPresentacion: 'vial', nombre: 'Vial' },
+  { id: 8, idPresentacion: 'inyeccion', nombre: 'Inyeccion' },
+  { id: 9, idPresentacion: 'solucion_acuosa', nombre: 'Solucion acuosa' },
+  { id: 10, idPresentacion: 'solucion_oral', nombre: 'Solucion oral' }
 ];
 const insumoPresentacionMedicaQuirurgica = [
-  { id: 1, nombre: 'Material' },
-  { id: 2, nombre: 'Equipo' }
+  { id: 1, idPresentacion: 'material', nombre: 'Material' },
+  { id: 2, idPresentacion: 'equipo', nombre: 'Equipo' }
 ];
 
 export default function InsumoForm({ onSubmit, id, formData, onFormDataChange }) {
@@ -196,7 +196,7 @@ export default function InsumoForm({ onSubmit, id, formData, onFormDataChange })
             >
               <option value="">Seleccione...</option>
               {getPresentaciones().map((presentacion) => (
-                <option key={presentacion.id} value={presentacion.nombre} className="capitalize">
+                <option key={presentacion.id} value={presentacion.idPresentacion} className="capitalize">
                   {presentacion.nombre}
                 </option>
               ))}

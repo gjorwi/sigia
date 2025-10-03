@@ -15,7 +15,7 @@ import Recepcion from './components/Recepcion';
 import Tracking from './components/Tracking';
 import Inventario from './components/Inventario';
 import Registro from './components/Registro';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';  
 
 export default function ClientePage() {
   const {user} = useAuth();
@@ -96,7 +96,7 @@ export default function ClientePage() {
     <>
       <div className="mb-4">
         {/* <h2 className="text-2xl font-bold text-white">Panel de Control</h2> */}
-        <div className="flex items-center pl-6 py-2 mb-4 gap-2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg">
+        <div className="flex md:items-center md:flex-row flex-col pl-6 py-2 mb-4 gap-2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg">
           <span className="text-white text-sm mt-1 capitalize">{user?.hospital?.nombre}</span>
           <span className="text-white bg-orange-500 w-fit px-2 rounded-full text-sm capitalize">{user?.sede?.nombre}</span>
         </div>
@@ -193,7 +193,7 @@ export default function ClientePage() {
             }`}>
               <PlusCircle className="h-5 w-5" />
             </div>
-            <span className="font-medium">Registro</span>
+            <span className="font-medium">Registro/Despacho</span>
           </button>
         </div>
       </div>

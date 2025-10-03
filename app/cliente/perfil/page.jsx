@@ -5,11 +5,12 @@ import { useRouter } from 'next/navigation';
 import { getUserById } from '@/servicios/users/get';
 import { putChangePassword } from '@/servicios/users/put';
 import { ArrowLeft } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Perfil() {
     const router = useRouter();
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const { user } = useAuth();
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         currentPassword: '',
         newPassword: '',
@@ -18,26 +19,26 @@ export default function Perfil() {
     const [errors, setErrors] = useState({});
     const [message, setMessage] = useState({ type: '', text: '' });
 
-    useEffect(() => {
-        // TODO: Replace with actual user ID from session
-        const userId = 1; // This should come from your auth context/session
-        loadUser(userId);
-    }, []);
+    // useEffect(() => {
+    //     // TODO: Replace with actual user ID from session
+    //     const userId = 1; // This should come from your auth context/session
+    //     loadUser(userId);
+    // }, []);
 
-    const loadUser = async (id) => {
-        try {
-            const result = await getUserById(id);
-            if (result.success) {
-                setUser(result.data);
-            } else {
-                setMessage({ type: 'error', text: result.message });
-            }
-        } catch (error) {
-            setMessage({ type: 'error', text: 'Error al cargar el perfil' });
-        } finally {
-            setLoading(false);
-        }
-    };
+    // const loadUser = async (id) => {
+    //     try {
+    //         const result = await getUserById(id);
+    //         if (result.success) {
+    //             setUser(result.data);
+    //         } else {
+    //             setMessage({ type: 'error', text: result.message });
+    //         }
+    //     } catch (error) {
+    //         setMessage({ type: 'error', text: 'Error al cargar el perfil' });
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -104,21 +105,18 @@ export default function Perfil() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+            <div className="min-h-screen flex items-center justify-center p-4">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-500 mx-auto"></div>
-                    <p className="mt-4 text-lg font-medium text-gray-700">Cargando tu perfil...</p>
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mx-auto"></div>
+                    <p className="mt-4 text-lg font-medium text-white/70">Cargando tu perfil...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen p-4 md:p-6 relative">
-          <button onClick={() => router.back()} className="bg-white/20 backdrop-blur-sm absolute mt-4 -top-4 -left-2 text-white px-4 py-4  rounded-full hover:bg-indigo-700 transition-colors duration-200">
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-            <div className="max-w-5xl mx-auto space-y-6">
+        <div className="min-h-screen md:p-6 relative -mt-15">
+            <div className="max-w-5xl space-y-6">
                 {/* Profile Card */}
                 <div className="bg-gradient-to-r from-indigo-600/80 to-blue-600/80 rounded-2xl shadow-xl overflow-hidden mt-10">
                     <div className="bg-white/5 backdrop-blur-sm px-6 py-5">
@@ -139,7 +137,7 @@ export default function Perfil() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
                             <div className="space-y-1">
                                 <p className="text-sm font-medium text-white/70">Nombre completo</p>
-                                <p className="text-white font-medium">{user?.nombre} {user?.apellido}</p>
+                                <p className="text-white font-medium capitalize">{user?.nombre} {user?.apellido}</p>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-sm font-medium text-white/70">Correo electrónico</p>
@@ -222,7 +220,7 @@ export default function Perfil() {
                                                     ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                                                     : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
                                             } shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-1 transition duration-150`}
-                                            placeholder="Ingresa tu contraseña actual"
+                                            placeholder="Contraseña actual"
                                         />
                                         <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                             <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -258,14 +256,14 @@ export default function Perfil() {
                                                         ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                                                         : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
                                                 } shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-1 transition duration-150`}
-                                                placeholder="Crea una nueva contraseña"
+                                                placeholder="Nueva contraseña"
                                             />
                                             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                                 <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                                 </svg>
                                             </div>
-                                        </div>
+                                        </div> 
                                         {errors.newPassword && (
                                             <p className="mt-2 text-sm text-red-600 flex items-center">
                                                 <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -293,7 +291,7 @@ export default function Perfil() {
                                                         ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                                                         : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
                                                 } shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-1 transition duration-150`}
-                                                placeholder="Confirma tu nueva contraseña"
+                                                placeholder="Confirmar contraseña"
                                             />
                                             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                                 <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">

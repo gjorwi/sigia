@@ -10,6 +10,7 @@ import { getUsers } from '@/servicios/users/get';
 import { getInsumos } from '@/servicios/insumos/get';
 import { getSedes } from '@/servicios/sedes/get';
 import MapAlmacenes from '@/components/mapAlmacenes';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 // Importar íconos dinámicamente para evitar problemas de SSR
 const Users = dynamic(() => import('lucide-react').then(mod => mod.Users), { ssr: false });
@@ -33,6 +34,7 @@ const DashboardPage = () => {
   const [activeTab, setActiveTab] = useState('mapa');
   const [menuActivo, setMenuActivo] = useState('mapa');
   const router = useRouter();
+  const [isLoadingAlmacenes, setIsLoadingAlmacenes] = useState(false);
   const [hospitales, setHospitales] = useState([]);
   const [users, setUsers] = useState([]);
   const [insumos, setInsumos] = useState([]);
@@ -46,6 +48,7 @@ const DashboardPage = () => {
   }, [user]);
 
   const handleGetResumen = async (token) => {
+    setIsLoadingAlmacenes(false);
     const [hRes, uRes, iRes, sRes] = await Promise.allSettled([
       getHospitales(token),
       getUsers(token),
@@ -112,6 +115,7 @@ const DashboardPage = () => {
     if (msgs.length&&user.can_crud_user) {
       showMessage('Aviso', msgs.join(' | '), 'warning', 5000)
     }
+    setIsLoadingAlmacenes(true);
   };
 
   const closeModal = () => {
@@ -185,7 +189,7 @@ const DashboardPage = () => {
       <div className="md:ml-64 flex flex-col">
         <main className="flex-1">
           <div className="pb-6">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 mt-5">
               
               {/* Quick Actions */}
               <div className=" bg-white shadow rounded-lg overflow-hidden">
@@ -413,13 +417,16 @@ const DashboardPage = () => {
                     </div>
                   )}
                   {menuActivo === 'mapa' && (
-                    <div className="space-y-4">
+                    <div className="space-y-4 p-2">
                       <div className="rounded-lg overflow-hidden border border-gray-200">
-                        <MapAlmacenes almacenes={hospitales}/>
-                        {/* <WarehouseMap /> */}
+                        {isLoadingAlmacenes?
+                          <MapAlmacenes almacenes={hospitales}/>
+                        :
+                          <LoadingSpinner message="Cargando almacenes..." />
+                        }
                       </div>
-                      <div className="bg-gray-50 rounded-lg">
-                        <h4 onClick={() => handleGetResumen(user.token)} className="font-medium text-gray-900 mb-2">Resumen de Almacenes</h4>
+                      <div className="bg-gray-50 rounded-lg p-2">
+                        <h4 className="font-medium text-gray-900 mb-2">Resumen de Almacenes</h4>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="bg-white p-3 rounded-lg shadow border border-green-100">
                             <div className="flex items-center">

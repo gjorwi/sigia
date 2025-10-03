@@ -102,7 +102,7 @@ export default function Menu() {
   };
   const navigation = [
     { name: 'Panel de Control', icon: LayoutDashboard, href: '/administrador', current: true },
-    { name: 'Despachos', icon: Package, href: '/administrador/despachos', current: false },
+    { name: 'Movimientos', icon: Package, href: '/administrador/movimientos', current: false },
     { name: 'Inventario', icon: Warehouse, href: '/administrador/inventario', current: false },
     // { name: 'Mapa', icon: MapPin, href: '/administrador/mapa', current: false },
     { name: 'Solicitudes', icon: FileText, href: '/administrador/solicitudes', current: false },
@@ -129,8 +129,16 @@ export default function Menu() {
   return (
     <>
       {/* <header className="flex"> */}
+      {/* Mobile overlay to close sidebar by tapping outside */}
+      {showMenu && isMobile && sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
     {shouldShowSidebar && (
-      <div className="fixed h-screen bg-gradient-to-br from-indigo-900/90 via-blue-800/90 to-purple-900/90 inset-y-0 left-0 transform translate-x-0 transition-all duration-200 ease-in-out z-20 w-64 bg-white/10 backdrop-blur-xl border-r border-white/10 shadow-2xl text-white">
+      <div className="fixed h-screen bg-gradient-to-br from-indigo-900/90 via-blue-800/90 to-purple-900/90 inset-y-0 left-0 transform translate-x-0 transition-all duration-200 ease-in-out z-50 w-64 bg-white/10 backdrop-blur-xl border-r border-white/10 shadow-2xl text-white">
         <div className="flex items-center justify-between h-18 border-b border-white/20">
           <div className="flex items-center w-full p-4">
             <div className="h-8 w-8 flex items-center justify-center bg-white/10 rounded-lg p-1.5 border border-white/20">

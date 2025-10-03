@@ -4,11 +4,14 @@ import { useEffect, useState } from 'react';
 import Modal from '@/components/Modal';
 import { useRouter } from 'next/navigation';
 import { Package } from 'lucide-react';
-import { getLote } from '@/servicios/lotes/get';
+import { getInventario } from '@/servicios/inventario/get';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Inventario() {
+  const { user, logout } = useAuth();
   const router = useRouter();
-  const [lotes, setLotes] = useState([] );
+  const [inventario, setInventario] = useState([]);
+  const [expandedItems, setExpandedItems] = useState({});
   const [modal, setModal] = useState({
     isOpen: false,
     title: '',
@@ -28,19 +31,32 @@ export default function Inventario() {
   const closeModal = () => {
     setModal(prev => ({ ...prev, isOpen: false }));
   };
+
+  const handleToggleDetalle = (index) => {
+    setExpandedItems(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
   
   const handleGetLotes = async () => {
-    const response = await getLote();
-    if (!response.success) {
-      console.error('Error al obtener lotes:', response.message);
-      showMessage('Error', response.message, 'error', 4000);
+    const { token,sede_id } = user;
+    const response = await getInventario(token,sede_id);
+    console.log('lotes: ' + JSON.stringify(response,null,2));
+    if (!response.status) {
+      if(response.autenticacion==1||response.autenticacion==2){
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        return;
+      }
+      showMessage('Error', response.mensaje||'Error en la solicitud', 'error', 4000);
       return;
     }
-    // showMessage('Éxito', response.message, 'success', 2000);
-    setLotes(response.data);
+    if(response.data&&response.data.length > 0){
+      setInventario(response?.data);
+    }
   };
-
-  
 
   return (
     <div className="md:pl-64 flex flex-col">
@@ -97,35 +113,135 @@ export default function Inventario() {
                 </p>
               </div>
               <div className="border-t border-gray-200">
-                {lotes.length === 0 ? (
+                {inventario.length === 0 ? (
                   <div className="px-4 py-12 text-center">
                     <p className="text-sm text-gray-500">
                       No hay lotes registrados
                     </p>
                   </div>
                 ) : (
-                  <div className="px-4 py-12 text-center">
-                    {lotes.map((lote) => (
-                      <div key={lote.id} className="px-4 py-5 sm:px-6">
+                  <div className="divide-y divide-gray-200">
+                    {inventario.map((inventario,index) => (
+                      <div key={index} className="px-4 py-5 sm:px-6">
+                        {/* Información principal del item */}
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
                             <div className="flex-shrink-0 h-12 w-12">
                               <Package className='h-12 w-12 text-gray-600'/>
                             </div>
-                            <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">{lote.numeroLote}</div>
-                              <div className="text-sm text-gray-500">{lote.fechaVencimiento}</div>
+                            <div className="flex flex-col items-start ml-4">
+                              <div className="text-sm font-medium text-gray-900">{inventario?.insumo?.nombre}</div>
+                              <div className="text-sm text-gray-500">Cantidad total: <span className="font-bold text-gray-900">{inventario?.cantidad_total}</span></div>
                             </div>
                           </div>
                           <div className="ml-4 flex-shrink-0">
                             <button
                               type="button"
+                              onClick={() => handleToggleDetalle(index)}
                               className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
-                              Detalle
+                              {expandedItems[index] ? 'Ocultar' : 'Detalle'}
                             </button>
                           </div>
                         </div>
+
+                        {/* Detalle expandible del item */}
+                        {expandedItems[index] && (
+                          <div className="mt-6 pt-6 border-t border-gray-100">
+                            {/* Información general */}
+                            {/* <div className="mb-6">
+                              <div className="flex items-center mb-4">
+                                <Package className="h-8 w-8 text-indigo-600 mr-3" />
+                                <div>
+                                  <h4 className="text-lg font-semibold text-gray-900">{selectedInsumo.nombre}</h4>
+                                  <p className="text-sm text-gray-600">
+                                    Cantidad Total: <span className="font-bold text-indigo-600">{selectedInsumo.cantidad_total}</span>
+                                  </p>
+                                </div>
+                              </div>
+                            </div> */}
+
+                            {/* Información adicional si está disponible */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                              {inventario?.unidad_medida && (
+                                <div className="bg-gray-50 p-3 rounded-lg">
+                                  <h5 className="text-sm font-medium text-gray-900 mb-1">Unidad de Medida</h5>
+                                  <p className="text-sm text-gray-600">{inventario?.unidad_medida}</p>
+                                </div>
+                              )}
+                              {inventario?.categoria && (
+                                <div className="bg-gray-50 p-3 rounded-lg">
+                                  <h5 className="text-sm font-medium text-gray-900 mb-1">Categoría</h5>
+                                  <p className="text-sm text-gray-600">{inventario?.categoria}</p>
+                                </div>
+                              )}
+                              {inventario?.insumo?.descripcion && (
+                                <div className="bg-gray-50 p-3 rounded-lg">
+                                  <h5 className="text-sm font-medium text-gray-900 mb-1">Descripción</h5>
+                                  <p className="text-sm text-gray-600">{inventario?.insumo?.descripcion}</p>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Lotes si están disponibles */}
+                            {inventario.lotes && inventario.lotes.length > 0 && (
+                              <div>
+                                <h4 className="text-md font-semibold text-gray-900 mb-3">Lotes Disponibles</h4>
+                                <div className="space-y-3">
+                                  {inventario.lotes.map((lote, loteIndex) => (
+                                    <div key={loteIndex} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+                                      <div className="flex justify-between items-start">
+                                        <div className="flex-1">
+                                          <div className="flex items-center mb-2">
+                                            <span className="text-sm font-medium text-gray-900">
+                                              Lote: {lote.numero_lote || lote.id || `Lote ${loteIndex + 1}`}
+                                            </span>
+                                          </div>
+                                          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm text-gray-600">
+                                            <div className="flex items-center">
+                                              <Package className="h-4 w-4 mr-1" />
+                                              <span>Cantidad: <strong>{lote.cantidad || 'N/A'}</strong></span>
+                                            </div>
+                                            {lote.fecha_vencimiento && (
+                                              <div className="flex items-center">
+                                                <span>Vence: <strong>{new Date(lote.fecha_vencimiento).toLocaleDateString()}</strong></span>
+                                              </div>
+                                            )}
+                                            {lote.proveedor && (
+                                              <div className="flex items-center">
+                                                <span>Proveedor: <strong>{lote.proveedor}</strong></span>
+                                              </div>
+                                            )}
+                                          </div>
+                                        </div>
+                                        <div className="ml-4">
+                                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                            (lote.cantidad && lote.cantidad > 0) ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                          }`}>
+                                            {(lote.cantidad && lote.cantidad > 0) ? 'Disponible' : 'Agotado'}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Mensaje si no hay lotes específicos */}
+                            {(!inventario.lotes || inventario.lotes.length === 0) && (
+                              <div className="text-center py-8 bg-gray-50 rounded-lg">
+                                <Package className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                                <p className="text-gray-500">
+                                  La información de lotes específicos no está disponible en este momento.
+                                </p>
+                                <p className="text-sm text-gray-400 mt-1">
+                                  Cantidad total disponible: <strong>{inventario.cantidad_total}</strong>
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -133,6 +249,7 @@ export default function Inventario() {
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
