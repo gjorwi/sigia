@@ -141,13 +141,16 @@ export default function NuevoDespacho() {
       return;
     }
     console.log('formData: ' + JSON.stringify(formData,null,2));
-    const { token } = user;
-    const { hospital_id_desde, hospital_id_hasta, sede_id,sede_tipo, hospital_id, tipo_movimiento, fecha_despacho, insumos, observaciones } = formData;
-    const data = {
-      origen_almacen_id: hospital_id_desde,
+    const { token, hospital_id:hospital_id_desde, sede_id:sede_id_desde } = user;
+    const {hospital_id_hasta, sede_id,sede_tipo, hospital_id, tipo_movimiento, fecha_despacho, insumos, observaciones } = formData;
+    
+    const dataSend = {
+      origen_hospital_id: hospital_id_desde,
+      origen_sede_id: sede_id_desde,
+      destino_hospital_id: hospital_id_hasta,
+      destino_sede_id: sede_id,
+      origen_almacen_tipo: "almacenCent",
       destino_almacen_tipo: sede_tipo,
-      hospital_id: hospital_id,
-      sede_id: sede_id,
       tipo_movimiento: tipo_movimiento,
       fecha_despacho: fecha_despacho,
       observaciones: observaciones,
@@ -157,10 +160,10 @@ export default function NuevoDespacho() {
           cantidad: lote.cantidad
         }))
       )
-    };
+    }
     setLoading(true);
-    console.log('formData: ' + JSON.stringify(data,null,2));
-    const result = await postMovimiento(data,token);
+    console.log('formData: ' + JSON.stringify(dataSend,null,2));
+    const result = await postMovimiento(dataSend,token);
     if (!result.status) {
       if(result.autenticacion==1||result.autenticacion==2){
         showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
@@ -174,7 +177,7 @@ export default function NuevoDespacho() {
     }
     showMessage('Éxito', result.mensaje, 'success', 2000);
     setLoading(false);
-    // clearSearch();
+    clearSearch();
   };
 
   const handleSearch = async (e) => {

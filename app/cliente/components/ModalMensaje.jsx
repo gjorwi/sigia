@@ -1,14 +1,15 @@
 'use client';
+
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
-export default function Modal({ isOpen, onClose, title, message, type, time = null }) {
+const ModalMensaje = ({ isOpen, onClose, title, message, type, time = null }) => {
   const [remainingTime, setRemainingTime] = useState(time);
   const startTimeRef = useRef(null);
   const animationFrameRef = useRef(null);
   const [isClosing, setIsClosing] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+
   // Define color based on message type
   const getTypeColor = (type) => {
     switch (type) {
@@ -41,11 +42,6 @@ export default function Modal({ isOpen, onClose, title, message, type, time = nu
     }
   }, [time, onClose]);
 
-  // Handle mounting state for SSR compatibility
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   // Start/stop the animation based on isOpen and time
   useEffect(() => {
     if (isOpen && time && !isClosing) {
@@ -71,13 +67,13 @@ export default function Modal({ isOpen, onClose, title, message, type, time = nu
   // Calculate progress percentage (0 to 1)
   const progress = time ? 1 - (remainingTime / time) : 0;
 
-  // Don't render anything if not open or not mounted
-  if (!isOpen || !isMounted) {
+  // Don't render anything if not open or document is not available
+  if (!isOpen || typeof document === 'undefined') {
     return null;
   }
 
-  const modalContent = (
-    <div className="fixed inset-0 z-[10001] overflow-y-auto">
+  return createPortal(
+    <div className="fixed inset-0 z-[10002] overflow-y-auto">
       {/* Backdrop */}
       <div 
         className="fixed inset-0 bg-black/50 bg-opacity-50 transition-opacity"
@@ -114,11 +110,11 @@ export default function Modal({ isOpen, onClose, title, message, type, time = nu
               </div>
             )}
             <div className="bg-gray-50 px-4 py-3 sm:flex sm:items-center sm:justify-between sm:px-6 sm:py-4 border-b border-gray-200">
-            <h3 className="text-lg font-medium leading-6 text-gray-900">
-              <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getTypeColor(type)}`}>
-                {title}
-              </div>
-            </h3>
+              <h3 className="text-lg font-medium leading-6 text-gray-900">
+                <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getTypeColor(type)}`}>
+                  {title}
+                </div>
+              </h3>
               <button
                 type="button"
                 className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -132,28 +128,28 @@ export default function Modal({ isOpen, onClose, title, message, type, time = nu
 
           {/* Content */}
           <div className="bg-white px-4 pt-5 pb-4 sm:p-6">
-          <div className="mt-2">
-            <p className="text-sm text-gray-700">{message}</p>
-          </div>
-            
+            <div className="mt-2">
+              <p className="text-sm text-gray-700">{message}</p>
+            </div>
           </div>
 
           {/* Footer */}
           <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-200">
-           {!time && (
-            <button
+            {!time && (
+              <button
                 type="button"
                 className="inline-flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
                 onClick={onClose}
               >
-              Aceptar
-            </button>
+                Aceptar
+              </button>
             )}
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
+};
 
-  return createPortal(modalContent, document.body);
-}
+export default ModalMensaje;

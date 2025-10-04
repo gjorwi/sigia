@@ -17,7 +17,8 @@ export default function Movimientos() {
     busqueda: '',
     estado: '',
     tipo: '',
-    tipoMovimiento: ''
+    tipoMovimiento: '',
+    conDiscrepancia: false
   });
   const [modal, setModal] = useState({
     isOpen: false,
@@ -73,6 +74,13 @@ export default function Movimientos() {
       );
     }
 
+    // Filtro por discrepancias
+    if (filtros.conDiscrepancia) {
+      movimientosFiltrados = movimientosFiltrados.filter(mov => 
+        mov?.discrepancia_total === true
+      );
+    }
+
     setMovimientosFiltrados(movimientosFiltrados);
   };
 
@@ -81,7 +89,8 @@ export default function Movimientos() {
       busqueda: '',
       estado: '',
       tipo: '',
-      tipoMovimiento: ''
+      tipoMovimiento: '',
+      conDiscrepancia: false
     });
   };
   
@@ -143,7 +152,7 @@ export default function Movimientos() {
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {despachoActions.map((action, index) => (
                 <div 
-                  key={index}
+                  key={`action-${index}-${action.title || action.name || index}`}
                   className={`bg-white border-l-4 ${action.color.split(' ')[3]} overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow duration-200 cursor-pointer`}
                   onClick={() => router.push(action.href)}
                 >
@@ -202,13 +211,28 @@ export default function Movimientos() {
                     >
                       <option value="">Todos los estados</option>
                       <option value="pendiente">Pendiente</option>
-                      <option value="en_transito">En Tránsito</option>
-                      <option value="completado">Completado</option>
+                      <option value="despachado">Despachado</option>
+                      <option value="recibido">Recibido</option>
                       <option value="cancelado">Cancelado</option>
                     </select>
                   </div>
 
-                  {/* Filtro por tipo de movimiento */}
+                  {/* Filtro por discrepancias */}
+                  <div>
+                    <label className="flex items-center mt-6">
+                      <input
+                        type="checkbox"
+                        checked={filtros.conDiscrepancia}
+                        onChange={(e) => setFiltros(prev => ({ ...prev, conDiscrepancia: e.target.checked }))}
+                        className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                      />
+                      <span className="ml-2 text-sm font-medium text-gray-700">
+                        Solo con discrepancias ⚠️
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* Botones de acción */}
                   <div className='flex items-center justify-start'>
                     <div className="flex space-x-2 md:mt-5">
                       <button
@@ -252,7 +276,7 @@ export default function Movimientos() {
                 ) : (
                   <div className="divide-y divide-gray-200">
                     {movimientosFiltrados.map((movimiento,i) => (
-                      <div key={i} className="px-4 py-5 sm:px-6">
+                      <div key={`movimiento-${movimiento?.id || i}`} className="px-4 py-5 sm:px-6">
                         <div className="flex items-center justify-between">
                           <div className="flex justify-start items-start">
                             <div className="flex-shrink-0 h-12 w-12 text-gray-900">
@@ -268,18 +292,23 @@ export default function Movimientos() {
                               <div className="text-xs text-gray-400 mt-1">
                                 Cantidad: {movimiento?.cantidad_salida} | Código: {movimiento?.codigo_grupo}
                               </div>
-                              <div className="mt-2">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              <div className="mt-2 flex items-center gap-2">
+                                <span className={`inline-flex items-center capitalize px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                   movimiento?.estado === 'pendiente' 
                                     ? 'bg-yellow-100 text-yellow-800' 
-                                    : movimiento?.estado === 'completado'
+                                    : movimiento?.estado === 'recibido'
                                     ? 'bg-green-100 text-green-800'
-                                    : movimiento?.estado === 'en_transito'
+                                    : movimiento?.estado === 'despachado'
                                     ? 'bg-blue-100 text-blue-800'
                                     : 'bg-gray-100 text-gray-800'
                                 }`}>
                                   {movimiento?.estado}
                                 </span>
+                                {movimiento?.discrepancia_total && (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 animate-pulse">
+                                    ⚠️ Discrepancia
+                                  </span>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -392,6 +421,58 @@ export default function Movimientos() {
                                 </div>
                               </div>
 
+                              {/* Sección de Discrepancias */}
+                              {movimiento?.discrepancia_total && (
+                                <div className="border-t border-gray-200 pt-4">
+                                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                                    <div className="flex items-center mb-3">
+                                      <div className="flex-shrink-0">
+                                        <span className="text-red-400 text-lg">⚠️</span>
+                                      </div>
+                                      <div className="ml-3">
+                                        <h4 className="text-sm font-semibold text-red-800">Discrepancias Detectadas</h4>
+                                        <p className="text-xs text-red-600 mt-1">
+                                          Se encontraron diferencias entre las cantidades despachadas y recibidas
+                                        </p>
+                                      </div>
+                                    </div>
+                                    
+                                    {/* Resumen de discrepancias */}
+                                    <div className="grid grid-cols-2 gap-4 text-sm">
+                                      <div>
+                                        <span className="font-medium text-red-700">Total Despachado:</span>
+                                        <span className="ml-2 text-red-900">{movimiento?.cantidad_salida_total || 0}</span>
+                                      </div>
+                                      <div>
+                                        <span className="font-medium text-red-700">Total Recibido:</span>
+                                        <span className="ml-2 text-red-900">{movimiento?.cantidad_entrada_total || 0}</span>
+                                      </div>
+                                    </div>
+                                    
+                                    {/* Lotes con discrepancias */}
+                                    {movimiento?.lotes_grupos && (
+                                      <div className="mt-3">
+                                        <h5 className="text-xs font-medium text-red-700 mb-2">Lotes con discrepancias:</h5>
+                                        <div className="space-y-1">
+                                          {movimiento.lotes_grupos
+                                            .filter(lg => lg.discrepancia)
+                                            .map((loteGrupo, idx) => (
+                                              <div key={`discrepancia-${loteGrupo?.lote?.id || idx}`} className="text-xs bg-white rounded px-2 py-1 border border-red-200">
+                                                <span className="font-medium text-gray-600">{loteGrupo.lote?.insumo?.nombre}</span>
+                                                <span className="text-red-600 ml-2">
+                                                  Lote: {loteGrupo.lote?.numero_lote} | 
+                                                  Enviado: {loteGrupo.cantidad_salida} | 
+                                                  Recibido: {loteGrupo.cantidad_entrada}
+                                                </span>
+                                              </div>
+                                            ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
                               {/* Lotes e Insumos - Vista Agrupada */}
                               {movimiento?.lotes_grupos && movimiento.lotes_grupos.length > 0 && (
                                 <div className="border-t border-gray-200 pt-4">
@@ -433,10 +514,9 @@ export default function Movimientos() {
                                             return acc;
                                           }, {});
 
-                                          return Object.entries(insumosAgrupados).map(([insumoId, data], index) => (
-                                            <React.Fragment key={insumoId}>
-                                              {/* Fila principal del insumo */}
-                                              <tr className="hover:bg-gray-50 bg-gray-25">
+                                            return Object.entries(insumosAgrupados).map(([insumoId, data]) => (
+                                              <>
+                                              <tr key={insumoId} className="hover:bg-gray-50 bg-gray-25">
                                                 <td className="px-2 py-2">
                                                   <div className="min-w-0">
                                                     <div className="text-xs font-medium text-gray-900 truncate max-w-xs" title={data.insumo?.nombre}>
@@ -489,7 +569,7 @@ export default function Movimientos() {
                                               
                                               {/* Filas de lotes expandibles */}
                                               {expandedItems[`insumo-${insumoId}`] && data.lotes.map((loteGrupo, loteIndex) => (
-                                                <tr key={`${insumoId}-${loteIndex}`} className="bg-blue-50">
+                                                <tr key={`lote-${insumoId}-${loteGrupo?.lote?.id || loteIndex}`} className="bg-blue-50">
                                                   <td className="px-4 py-1 pl-8">
                                                     <div className="text-xs text-gray-600">
                                                       └ Lote: {loteGrupo?.lote?.numero_lote}
@@ -524,8 +604,8 @@ export default function Movimientos() {
                                                   <td className="px-2 py-1"></td>
                                                 </tr>
                                               ))}
-                                            </React.Fragment>
-                                          ));
+                                              </>
+                                            ));
                                         })()}
                                       </tbody>
                                     </table>

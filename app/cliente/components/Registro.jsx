@@ -1,15 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Upload, Save, X, CheckCircle, AlertCircle, Package, Calendar, Hash, DollarSign, Info, Search } from 'lucide-react';
+import { Plus, Upload, Save, X, CheckCircle, AlertCircle, Package, Calendar, Hash, DollarSign, Info, Search, ArrowLeft } from 'lucide-react';
 import ClientInsumoForm from './clientInsumoForm';
 import { getInsumoById } from '@/servicios/insumos/get';
 import Modal from '@/components/Modal';
+import MovimientoInsumoCliente from './MovimientoInsumoCliente';
 
 const Registro = () => {
-  const [activeTab, setActiveTab] = useState('entrada');
+  const [selectedOption, setSelectedOption] = useState(null); // null, 'entrada', 'salida'
   const [showForm, setShowForm] = useState(false);
-    const [regInsumo, setRegInsumo] = useState(false);
+  const [showMovimiento, setShowMovimiento] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [insumoFound, setInsumoFound] = useState(false);
   const [formData, setFormData] = useState({
@@ -41,7 +42,7 @@ const Registro = () => {
       return;
     }
     setModal({isOpen: true, title: 'Success', message: result.message, type: 'success', time: 4000});
-    setRegInsumo(result.data);
+    set (result.data);
   }
 
   const closeModal = () => {
@@ -102,6 +103,24 @@ const Registro = () => {
     'Alcohol etílico 70%'
   ];
 
+  const handleSelectOption = (option) => {
+    setSelectedOption(option);
+    setShowForm(false);
+    setShowMovimiento(false);
+    
+    if (option === 'salida') {
+      setShowMovimiento(true);
+    } else if (option === 'entrada') {
+      setShowForm(true);
+    }
+  };
+
+  const handleBack = () => {
+    setSelectedOption(null);
+    setShowForm(false);
+    setShowMovimiento(false);
+  };
+
   return (
     <>
       <Modal
@@ -113,127 +132,186 @@ const Registro = () => {
         time={modal.time}
       />
       <div className="space-y-6">
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-white/10">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-semibold text-white">
-                {activeTab === 'entrada' ? 'Registro de Entrada' : 'Registro de Salida'}
-              </h2>
-              <p className="text-sm text-gray-300">
-                {activeTab === 'entrada' 
-                  ? 'Registra la entrada de nuevos artículos al inventario' 
-                  : 'Registra la salida de artículos del inventario'}
-              </p>
+        {!selectedOption ? (
+          // Pantalla de selección principal
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-white/10">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-white mb-2">Gestión de Inventario</h2>
+              <p className="text-gray-300">Selecciona el tipo de operación que deseas realizar</p>
             </div>
-            <div className="mt-4 md:mt-0">
-              <div className="inline-flex rounded-md shadow-sm" role="group">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('entrada')}
-                  className={`px-4 py-2 text-sm font-medium rounded-l-lg ${
-                    activeTab === 'entrada'
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-white/5 text-gray-300 hover:bg-white/10'
-                  }`}
-                >
-                  Entrada
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('salida')}
-                  className={`px-4 py-2 text-sm font-medium rounded-r-lg ${
-                    activeTab === 'salida'
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-white/5 text-gray-300 hover:bg-white/10'
-                  }`}
-                >
-                  Salida
-                </button>
-              </div>
-            </div>
-          </div>
 
-          {!showForm ? (
-            <div className="text-center py-12 border-2 border-dashed border-white/10 rounded-xl">
-              <Package className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-lg font-medium text-gray-200">
-                {activeTab === 'entrada' 
-                  ? 'Registrar nueva entrada de inventario' 
-                  : 'Registrar nueva salida de inventario'}
-              </h3>
-              <p className="mt-1 text-sm text-gray-400">
-                {activeTab === 'entrada' 
-                  ? 'Comienza registrando los artículos que ingresan al almacén.'
-                  : 'Registra los artículos que salen del almacén.'}
-              </p>
-              <div className="mt-6">
-                <button
-                  type="button"
-                  onClick={() => setShowForm(true)}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  <Plus className="h-5 w-5 mr-2" />
-                  {activeTab === 'entrada' ? 'Nueva Entrada' : 'Nueva Salida'}
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div>
-            {regInsumo
-              ? (
-                <ClientInsumoForm 
-                  id="clientInsumoForm"
-                  handleNewInsumoSubmit={handleNewInsumoSubmit}
-                  handleNewInsumoChange={handleNewInsumoChange}
-                  newInsumoFormData={newInsumoFormData}
-                  newInsumoErrors={newInsumoErrors}
-                  showCantidadPorPaquete={showCantidadPorPaquete}
-                  insumoTipos={insumoTipos}
-                  insumoMedida={insumoMedida}
-                  setShowForm={setShowForm}
-                  activeTab={activeTab}
-                />
-              )
-              :<div className="flex items-center">
-                <div className="relative w-full">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <Search className="h-5 w-5 text-white/40" aria-hidden="true" />
+            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              {/* Opción Salida - Priorizada */}
+              <div 
+                onClick={() => handleSelectOption('salida')}
+                className="group relative bg-gradient-to-br from-red-500/20 to-orange-500/20 hover:from-red-500/30 hover:to-orange-500/30 border border-red-500/30 hover:border-red-500/50 rounded-2xl p-8 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-orange-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <div className="relative z-10 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-red-500/20 rounded-2xl flex items-center justify-center group-hover:bg-red-500/30 transition-colors">
+                    <Upload className="h-8 w-8 text-red-400 group-hover:text-red-300" />
                   </div>
-                  <input
-                    type="text"
-                    placeholder="Buscar insumo por código o nombre"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="block w-full rounded-md border-0 bg-white/5 py-1.5 pl-10 pr-3 text-white ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
-                  />
+                  
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-red-100">
+                    Salida de Inventario
+                  </h3>
+                  
+                  <p className="text-gray-300 group-hover:text-gray-200 mb-4">
+                    Registra despachos y salidas de insumos hacia otras sedes
+                  </p>
+                  
+                  <div className="space-y-2 text-sm text-gray-400 group-hover:text-gray-300">
+                    <div className="flex items-center justify-center gap-2">
+                      <Package className="h-4 w-4" />
+                      <span>Despacho entre sedes</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2">
+                      <CheckCircle className="h-4 w-4" />
+                      <span>Control por lotes</span>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-6">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg transition-colors">
+                      <span className="font-medium">Comenzar</span>
+                      <ArrowLeft className="h-4 w-4 rotate-180" />
+                    </div>
+                  </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={(e) => searchInsumo(e)}
-                  className="ml-2 bg-indigo-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  buscar
-                </button>
               </div>
-            }
+
+              {/* Opción Entrada */}
+              <div 
+                onClick={() => handleSelectOption('entrada')}
+                className="group relative bg-gradient-to-br from-green-500/20 to-emerald-500/20 hover:from-green-500/30 hover:to-emerald-500/30 border border-green-500/30 hover:border-green-500/50 rounded-2xl p-8 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <div className="relative z-10 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-green-500/20 rounded-2xl flex items-center justify-center group-hover:bg-green-500/30 transition-colors">
+                    <Plus className="h-8 w-8 text-green-400 group-hover:text-green-300" />
+                  </div>
+                  
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-green-100">
+                    Entrada de Inventario
+                  </h3>
+                  
+                  <p className="text-gray-300 group-hover:text-gray-200 mb-4">
+                    Registra nuevos insumos que ingresan al almacén
+                  </p>
+                  
+                  <div className="space-y-2 text-sm text-gray-400 group-hover:text-gray-300">
+                    <div className="flex items-center justify-center gap-2">
+                      <Package className="h-4 w-4" />
+                      <span>Nuevos insumos</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      <span>Control de fechas</span>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-6">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-300 rounded-lg transition-colors">
+                      <span className="font-medium">Comenzar</span>
+                      <ArrowLeft className="h-4 w-4 rotate-180" />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
-          <div className="flex justify-end gap-2 pt-4">
-            <button
-              type="button"
-              onClick={() => setShowForm(false)}
-              className=" bg-indigo-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className=" bg-indigo-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              {activeTab === 'entrada' ? 'Registrar Entrada' : 'Registrar Salida'}
-            </button>
           </div>
-        </div>
+        ) : (
+          // Contenido específico según la selección
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-white/10">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={handleBack}
+                  className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Volver
+                </button>
+                <div>
+                  <h2 className="text-xl font-semibold text-white">
+                    {selectedOption === 'entrada' ? 'Registro de Entrada' : 'Registro de Salida'}
+                  </h2>
+                  <p className="text-sm text-gray-300">
+                    {selectedOption === 'entrada' 
+                      ? 'Registra la entrada de nuevos artículos al inventario' 
+                      : 'Registra la salida de artículos del inventario'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Contenido específico */}
+            {selectedOption === 'salida' && showMovimiento && (
+              <MovimientoInsumoCliente onBack={handleBack} />
+            )}
+
+            {selectedOption === 'entrada' && showForm && (
+              <div>
+                {insumoFound ? (
+                  <ClientInsumoForm 
+                    id="clientInsumoForm"
+                    handleNewInsumoSubmit={handleNewInsumoSubmit}
+                    handleNewInsumoChange={handleNewInsumoChange}
+                    newInsumoFormData={newInsumoFormData}
+                    newInsumoErrors={newInsumoErrors}
+                    showCantidadPorPaquete={showCantidadPorPaquete}
+                    insumoTipos={insumoTipos}
+                    insumoMedida={insumoMedida}
+                    setShowForm={setShowForm}
+                    activeTab="entrada"
+                  />
+                ) : (
+                  <div className="flex items-center">
+                    <div className="relative w-full">
+                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <Search className="h-5 w-5 text-white/40" aria-hidden="true" />
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Buscar insumo por código o nombre"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="block w-full rounded-md border-0 bg-white/5 py-1.5 pl-10 pr-3 text-white ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => searchInsumo(e)}
+                      className="ml-2 bg-indigo-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                      buscar
+                    </button>
+                  </div>
+                )}
+
+                {showForm && (
+                  <div className="flex justify-end gap-2 pt-4">
+                    <button
+                      type="button"
+                      onClick={handleBack}
+                      className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md shadow-sm transition-colors"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md shadow-sm transition-colors"
+                    >
+                      Registrar Entrada
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </>
   );

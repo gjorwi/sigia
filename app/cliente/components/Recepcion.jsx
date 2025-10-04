@@ -1,18 +1,30 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { Package, CheckCircle, AlertCircle, Clock, Search } from 'lucide-react';
+import { Package, CheckCircle, AlertCircle, Clock, Search, Truck, CheckCircle2, CheckCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { getMovimientosRecepcion } from '@/servicios/despachos/get';
+import { getMovimientosRecepcion, getMovimientos } from '@/servicios/despachos/get';
 import { useRouter } from 'next/navigation';
 import Modal from '@/components/Modal';
+import ModalDetallesRecepcion from './ModalDetallesRecepcion';
+import ModalRegistroRecepcion from './ModalRegistroRecepcion';
+import ModalMensaje from './ModalMensaje';
+import { postMovimientosRecepcion } from '@/servicios/despachos/post';
+import { postRepartidorSeguimiento } from '@/servicios/repartidor/post';
 
 const Recepcion = () => {
   const { user, logout } = useAuth();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [recepciones, setRecepciones] = useState([]);
+  const [tipoVista, setTipoVista] = useState('recepcion'); // 'recepcion' o 'despacho'
+  const [paginacion, setPaginacion] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 10
+  });
   const [modal, setModal] = useState({
     isOpen: false,
     title: '',
@@ -22,8 +34,12 @@ const Recepcion = () => {
   });
   const [modalDetalles, setModalDetalles] = useState({
     isOpen: false,
+    recepcion: null
+  });
+  const [modalRegistrar, setModalRegistrar] = useState({
+    isOpen: false,
     recepcion: null,
-    insumosRecibidos: {} // {insumoId: {recibido: boolean, lotes: {loteId: boolean}}}
+    insumosRecibidos: {} // {insumoId: {recibido: boolean, lotes: {loteId: {recibido: boolean, cantidadRecibida: number}}}}
   });
   const showMessage = (title, message, type = 'info', time = null) => {
     setModal({isOpen: true, title, message, type, time});
@@ -36,29 +52,267 @@ const Recepcion = () => {
   const abrirModalDetalles = (recepcion) => {
     setModalDetalles({
       isOpen: true,
-      recepcion: recepcion,
-      insumosRecibidos: {}
+      recepcion: recepcion
     });
   };
 
   const cerrarModalDetalles = () => {
     setModalDetalles({
       isOpen: false,
+      recepcion: null
+    });
+  };
+
+  const abrirModalRegistrar = (recepcion) => {
+    // Inicializar el estado de insumos recibidos (todos marcados por defecto)
+    const insumosRecibidos = {};
+    
+    if (recepcion.lotes_grupos) {
+      // Agrupar por insumo
+      const insumosAgrupados = recepcion.lotes_grupos.reduce((acc, loteGrupo) => {
+        const insumoId = loteGrupo?.lote?.insumo?.id;
+        if (!acc[insumoId]) {
+          acc[insumoId] = {
+            insumo: loteGrupo?.lote?.insumo,
+            lotes: []
+          };
+        }
+        acc[insumoId].lotes.push(loteGrupo);
+        return acc;
+      }, {});
+
+      // Marcar todos como recibidos por defecto con cantidades originales
+      Object.keys(insumosAgrupados).forEach(insumoId => {
+        insumosRecibidos[insumoId] = {
+          recibido: true,
+          lotes: {}
+        };
+        insumosAgrupados[insumoId].lotes.forEach(loteGrupo => {
+          insumosRecibidos[insumoId].lotes[loteGrupo.lote.id] = {
+            recibido: true,
+            cantidadRecibida: loteGrupo.cantidad_salida || 0
+          };
+        });
+      });
+    }
+
+    setModalRegistrar({
+      isOpen: true,
+      recepcion: recepcion,
+      insumosRecibidos: insumosRecibidos
+    });
+  };
+
+  const cerrarModalRegistrar = () => {
+    setModalRegistrar({
+      isOpen: false,
       recepcion: null,
       insumosRecibidos: {}
     });
   };
 
-  
-  
-  useEffect(() => {
-    
-    handleRecepciones();
-  }, []);
+  const toggleInsumoRegistrar = (insumoId) => {
+    setModalRegistrar(prev => {
+      const insumoActual = prev.insumosRecibidos[insumoId];
+      const nuevoEstadoInsumo = !insumoActual?.recibido;
+      
+      // Si se deselecciona el insumo padre, deseleccionar todos los lotes hijos
+      const nuevosLotes = { ...insumoActual?.lotes };
+      if (!nuevoEstadoInsumo) {
+        // Deseleccionar todos los lotes del insumo
+        Object.keys(nuevosLotes).forEach(loteId => {
+          nuevosLotes[loteId] = {
+            ...nuevosLotes[loteId],
+            recibido: false,
+            cantidadRecibida: 0
+          };
+        });
+      } else {
+        // Si se selecciona el insumo padre, restaurar todos los lotes con cantidades originales
+        Object.keys(nuevosLotes).forEach(loteId => {
+          // Buscar la cantidad original del lote
+          const recepcion = prev.recepcion;
+          if (recepcion?.lotes_grupos) {
+            const loteOriginal = recepcion.lotes_grupos.find(lg => 
+              lg.lote?.id?.toString() === loteId && lg.lote?.insumo?.id?.toString() === insumoId
+            );
+            if (loteOriginal) {
+              nuevosLotes[loteId] = {
+                ...nuevosLotes[loteId],
+                recibido: true,
+                cantidadRecibida: loteOriginal.cantidad_salida || 0
+              };
+            }
+          }
+        });
+      }
 
-  const handleRecepciones = async () => {
-    const { token, sede_id } = user;
-    const response = await getMovimientosRecepcion(token, sede_id);
+      return {
+        ...prev,
+        insumosRecibidos: {
+          ...prev.insumosRecibidos,
+          [insumoId]: {
+            ...insumoActual,
+            recibido: nuevoEstadoInsumo,
+            lotes: nuevosLotes
+          }
+        }
+      };
+    });
+  };
+
+  const toggleLoteRegistrar = (insumoId, loteId) => {
+    setModalRegistrar(prev => {
+      const loteActual = prev.insumosRecibidos[insumoId]?.lotes?.[loteId];
+      const nuevoEstadoLote = !loteActual?.recibido;
+      
+      let nuevaCantidad = 0;
+      
+      // Si se deselecciona el lote, cantidad = 0
+      if (!nuevoEstadoLote) {
+        nuevaCantidad = 0;
+      } else {
+        // Si se selecciona, restaurar cantidad original de la consulta
+        const recepcion = prev.recepcion;
+        if (recepcion?.lotes_grupos) {
+          const loteOriginal = recepcion.lotes_grupos.find(lg => 
+            lg.lote?.id?.toString() === loteId.toString() && lg.lote?.insumo?.id?.toString() === insumoId.toString()
+          );
+          if (loteOriginal) {
+            nuevaCantidad = loteOriginal.cantidad_salida || 0;
+          }
+        }
+      }
+
+      return {
+        ...prev,
+        insumosRecibidos: {
+          ...prev.insumosRecibidos,
+          [insumoId]: {
+            ...prev.insumosRecibidos[insumoId],
+            lotes: {
+              ...prev.insumosRecibidos[insumoId]?.lotes,
+              [loteId]: {
+                ...loteActual,
+                recibido: nuevoEstadoLote,
+                cantidadRecibida: nuevaCantidad
+              }
+            }
+          }
+        }
+      };
+    });
+  };
+
+  const actualizarCantidadLote = (insumoId, loteId, nuevaCantidad) => {
+    setModalRegistrar(prev => {
+      const cantidadNumerica = parseInt(nuevaCantidad) || 0;
+      
+      // Solo cambiar el estado del checkbox si la cantidad es > 0 y estaba deseleccionado
+      let nuevoEstadoRecibido = prev.insumosRecibidos[insumoId]?.lotes?.[loteId]?.recibido;
+      if (cantidadNumerica > 0 && !nuevoEstadoRecibido) {
+        nuevoEstadoRecibido = true;
+      }
+      // No deseleccionar automáticamente cuando la cantidad es 0
+      // Eso debe hacerse solo con el checkbox
+
+      return {
+        ...prev,
+        insumosRecibidos: {
+          ...prev.insumosRecibidos,
+          [insumoId]: {
+            ...prev.insumosRecibidos[insumoId],
+            lotes: {
+              ...prev.insumosRecibidos[insumoId]?.lotes,
+              [loteId]: {
+                ...prev.insumosRecibidos[insumoId]?.lotes?.[loteId],
+                recibido: nuevoEstadoRecibido,
+                cantidadRecibida: cantidadNumerica
+              }
+            }
+          }
+        }
+      };
+    });
+  };
+
+
+  const generarArrayEnvio = () => {
+    const { insumosRecibidos, recepcion } = modalRegistrar;
+    const items = [];
+    
+    // Recorrer todos los insumos y sus lotes para generar los items
+    Object.keys(insumosRecibidos).forEach(insumoId => {
+      const insumo = insumosRecibidos[insumoId];
+      if (insumo.lotes) {
+        Object.keys(insumo.lotes).forEach(loteId => {
+          const lote = insumo.lotes[loteId];
+          
+          // Agregar al array de items usando lote_id (incluso si cantidad es 0)
+          items.push({
+            lote_id: parseInt(loteId),
+            cantidad: lote.cantidadRecibida || 0
+          });
+        });
+      }
+    });
+
+    // Generar fecha actual en formato YYYY-MM-DD
+    const fechaActual = new Date().toISOString().split('T')[0];
+    
+    // Estructura final del objeto de envío
+    const datosEnvio = {
+      movimiento_stock_id: recepcion?.id || null,
+      fecha_recepcion: fechaActual,
+      user_id_receptor: user?.id || null,
+      items: items
+    };
+    
+    return datosEnvio;
+  };
+
+  const confirmarRegistro = async () => {
+      setLoading(true);
+      const datosEnvio = generarArrayEnvio();
+      const {token} = user;
+      const response = await postMovimientosRecepcion(token, datosEnvio);
+      
+      if (!response.status) {
+        if(response.autenticacion==1||response.autenticacion==2){
+          showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+          logout();
+          router.replace('/');
+          setLoading(false);
+          return;
+        }
+        showMessage('Error', response.mensaje||'Error en la solicitud', 'error', 10000);
+        setLoading(false);
+        return;
+      }
+      
+      // Éxito - cerrar modal y mostrar mensaje
+      setModalRegistrar({
+        isOpen: false,
+        recepcion: null,
+        insumosRecibidos: {}
+      });
+      
+      // Recargar la lista de recepciones
+      handleRecepciones();
+      
+      showMessage('Éxito', response.mensaje, 'success', 3000);
+      setLoading(false);
+  };
+
+  const updateStatusMovimiento = async (movimientoStockId) => {
+    const {token} = user;
+    const data = 
+      {
+        "movimiento_stock_id": movimientoStockId,
+        "estado": "entregado",
+        "observaciones": "Entregado al usuario"
+      }
+    const response = await postRepartidorSeguimiento(token, data);
     if (!response.status) {
       if(response.autenticacion==1||response.autenticacion==2){
         showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
@@ -66,12 +320,61 @@ const Recepcion = () => {
         router.replace('/');
         return;
       }
-      showMessage('Error', response.mensaje, 'error', 4000);
+      showMessage('Error', response.mensaje||'Error en la solicitud', 'error', 4000);
       return;
     }
-    console.log("Movimientos: "+JSON.stringify(response.data, null, 2));
-    if(response.data&&response.data.data){
-      setRecepciones(response.data.data);
+    showMessage('Éxito', response.mensaje, 'success', 3000);
+    handleRecepciones();
+  };
+  
+  useEffect(() => {
+    handleRecepciones();
+  }, [tipoVista]);
+
+  const handleRecepciones = async (page = 1) => {
+    const { token, sede_id } = user;
+    const response = tipoVista === 'recepcion' 
+      ? await getMovimientosRecepcion(token, sede_id, page)
+      : await getMovimientos(token, sede_id);
+    if (!response.status) {
+      if(response.autenticacion==1||response.autenticacion==2){
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        return;
+      }
+      showMessage('Error', response.mensaje||'Error en la solicitud', 'error', 4000);
+      return;
+    }
+    if(response.data){
+      // Para recepciones (con paginación)
+      if(response.data.data){
+        setRecepciones(response.data.data);
+        setPaginacion({
+          currentPage: response.data.current_page || page,
+          totalPages: response.data.last_page || 1,
+          totalItems: response.data.total || 0,
+          itemsPerPage: response.data.per_page || 10
+        });
+      }
+    }
+  };
+
+  const cambiarPagina = (nuevaPagina) => {
+    if (nuevaPagina >= 1 && nuevaPagina <= paginacion.totalPages) {
+      handleRecepciones(nuevaPagina);
+    }
+  };
+
+  const paginaAnterior = () => {
+    if (paginacion.currentPage > 1) {
+      cambiarPagina(paginacion.currentPage - 1);
+    }
+  };
+
+  const paginaSiguiente = () => {
+    if (paginacion.currentPage < paginacion.totalPages) {
+      cambiarPagina(paginacion.currentPage + 1);
     }
   };
 
@@ -82,15 +385,20 @@ const Recepcion = () => {
         icon: <Clock className="h-4 w-4" />,
         label: 'Pendiente'
       },
-      completado: { 
-        bg: 'bg-green-100 text-green-800',
-        icon: <CheckCircle className="h-4 w-4" />,
-        label: 'Completado'
+      despachado: { 
+        bg: 'bg-yellow-100 text-yellow-800',
+        icon: <Truck className="h-4 w-4" />,
+        label: 'Despachado'
       },
-      en_proceso: { 
+      entregado: { 
         bg: 'bg-blue-100 text-blue-800',
-        icon: <Package className="h-4 w-4" />,
-        label: 'En Proceso'
+        icon: <CheckCircle2 className="h-4 w-4" />,
+        label: 'Entregado'
+      },
+      recibido: { 
+        bg: 'bg-green-100 text-green-800',
+        icon: <CheckCheck className="h-4 w-4" />,
+        label: 'Recibido'
       },
       con_incidencias: {
         bg: 'bg-red-100 text-red-800',
@@ -121,8 +429,37 @@ const Recepcion = () => {
 
   return (
     <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-white/10 mb-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-        <h2 className="text-xl font-semibold text-white mb-4 md:mb-0">Recepción de Despachos</h2>
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
+        <div className="flex flex-col md:flex-row md:items-center gap-4">
+          <h2 className="text-xl font-semibold text-white">
+            {tipoVista === 'recepcion' ? 'Recepción de Movimientos' : 'Despachos Realizados'}
+          </h2>
+          
+          {/* Selector de tipo de vista */}
+          <div className="flex bg-white/5 rounded-lg p-1 border border-white/20">
+            <button
+              onClick={() => setTipoVista('recepcion')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                tipoVista === 'recepcion'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-gray-300 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              Recepciones
+            </button>
+            <button
+              onClick={() => setTipoVista('despacho')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                tipoVista === 'despacho'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-gray-300 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              Despachos
+            </button>
+          </div>
+        </div>
+        
         <div className="relative w-full md:w-80">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-5 w-5 text-gray-400" />
@@ -130,7 +467,7 @@ const Recepcion = () => {
           <input
             type="text"
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            placeholder="Buscar recepción..."
+            placeholder={`Buscar ${tipoVista === 'recepcion' ? 'recepción' : 'despacho'}...`}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -142,13 +479,13 @@ const Recepcion = () => {
           <thead className="bg-white/5">
             <tr>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                ID Recepción
+                {tipoVista === 'recepcion' ? 'ID Recepción' : 'ID Despacho'}
               </th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                 Fecha/Hora
               </th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                Origen
+                {tipoVista === 'recepcion' ? 'Origen' : 'Destino'}
               </th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                 Estado
@@ -174,7 +511,10 @@ const Recepcion = () => {
                   {formatDate(recepcion.fecha_despacho)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
-                  {recepcion.origen_hospital?.nombre || recepcion.origen || 'N/A'}
+                  {tipoVista === 'recepcion' 
+                    ? (recepcion.origen_hospital?.nombre || recepcion.origen || 'N/A')
+                    : (recepcion.destino_hospital?.nombre || recepcion.destino || 'N/A')
+                  }
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   {getStatusBadge(recepcion.estado)}
@@ -183,17 +523,26 @@ const Recepcion = () => {
                   {recepcion.lotes_grupos?.length || recepcion.items || 0}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
-                  {recepcion.cantidad_salida || recepcion.total || 0}
+                  {recepcion.cantidad_salida_total || recepcion.total || 0}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  {/* <button 
+                    onClick={() => updateStatusMovimiento(recepcion.id)}
+                    className="text-white bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded cursor-pointer hover:text-white mr-3"
+                  >
+                    Cambiar
+                  </button> */}
                   <button 
                     onClick={() => abrirModalDetalles(recepcion)}
-                    className="text-indigo-400 hover:text-indigo-300 mr-3"
+                    className="text-white bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded cursor-pointer hover:text-white mr-3"
                   >
-                    Ver Detalles
+                    Detalles
                   </button>
-                  {recepcion.estado === 'pendiente' && (
-                    <button className="text-green-400 hover:text-green-300">
+                  {recepcion.estado === 'entregado' && (
+                    <button 
+                      onClick={() => abrirModalRegistrar(recepcion)}
+                      className="text-green-400 hover:text-green-300"
+                    >
                       Registrar
                     </button>
                   )}
@@ -203,161 +552,117 @@ const Recepcion = () => {
           </tbody>
         </table>
       </div>
+    
 
-      <div className="mt-4 flex flex-col md:flex-row justify-between items-center">
-        <div className="text-sm text-gray-400">
-          Mostrando <span className="font-medium">1</span> a <span className="font-medium">3</span> de{' '}
-          <span className="font-medium">3</span> resultados
-        </div>
-        <div className="flex space-x-2">
-          <button className="px-3 py-1 rounded-md bg-white/10 text-white hover:bg-white/20 disabled:opacity-50" disabled>
+      {/* Paginación - Solo para recepciones */}
+      {paginacion.totalPages > 1 && (
+      <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+        <div className="flex-1 flex justify-between sm:hidden">
+          <button 
+            onClick={paginaAnterior}
+            disabled={paginacion.currentPage === 1}
+            className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             Anterior
           </button>
-          <button className="px-3 py-1 rounded-md bg-indigo-600 text-white hover:bg-indigo-700">
-            1
-          </button>
-          <button className="px-3 py-1 rounded-md bg-white/10 text-white hover:bg-white/20">
-            2
-          </button>
-          <button className="px-3 py-1 rounded-md bg-white/10 text-white hover:bg-white/20">
+          <button 
+            onClick={paginaSiguiente}
+            disabled={paginacion.currentPage === paginacion.totalPages}
+            className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             Siguiente
           </button>
         </div>
+        <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm text-gray-700">
+              Mostrando <span className="font-medium">{(paginacion.currentPage - 1) * paginacion.itemsPerPage + 1}</span> a{' '}
+              <span className="font-medium">{Math.min(paginacion.currentPage * paginacion.itemsPerPage, paginacion.totalItems)}</span> de{' '}
+              <span className="font-medium">{paginacion.totalItems}</span> resultados
+            </p>
+          </div>
+          <div>
+            <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+              <button 
+                onClick={paginaAnterior}
+                disabled={paginacion.currentPage === 1}
+                className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Anterior
+              </button>
+              
+              {/* Páginas numeradas */}
+              {Array.from({ length: Math.min(5, paginacion.totalPages) }, (_, i) => {
+                let pageNum;
+                if (paginacion.totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (paginacion.currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (paginacion.currentPage >= paginacion.totalPages - 2) {
+                  pageNum = paginacion.totalPages - 4 + i;
+                } else {
+                  pageNum = paginacion.currentPage - 2 + i;
+                }
+                
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => cambiarPagina(pageNum)}
+                    className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                      pageNum === paginacion.currentPage
+                        ? 'bg-indigo-50 border-indigo-500 text-indigo-600'
+                        : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+              
+              <button 
+                onClick={paginaSiguiente}
+                disabled={paginacion.currentPage === paginacion.totalPages}
+                className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Siguiente
+              </button>
+            </nav>
+          </div>
+        </div>
       </div>
-
+      )}
 
       {/* Modal para mensajes */}
-      <Modal
+      <ModalMensaje
         isOpen={modal.isOpen}
         onClose={closeModal}
         title={modal.title}
+        message={modal.message}
         type={modal.type}
         time={modal.time}
-      >
-        {modal.message}
-      </Modal>
+      />
 
-      {/* Modal de Detalles usando Portal */}
-      {modalDetalles.isOpen && typeof document !== 'undefined' && createPortal(
-        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center p-4 z-[9999]">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            {/* Header del Modal */}
-            <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Detalles de Recepción - {modalDetalles.recepcion?.codigo_grupo}
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Origen: {modalDetalles.recepcion?.origen_hospital?.nombre} | 
-                    Fecha: {formatDate(modalDetalles.recepcion?.fecha_despacho)}
-                  </p>
-                </div>
-                <button
-                  onClick={cerrarModalDetalles}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </div>
+      {/* Modal de Detalles */}
+      <ModalDetallesRecepcion
+        isOpen={modalDetalles.isOpen}
+        recepcion={modalDetalles.recepcion}
+        onClose={cerrarModalDetalles}
+        formatDate={formatDate}
+      />
 
-            {/* Contenido del Modal */}
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
-              <div className="mb-4">
-                <h4 className="text-md font-semibold text-gray-900 mb-3">
-                  Insumos y Lotes ({modalDetalles.recepcion?.lotes_grupos?.length || 0} items)
-                </h4>
-                <p className="text-sm text-gray-600 mb-4">
-                  Detalle completo de los insumos y lotes incluidos en este movimiento.
-                </p>
-              </div>
-
-              {modalDetalles.recepcion?.lotes_grupos && (
-                <div className="space-y-4">
-                  {(() => {
-                    // Agrupar lotes por insumo
-                    const insumosAgrupados = modalDetalles.recepcion.lotes_grupos.reduce((acc, loteGrupo) => {
-                      const insumoId = loteGrupo?.lote?.insumo?.id;
-                      if (!acc[insumoId]) {
-                        acc[insumoId] = {
-                          insumo: loteGrupo?.lote?.insumo,
-                          lotes: []
-                        };
-                      }
-                      acc[insumoId].lotes.push(loteGrupo);
-                      return acc;
-                    }, {});
-
-                    return Object.entries(insumosAgrupados).map(([insumoId, data]) => (
-                      <div key={insumoId} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                        {/* Header del Insumo */}
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                              <Package className="w-4 h-4 text-indigo-600" />
-                            </div>
-                            <div className="flex-1">
-                              <div className="text-sm font-medium text-gray-900">
-                                {data.insumo?.nombre}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                #{data.insumo?.codigo} | {data.insumo?.tipo} | {data.lotes.length} lote(s)
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-sm font-semibold text-gray-900">
-                            Total: {data.lotes.reduce((sum, lg) => sum + (lg.cantidad_salida || 0), 0)}
-                          </div>
-                        </div>
-
-                        {/* Lotes del Insumo */}
-                        <div className="ml-11 space-y-2">
-                          {data.lotes.map((loteGrupo, loteIndex) => (
-                            <div key={loteIndex} className="bg-white p-3 rounded border border-gray-200">
-                              <div className="flex items-center justify-between">
-                                <div className="flex-1">
-                                  <div className="text-sm font-medium text-gray-900">
-                                    Lote: {loteGrupo.lote?.numero_lote}
-                                  </div>
-                                  <div className="text-xs text-gray-500 mt-1">
-                                    ID: {loteGrupo.lote?.id} | 
-                                    Cantidad: <span className="font-medium">{loteGrupo.cantidad_salida}</span> | 
-                                    Vence: {loteGrupo.lote?.fecha_vencimiento ? 
-                                      new Date(loteGrupo.lote.fecha_vencimiento).toLocaleDateString() : 'N/A'}
-                                  </div>
-                                </div>
-                                <div className="ml-4">
-                                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                    {loteGrupo.cantidad_salida} unidades
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ));
-                  })()}
-                </div>
-              )}
-            </div>
-
-            {/* Footer del Modal */}
-            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end">
-              <button
-                onClick={cerrarModalDetalles}
-                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
+      {/* Modal de Registro */}
+      <ModalRegistroRecepcion
+        isOpen={modalRegistrar.isOpen}
+        recepcion={modalRegistrar.recepcion}
+        insumosRecibidos={modalRegistrar.insumosRecibidos}
+        onClose={cerrarModalRegistrar}
+        onToggleInsumo={toggleInsumoRegistrar}
+        onToggleLote={toggleLoteRegistrar}
+        onUpdateCantidad={actualizarCantidadLote}
+        onConfirmar={confirmarRegistro}
+        formatDate={formatDate}
+        loading={loading}
+      />
     </div>
   );
 };

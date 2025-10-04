@@ -2,6 +2,7 @@ import axios from 'axios';
 import config from '@/config';
 
 export const getInventario = async (token,id) => {
+  console.log("id: "+id);
   try {
     const response = await axios.get(`${config.URL_API}inventario/sede/${id}`, {
       headers: {

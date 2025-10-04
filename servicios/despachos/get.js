@@ -15,15 +15,14 @@ export const getMovimientos = async (token,idSede) => {
         console.error('Error al obtener despachos:', error);
         const errorData = {
             success: false,
-            message: "Cliente->Server Error al obtener los despachos",
             data: null
         }
         return errorData;
     }
 };
-export const getMovimientosRecepcion = async (token,idSede) => {
+export const getMovimientosRecepcion = async (token, idSede, page = 1) => {
     try {
-        const response = await axios.get(`${config.URL_API}movimientos-stock/destino_sede/${idSede}`, {
+        const response = await axios.get(`${config.URL_API}movimientos-stock/destino_sede/${idSede}?page=${page}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`

@@ -65,11 +65,11 @@ export default function ClientePage() {
     },
     { 
       id: 2, 
-      name: 'En transito', 
+      name: 'Total despachos', 
       value: '1', 
       icon: Truck, 
       color: 'bg-blue-500',
-      trend: '1 en camino',
+      trend: 'Despachos',
       trendType: 'neutral'
     },
     { 
@@ -78,7 +78,7 @@ export default function ClientePage() {
       value: '3', 
       icon: AlertCircle, 
       color: 'bg-orange-500',
-      trend: '3 en falla',
+      trend: 'Insumos en falla',
       trendType: 'up'
     },
     { 
@@ -87,7 +87,7 @@ export default function ClientePage() {
       value: '2', 
       icon: AlertCircle, 
       color: 'bg-yellow-500',
-      trend: '2 pendientes',
+      trend: 'pendientes',
       trendType: 'warning'
     },
   ];
@@ -145,9 +145,23 @@ export default function ClientePage() {
             }`}>
               <Package className="h-5 w-5" />
             </div>
-            <span className="font-medium">Recepción</span>
+            <span className="font-medium">Movimientos</span>
           </button>
-          
+          <button 
+            className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${
+              menuActivo === 'registro' 
+                ? 'bg-purple-600 text-white' 
+                : 'bg-purple-500/15 text-gray-800 hover:bg-purple-500/30'
+            }`}
+            onClick={() => setMenuActivo('registro')}
+          >
+            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+              menuActivo === 'registro' ? 'bg-white/20' : 'bg-purple-500/90 text-white'
+            }`}>
+              <PlusCircle className="h-5 w-5" />
+            </div>
+            <span className="font-medium">Registro/Despacho</span>
+          </button>
           <button 
             className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${
               menuActivo === 'tracking' 
@@ -180,21 +194,7 @@ export default function ClientePage() {
             <span className="font-medium">Inventario</span>
           </button>
           
-          <button 
-            className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${
-              menuActivo === 'registro' 
-                ? 'bg-purple-600 text-white' 
-                : 'bg-purple-500/15 text-gray-800 hover:bg-purple-500/30'
-            }`}
-            onClick={() => setMenuActivo('registro')}
-          >
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-              menuActivo === 'registro' ? 'bg-white/20' : 'bg-purple-500/90 text-white'
-            }`}>
-              <PlusCircle className="h-5 w-5" />
-            </div>
-            <span className="font-medium">Registro/Despacho</span>
-          </button>
+          
         </div>
       </div>
       <div className="mt-2">
