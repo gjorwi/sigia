@@ -9,7 +9,7 @@ import config from '@/config';
  */
 export const postDespachoAPaciente = async (token, data) => {
   try {
-    const response = await axios.post(`${config.URL_API}despacho/paciente`, data, {
+    const response = await axios.post(`${config.URL_API}despachos-pacientes`, data, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
@@ -38,7 +38,7 @@ export const getHistorialDespachosPacientes = async (token, sedeId, filtros = {}
       ...filtros
     };
 
-    const response = await axios.get(`${config.URL_API}despachos/pacientes`, {
+    const response = await axios.get(`${config.URL_API}despachos-pacientes`, {
       params,
       headers: {
         'Content-Type': 'application/json',
@@ -49,11 +49,7 @@ export const getHistorialDespachosPacientes = async (token, sedeId, filtros = {}
     const result = await response.data;
     return result;
   } catch (error) {
-    console.error('Error en getHistorialDespachosPacientes:', error);
-    return {
-      status: false,
-      mensaje: 'Error de conexión al servidor',
-      error: error.message
-    };
+    console.log('Error en getHistorialDespachosPacientes:', error);
+    return error;
   }
 };

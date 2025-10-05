@@ -248,21 +248,14 @@ const MovimientoInsumoCliente = ({ onBack }) => {
       } else if (tipoDespacho === 'paciente') {
         // Estructura para despacho a paciente (salida definitiva)
         dataSend = {
-          origen_hospital_id: hospital_id,
-          origen_sede_id: sede_id,
+          hospital_id: hospital_id,
+          sede_id: sede_id,
           tipo_movimiento: 'salida_paciente',
           fecha_despacho: new Date().toISOString().split('T')[0],
           observaciones: observaciones,
-          paciente: {
-            nombres: datosPaciente.nombres,
-            apellidos: datosPaciente.apellidos,
-            cedula: datosPaciente.cedula,
-            telefono: datosPaciente.telefono,
-            direccion: datosPaciente.direccion,
-            edad: datosPaciente.edad,
-            genero: datosPaciente.genero,
-            diagnostico: datosPaciente.diagnostico
-          },
+          paciente_nombres: datosPaciente.nombres,
+          paciente_apellidos: datosPaciente.apellidos,
+          paciente_cedula: datosPaciente.cedula,
           items: itemsParaEnviar
         };
         

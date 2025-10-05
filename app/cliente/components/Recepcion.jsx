@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react';
 import { Package, CheckCircle, AlertCircle, Clock, Search, Truck, CheckCircle2, CheckCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getMovimientosRecepcion, getMovimientos } from '@/servicios/despachos/get';
+import { getMovimientosPacientes } from '@/servicios/pacientes/get';
 import { useRouter } from 'next/navigation';
 import Modal from '@/components/Modal';
 import ModalDetallesRecepcion from './ModalDetallesRecepcion';
+import ModalDetallesPaciente from './ModalDetallesPaciente';
 import ModalRegistroRecepcion from './ModalRegistroRecepcion';
 import ModalMensaje from './ModalMensaje';
 import { postMovimientosRecepcion } from '@/servicios/despachos/post';
@@ -18,7 +20,7 @@ const Recepcion = () => {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [recepciones, setRecepciones] = useState([]);
-  const [tipoVista, setTipoVista] = useState('recepcion'); // 'recepcion' o 'despacho'
+  const [tipoVista, setTipoVista] = useState('recepcion'); // 'recepcion', 'despacho' o 'pacientes'
   const [paginacion, setPaginacion] = useState({
     currentPage: 1,
     totalPages: 1,
@@ -35,6 +37,10 @@ const Recepcion = () => {
   const [modalDetalles, setModalDetalles] = useState({
     isOpen: false,
     recepcion: null
+  });
+  const [modalDetallesPaciente, setModalDetallesPaciente] = useState({
+    isOpen: false,
+    despacho: null
   });
   const [modalRegistrar, setModalRegistrar] = useState({
     isOpen: false,
@@ -60,6 +66,20 @@ const Recepcion = () => {
     setModalDetalles({
       isOpen: false,
       recepcion: null
+    });
+  };
+
+  const abrirModalDetallesPaciente = (despacho) => {
+    setModalDetallesPaciente({
+      isOpen: true,
+      despacho: despacho
+    });
+  };
+
+  const cerrarModalDetallesPaciente = () => {
+    setModalDetallesPaciente({
+      isOpen: false,
+      despacho: null
     });
   };
 
@@ -333,9 +353,15 @@ const Recepcion = () => {
 
   const handleRecepciones = async (page = 1) => {
     const { token, sede_id } = user;
-    const response = tipoVista === 'recepcion' 
-      ? await getMovimientosRecepcion(token, sede_id, page)
-      : await getMovimientos(token, sede_id);
+    let response;
+    
+    if (tipoVista === 'recepcion') {
+      response = await getMovimientosRecepcion(token, sede_id, page);
+    } else if (tipoVista === 'despacho') {
+      response = await getMovimientos(token, sede_id);
+    } else if (tipoVista === 'pacientes') {
+      response = await getMovimientosPacientes(token, sede_id);
+    }
     if (!response.status) {
       if(response.autenticacion==1||response.autenticacion==2){
         showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
@@ -432,14 +458,16 @@ const Recepcion = () => {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
         <div className="flex flex-col md:flex-row md:items-center gap-4">
           <h2 className="text-xl font-semibold text-white">
-            {tipoVista === 'recepcion' ? 'Recepción de Movimientos' : 'Despachos Realizados'}
+            {tipoVista === 'recepcion' ? 'Recepción de Movimientos' : 
+             tipoVista === 'despacho' ? 'Despachos Realizados' : 
+             'Salidas a Pacientes'}
           </h2>
           
           {/* Selector de tipo de vista */}
           <div className="flex bg-white/5 rounded-lg p-1 border border-white/20">
             <button
               onClick={() => setTipoVista('recepcion')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                 tipoVista === 'recepcion'
                   ? 'bg-indigo-600 text-white shadow-sm'
                   : 'text-gray-300 hover:text-white hover:bg-white/10'
@@ -449,13 +477,23 @@ const Recepcion = () => {
             </button>
             <button
               onClick={() => setTipoVista('despacho')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                 tipoVista === 'despacho'
                   ? 'bg-indigo-600 text-white shadow-sm'
                   : 'text-gray-300 hover:text-white hover:bg-white/10'
               }`}
             >
               Despachos
+            </button>
+            <button
+              onClick={() => setTipoVista('pacientes')}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                tipoVista === 'pacientes'
+                  ? 'bg-green-600 text-white shadow-sm'
+                  : 'text-gray-300 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              Pacientes
             </button>
           </div>
         </div>
@@ -467,7 +505,11 @@ const Recepcion = () => {
           <input
             type="text"
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            placeholder={`Buscar ${tipoVista === 'recepcion' ? 'recepción' : 'despacho'}...`}
+            placeholder={`Buscar ${
+              tipoVista === 'recepcion' ? 'recepción' : 
+              tipoVista === 'despacho' ? 'despacho' : 
+              'despacho a paciente'
+            }...`}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -479,13 +521,17 @@ const Recepcion = () => {
           <thead className="bg-white/5">
             <tr>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                {tipoVista === 'recepcion' ? 'ID Recepción' : 'ID Despacho'}
+                {tipoVista === 'recepcion' ? 'ID Recepción' : 
+                 tipoVista === 'despacho' ? 'ID Despacho' : 
+                 'ID Despacho'}
               </th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                 Fecha/Hora
               </th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                {tipoVista === 'recepcion' ? 'Origen' : 'Destino'}
+                {tipoVista === 'recepcion' ? 'Origen' : 
+                 tipoVista === 'despacho' ? 'Destino' : 
+                 'Paciente'}
               </th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                 Estado
@@ -513,7 +559,18 @@ const Recepcion = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
                   {tipoVista === 'recepcion' 
                     ? (recepcion.origen_hospital?.nombre || recepcion.origen || 'N/A')
-                    : (recepcion.destino_hospital?.nombre || recepcion.destino || 'N/A')
+                    : tipoVista === 'despacho'
+                    ? (recepcion.destino_hospital?.nombre || recepcion.destino || 'N/A')
+                    : (
+                        <div>
+                          <div className="font-medium text-white">
+                            {recepcion.paciente_nombres} {recepcion.paciente_apellidos}
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            Cédula: {recepcion.paciente_cedula}
+                          </div>
+                        </div>
+                      )
                   }
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -533,7 +590,13 @@ const Recepcion = () => {
                     Cambiar
                   </button> */}
                   <button 
-                    onClick={() => abrirModalDetalles(recepcion)}
+                    onClick={() => {
+                      if (tipoVista === 'pacientes') {
+                        abrirModalDetallesPaciente(recepcion);
+                      } else {
+                        abrirModalDetalles(recepcion);
+                      }
+                    }}
                     className="text-white bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded cursor-pointer hover:text-white mr-3"
                   >
                     Detalles
@@ -647,6 +710,14 @@ const Recepcion = () => {
         isOpen={modalDetalles.isOpen}
         recepcion={modalDetalles.recepcion}
         onClose={cerrarModalDetalles}
+        formatDate={formatDate}
+      />
+
+      {/* Modal de Detalles de Paciente */}
+      <ModalDetallesPaciente
+        isOpen={modalDetallesPaciente.isOpen}
+        despacho={modalDetallesPaciente.despacho}
+        onClose={cerrarModalDetallesPaciente}
         formatDate={formatDate}
       />
 

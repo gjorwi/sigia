@@ -2,8 +2,16 @@
 
 import { createPortal } from 'react-dom';
 import { Package, User, Calendar, AlertTriangle, CheckCircle } from 'lucide-react';
+import { useEffect } from 'react';
 
 const ModalDetallesRecepcion = ({ isOpen, recepcion, onClose, formatDate }) => {
+
+  useEffect(() => {
+    if (recepcion) {
+     console.log("Recepcion: "+JSON.stringify(recepcion, null, 2));
+    }
+  }, [recepcion]);
+
   if (!isOpen || typeof document === 'undefined') return null;
 
   return createPortal(
