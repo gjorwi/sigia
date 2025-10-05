@@ -50,8 +50,18 @@ const ModalDetallesRecepcion = ({ isOpen, recepcion, onClose, formatDate }) => {
                 <div><span className="font-medium text-gray-900">Cédula:</span> {recepcion?.usuario?.cedula}</div>
                 <div><span className="font-medium text-gray-900">Email:</span> {recepcion?.usuario?.email}</div>
                 <div><span className="font-medium text-gray-900">Fecha despacho:</span> {formatDate(recepcion?.fecha_despacho)}</div>
-                <div><span className="font-medium text-gray-900">Origen:</span> {recepcion?.origen_hospital?.nombre}</div>
-                <div><span className="font-medium text-gray-900">Destino:</span> {recepcion?.destino_hospital?.nombre}</div>
+                {recepcion?.origen_hospital_id!=recepcion?.destino_hospital_id ? (
+                  <>
+                    <div><span className="font-medium text-gray-900">Origen:</span> {recepcion?.origen_hospital?.nombre}</div>
+                    <div><span className="font-medium text-gray-900">Destino:</span> {recepcion?.destino_hospital?.nombre}</div>
+                  </>
+                ):(
+                  <>
+                    <div><span className="font-medium text-gray-900">Sede Origen:</span> {recepcion?.origen_sede?.nombre}</div>
+                    <div><span className="font-medium text-gray-900">Sede Destino:</span> {recepcion?.destino_sede?.nombre}</div>
+                  </>
+                )}
+
               </div>
             </div>
 
@@ -67,6 +77,8 @@ const ModalDetallesRecepcion = ({ isOpen, recepcion, onClose, formatDate }) => {
                   <div><span className="font-medium text-gray-900">Cédula:</span> {recepcion?.usuario_receptor?.cedula}</div>
                   <div><span className="font-medium text-gray-900">Email:</span> {recepcion?.usuario_receptor?.email}</div>
                   <div><span className="font-medium text-gray-900">Fecha recepción:</span> {formatDate(recepcion?.fecha_recepcion)}</div>
+                  {/* datos de la sede */}
+                  <div><span className="font-medium text-gray-900">Sede:</span> {recepcion?.destino_sede?.nombre}</div>
                   {recepcion?.observaciones_recepcion && (
                     <div><span className="font-medium text-gray-900">Observaciones:</span> {recepcion.observaciones_recepcion}</div>
                   )}

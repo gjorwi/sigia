@@ -173,7 +173,7 @@ const Registro = () => {
                   </div>
                   
                   <div className="mt-6">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg transition-colors">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-500/80 hover:bg-red-500/30 text-red-300 rounded-lg transition-colors">
                       <span className="font-medium">Comenzar</span>
                       <ArrowLeft className="h-4 w-4 rotate-180" />
                     </div>

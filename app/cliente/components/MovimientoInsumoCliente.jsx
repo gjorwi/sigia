@@ -7,6 +7,7 @@ import InsumoSelectionModalCliente from './InsumoSelectionModalCliente';
 import { getSedeByHospitalId } from '@/servicios/sedes/get';
 import { getInventario } from '@/servicios/inventario/get';
 import { postMovimiento } from '@/servicios/despachos/post';
+import { postDespachoAPaciente } from '@/servicios/pacientes/post';
 import { useAuth } from '@/contexts/AuthContext';
 import { createPortal } from 'react-dom';
 const MovimientoInsumoCliente = ({ onBack }) => {
@@ -22,6 +23,12 @@ const MovimientoInsumoCliente = ({ onBack }) => {
   const [observaciones, setObservaciones] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [tipoDespacho, setTipoDespacho] = useState('sede'); // 'sede' o 'paciente'
+  const [datosPaciente, setDatosPaciente] = useState({
+    nombres: '',
+    apellidos: '',
+    cedula: '',
+  });
   const [modal, setModal] = useState({
     isOpen: false,
     title: '',
@@ -36,6 +43,28 @@ const MovimientoInsumoCliente = ({ onBack }) => {
 
   const closeModal = () => {
     setModal(prev => ({ ...prev, isOpen: false }));
+  };
+
+  const handleTipoDespachoChange = (tipo) => {
+    setTipoDespacho(tipo);
+    // Limpiar datos según el tipo
+    if (tipo === 'sede') {
+      setDatosPaciente({
+        nombres: '',
+        apellidos: '',
+        cedula: ''});
+      setInsumosSeleccionados([]);
+    } else {
+      setInsumosSeleccionados([]);
+      setSedeDestino(null);
+    }
+  };
+
+  const handleDatosPacienteChange = (field, value) => {
+    setDatosPaciente(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   useEffect(() => {
@@ -160,9 +189,21 @@ const MovimientoInsumoCliente = ({ onBack }) => {
 
 
   const handleSubmit = async () => {
-    if (!sedeDestino) {
-      showMessage('Error', 'Debe seleccionar una sede destino', 'error', 3000);
-      return;
+    // Validar según el tipo de despacho
+    if (tipoDespacho === 'sede') {
+      if (!sedeDestino) {
+        showMessage('Error', 'Debe seleccionar una sede destino', 'error', 3000);
+        return;
+      }
+    } else if (tipoDespacho === 'paciente') {
+      // Validar datos del paciente
+      const camposRequeridos = ['nombres', 'apellidos', 'cedula'];
+      const camposFaltantes = camposRequeridos.filter(campo => !datosPaciente[campo].trim());
+      
+      if (camposFaltantes.length > 0) {
+        showMessage('Error', `Debe completar los siguientes campos: ${camposFaltantes.join(', ')}`, 'error', 3000);
+        return;
+      }
     }
 
     // Validar que hay insumos seleccionados con cantidades
@@ -182,63 +223,132 @@ const MovimientoInsumoCliente = ({ onBack }) => {
 
     setLoading(true);
       const { token, sede_id, hospital_id, sede } = user;
-      // const data = {
-      //   origen_hospital_id: hospital_id,
-      //   origen_sede_id: sede_id,
-      //   destino_hospital_id: hospital_id, // Mismo hospital para despachos internos
-      //   destino_sede_id: sedeDestino.id,
-      //   origen_almacen_tipo: hospital.tipo_almacen,
-      //   destino_almacen_tipo: sedeDestino.tipo_almacen,
-      //   tipo_movimiento: 'despacho',
-      //   fecha_despacho: new Date().toISOString().split('T')[0],
-      //   observaciones: observaciones,
-      //   items: itemsParaEnviar
-      // };
-      const dataSend = {
-        origen_hospital_id: hospital_id,
-        origen_sede_id: sede_id,
-        destino_hospital_id: hospital_id,
-        destino_sede_id: sedeDestino.id,
-        origen_almacen_tipo: sede.tipo_almacen,
-        destino_almacen_tipo: sedeDestino.tipo_almacen,
-        tipo_movimiento: 'despacho',
-        fecha_despacho: new Date().toISOString().split('T')[0],
-        observaciones: observaciones,
-        items: itemsParaEnviar
-      }
-
-      console.log('Datos a enviar:', JSON.stringify(dataSend, null, 2));
-      const result = await postMovimiento(dataSend, token);
       
-      if (!result.status) {
+      let dataSend;
+      let response;
+      
+      if (tipoDespacho === 'sede') {
+        // Estructura para despacho a sede
+        dataSend = {
+          origen_hospital_id: hospital_id,
+          origen_sede_id: sede_id,
+          destino_hospital_id: hospital_id,
+          destino_sede_id: sedeDestino.id,
+          origen_almacen_tipo: sede.tipo_almacen,
+          destino_almacen_tipo: sedeDestino.tipo_almacen,
+          tipo_movimiento: 'despacho',
+          fecha_despacho: new Date().toISOString().split('T')[0],
+          observaciones: observaciones,
+          items: itemsParaEnviar
+        };
+        
+        console.log('Datos despacho a sede:', JSON.stringify(dataSend, null, 2));
+        response = await postMovimiento(token, dataSend);
+        
+      } else if (tipoDespacho === 'paciente') {
+        // Estructura para despacho a paciente (salida definitiva)
+        dataSend = {
+          origen_hospital_id: hospital_id,
+          origen_sede_id: sede_id,
+          tipo_movimiento: 'salida_paciente',
+          fecha_despacho: new Date().toISOString().split('T')[0],
+          observaciones: observaciones,
+          paciente: {
+            nombres: datosPaciente.nombres,
+            apellidos: datosPaciente.apellidos,
+            cedula: datosPaciente.cedula,
+            telefono: datosPaciente.telefono,
+            direccion: datosPaciente.direccion,
+            edad: datosPaciente.edad,
+            genero: datosPaciente.genero,
+            diagnostico: datosPaciente.diagnostico
+          },
+          items: itemsParaEnviar
+        };
+        
+        console.log('Datos despacho a paciente:', JSON.stringify(dataSend, null, 2));
+        // Usar servicio específico para despacho a paciente
+        response = await postDespachoAPaciente(token, dataSend);
+      }
+      
+      if (!response.status) {
         setLoading(false);
-        if (result.autenticacion === 1 || result.autenticacion === 2) {
+        if (response.autenticacion === 1 || response.autenticacion === 2) {
           showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
           logout();
           return;
         }
-        showMessage('Error', result.mensaje || 'Error al crear el despacho', 'error', 4000);
+        showMessage('Error', response.mensaje || 'Error al crear el despacho', 'error', 4000);
         return;
       }
 
-      showMessage('Éxito', 'Despacho creado exitosamente', 'success', 3000);
+      const mensajeExito = tipoDespacho === 'sede' 
+        ? 'Despacho a sede creado exitosamente' 
+        : 'Despacho a paciente registrado exitosamente';
+      showMessage('Éxito', mensajeExito, 'success', 3000);
       
       // Resetear formulario
       setSedeDestino(null);
       setInsumosSeleccionados([]);
       setObservaciones('');
+      setDatosPaciente({
+        nombres: '',
+        apellidos: '',
+        cedula: ''
+      });
       fetchInsumos(); // Recargar inventario actualizado
       setLoading(false);
   };
 
   return (
     <div className="space-y-6">
-      {/* Selección de Sede Destino */}
+      {/* Selector de Tipo de Despacho */}
       <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-white/10">
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <MapPin className="h-5 w-5" />
-          Sede Destino
+          <Package className="h-5 w-5" />
+          Tipo de Despacho
         </h3>
+        
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            onClick={() => handleTipoDespachoChange('sede')}
+            className={`p-4 rounded-lg border-2 transition-all ${
+              tipoDespacho === 'sede'
+                ? 'border-purple-400 bg-purple-500/20 text-white'
+                : 'border-white/20 bg-white/5 text-gray-300 hover:bg-white/10'
+            }`}
+          >
+            <div className="text-center">
+              <MapPin className="h-8 w-8 mx-auto mb-2" />
+              <div className="font-medium">Despacho a Sede</div>
+              <div className="text-sm opacity-80">Transferir a otra sede del hospital</div>
+            </div>
+          </button>
+          
+          <button
+            onClick={() => handleTipoDespachoChange('paciente')}
+            className={`p-4 rounded-lg border-2 transition-all ${
+              tipoDespacho === 'paciente'
+                ? 'border-green-400 bg-green-500/20 text-white'
+                : 'border-white/20 bg-white/5 text-gray-300 hover:bg-white/10'
+            }`}
+          >
+            <div className="text-center">
+              <Package className="h-8 w-8 mx-auto mb-2" />
+              <div className="font-medium">Despacho a Paciente</div>
+              <div className="text-sm opacity-80">Salida definitiva del almacén</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {/* Selección de Sede Destino - Solo si es despacho a sede */}
+      {tipoDespacho === 'sede' && (
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-white/10">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <MapPin className="h-5 w-5" />
+            Sede Destino
+          </h3>
         
         <div className="flex gap-4 items-end">
           <div className="flex-1">
@@ -268,7 +378,127 @@ const MovimientoInsumoCliente = ({ onBack }) => {
             Seleccionar
           </button>
         </div>
-      </div>
+        </div>
+      )}
+
+      {/* Formulario de Datos del Paciente - Solo si es despacho a paciente */}
+      {tipoDespacho === 'paciente' && (
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-white/10">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <Package className="h-5 w-5" />
+            Datos del Paciente
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Nombres *
+              </label>
+              <input
+                type="text"
+                value={datosPaciente.nombres}
+                onChange={(e) => handleDatosPacienteChange('nombres', e.target.value)}
+                placeholder="Nombres del paciente"
+                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Apellidos *
+              </label>
+              <input
+                type="text"
+                value={datosPaciente.apellidos}
+                onChange={(e) => handleDatosPacienteChange('apellidos', e.target.value)}
+                placeholder="Apellidos del paciente"
+                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Cédula *
+              </label>
+              <input
+                type="text"
+                value={datosPaciente.cedula}
+                onChange={(e) => handleDatosPacienteChange('cedula', e.target.value)}
+                placeholder="Número de cédula"
+                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40"
+              />
+            </div>
+            
+            {/* <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Teléfono
+              </label>
+              <input
+                type="tel"
+                value={datosPaciente.telefono}
+                onChange={(e) => handleDatosPacienteChange('telefono', e.target.value)}
+                placeholder="Número de teléfono"
+                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40"
+              />
+            </div> */}
+            
+            {/* <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Edad
+              </label>
+              <input
+                type="number"
+                value={datosPaciente.edad}
+                onChange={(e) => handleDatosPacienteChange('edad', e.target.value)}
+                placeholder="Edad del paciente"
+                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Género
+              </label>
+              <select
+                value={datosPaciente.genero}
+                onChange={(e) => handleDatosPacienteChange('genero', e.target.value)}
+                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
+              >
+                <option value="">Seleccionar género</option>
+                <option value="masculino">Masculino</option>
+                <option value="femenino">Femenino</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Dirección
+              </label>
+              <input
+                type="text"
+                value={datosPaciente.direccion}
+                onChange={(e) => handleDatosPacienteChange('direccion', e.target.value)}
+                placeholder="Dirección del paciente"
+                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40"
+              />
+            </div>
+            
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Diagnóstico
+              </label>
+              <textarea
+                value={datosPaciente.diagnostico}
+                onChange={(e) => handleDatosPacienteChange('diagnostico', e.target.value)}
+                placeholder="Diagnóstico o motivo del despacho"
+                rows="3"
+                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40"
+              />
+            </div> */}
+          </div>
+        </div>
+      )}
 
       {/* Selección de Insumos */}
       <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-white/10">
@@ -370,7 +600,12 @@ const MovimientoInsumoCliente = ({ onBack }) => {
           </button>
           <button
             onClick={handleSubmit}
-            disabled={loading || !sedeDestino || insumosSeleccionados.length === 0}
+            disabled={
+              loading || 
+              insumosSeleccionados.length === 0 ||
+              (tipoDespacho === 'sede' && !sedeDestino) ||
+              (tipoDespacho === 'paciente' && (!datosPaciente.nombres || !datosPaciente.apellidos || !datosPaciente.cedula))
+            }
             className="px-6 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center gap-2"
           >
             {loading ? (

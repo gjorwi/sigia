@@ -309,8 +309,8 @@ const Recepcion = () => {
     const data = 
       {
         "movimiento_stock_id": movimientoStockId,
-        "estado": "entregado",
-        "observaciones": "Entregado al usuario"
+        "estado": "despachado",
+        "observaciones": "Despachado al usuario"
       }
     const response = await postRepartidorSeguimiento(token, data);
     if (!response.status) {
@@ -386,7 +386,7 @@ const Recepcion = () => {
         label: 'Pendiente'
       },
       despachado: { 
-        bg: 'bg-yellow-100 text-yellow-800',
+        bg: 'bg-purple-100 text-purple-700',
         icon: <Truck className="h-4 w-4" />,
         label: 'Despachado'
       },
@@ -538,7 +538,7 @@ const Recepcion = () => {
                   >
                     Detalles
                   </button>
-                  {recepcion.estado === 'entregado' && (
+                  {recepcion.estado === 'entregado'||(user.sede.tipo_almacen!=='almacenPrin'&&recepcion.estado==='despachado') && (
                     <button 
                       onClick={() => abrirModalRegistrar(recepcion)}
                       className="text-green-400 hover:text-green-300"
