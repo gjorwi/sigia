@@ -173,6 +173,84 @@ const ModalDetallesPaciente = ({ isOpen, despacho, onClose, formatDate }) => {
                 </p>
               </div>
             )}
+
+            {/* Insumos Despachados */}
+            {despacho?.insumos_despachados && despacho.insumos_despachados.length > 0 && (
+              <div className="mt-6">
+                <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                  <Package className="h-4 w-4 text-purple-600 mr-2" />
+                  Insumos Despachados ({despacho.insumos_despachados.length})
+                </h4>
+                <div className="bg-white rounded-lg border overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Insumo
+                          </th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Código
+                          </th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Lote
+                          </th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Cantidad
+                          </th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Vencimiento
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {despacho.insumos_despachados.map((insumo, index) => (
+                          <tr key={index} className="hover:bg-gray-50">
+                            <td className="px-3 py-3 whitespace-nowrap">
+                              <div className="text-sm font-medium text-gray-900">
+                                {insumo.insumo_nombre}
+                              </div>
+                              {insumo.insumo_presentacion && (
+                                <div className="text-xs text-gray-500">
+                                  {insumo.insumo_presentacion}
+                                </div>
+                              )}
+                            </td>
+                            <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-900">
+                              {insumo.insumo_codigo || 'N/A'}
+                            </td>
+                            <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-900">
+                              {insumo.numero_lote || 'N/A'}
+                            </td>
+                            <td className="px-3 py-3 whitespace-nowrap">
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                {insumo.cantidad_despachada}
+                              </span>
+                            </td>
+                            <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-900">
+                              {formatDate ? formatDate(insumo.fecha_vencimiento) : insumo.fecha_vencimiento || 'N/A'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  {/* Resumen compacto */}
+                  <div className="bg-purple-50 px-4 py-2 border-t">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="font-medium text-purple-700">
+                        Total: {despacho.insumos_despachados.length} insumos
+                      </span>
+                      <span className="font-medium text-purple-700">
+                        Cantidad total: {despacho.insumos_despachados.reduce((total, insumo) => total + (parseInt(insumo.cantidad_despachada) || 0), 0)} unidades
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
           </div>
 
           {/* Información del Hospital y Sede */}
@@ -211,6 +289,7 @@ const ModalDetallesPaciente = ({ isOpen, despacho, onClose, formatDate }) => {
               )}
             </div>
           </div>
+
 
           {/* Información del Usuario */}
           <div className="bg-gray-50 rounded-xl p-6">

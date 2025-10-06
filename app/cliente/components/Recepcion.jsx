@@ -348,41 +348,65 @@ const Recepcion = () => {
   };
   
   useEffect(() => {
-    handleRecepciones();
+    if(user){
+      handleRecepciones();
+    }
   }, [tipoVista]);
 
   const handleRecepciones = async (page = 1) => {
+    setLoading(true);
     const { token, sede_id } = user;
     let response;
     
-    if (tipoVista === 'recepcion') {
-      response = await getMovimientosRecepcion(token, sede_id, page);
-    } else if (tipoVista === 'despacho') {
-      response = await getMovimientos(token, sede_id);
-    } else if (tipoVista === 'pacientes') {
-      response = await getMovimientosPacientes(token, sede_id);
-    }
-    if (!response.status) {
-      if(response.autenticacion==1||response.autenticacion==2){
-        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
-        logout();
-        router.replace('/');
+    try {
+      if (tipoVista === 'recepcion') {
+        response = await getMovimientosRecepcion(token, sede_id, page);
+      } else if (tipoVista === 'despacho') {
+        response = await getMovimientos(token, sede_id);
+      } else if (tipoVista === 'pacientes') {
+        response = await getMovimientosPacientes(token, sede_id);
+      }
+      
+      if (!response.status) {
+        if(response.autenticacion==1||response.autenticacion==2){
+          showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+          logout();
+          router.replace('/');
+          return;
+        }
+        showMessage('Error', response.mensaje||'Error en la solicitud', 'error', 4000);
         return;
       }
-      showMessage('Error', response.mensaje||'Error en la solicitud', 'error', 4000);
-      return;
-    }
-    if(response.data){
-      // Para recepciones (con paginación)
-      if(response.data.data){
-        setRecepciones(response.data.data);
-        setPaginacion({
-          currentPage: response.data.current_page || page,
-          totalPages: response.data.last_page || 1,
-          totalItems: response.data.total || 0,
-          itemsPerPage: response.data.per_page || 10
-        });
+      
+      if(response.data){
+        // Para recepciones (con paginación)
+        if(response.data.data){
+          setRecepciones(response.data.data);
+          setPaginacion({
+            currentPage: response.data.current_page || page,
+            totalPages: response.data.last_page || 1,
+            totalItems: response.data.total || 0,
+            itemsPerPage: response.data.per_page || 10
+          });
+        } else {
+          // Para despachos y pacientes (sin paginación)
+          if (tipoVista === 'pacientes') {
+            console.log('Datos de pacientes recibidos:', response.data);
+          }
+          setRecepciones(response.data);
+          setPaginacion({
+            currentPage: 1,
+            totalPages: 1,
+            totalItems: response.data.length || 0,
+            itemsPerPage: response.data.length || 0
+          });
+        }
       }
+    } catch (error) {
+      console.log('Error en handleRecepciones:', error);
+      showMessage('Error', 'Error de conexión', 'error', 4000);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -517,39 +541,72 @@ const Recepcion = () => {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-white/10">
+        <table className=" w-full">
           <thead className="bg-white/5">
-            <tr>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                {tipoVista === 'recepcion' ? 'ID Recepción' : 
-                 tipoVista === 'despacho' ? 'ID Despacho' : 
-                 'ID Despacho'}
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                Fecha/Hora
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                {tipoVista === 'recepcion' ? 'Origen' : 
-                 tipoVista === 'despacho' ? 'Destino' : 
-                 'Paciente'}
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                Estado
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                Items
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                Total
-              </th>
-              <th scope="col" className="relative px-6 py-3">
-                <span className="sr-only">Acciones</span>
-              </th>
+            <tr className="bg-white/15">
+              {!loading&&recepciones.length !== 0 && (
+                <>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    {tipoVista === 'recepcion' ? 'ID Recepción' : 
+                    tipoVista === 'despacho' ? 'ID Despacho' : 
+                    'ID Despacho'}
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    Fecha/Hora
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    {tipoVista === 'recepcion' ? 'Origen' : 
+                    tipoVista === 'despacho' ? 'Sede Destino' : 
+                    'Paciente'}
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    Estado
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    Items
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    Total
+                  </th>
+                  <th scope="col" className="relative px-6 py-3">
+                    <span className="sr-only">Acciones</span>
+                  </th>
+                </>
+              )}
             </tr>
           </thead>
-          <tbody className="bg-white/5 divide-y divide-white/10">
-            {recepciones.map((recepcion, index) => (
-              <tr key={recepcion.id || index} className="hover:bg-white/10">
+          <tbody className="bg-white/5 ">
+            {loading ? (
+              <tr className="w-full">
+                <td colSpan="6" className="px-6 py-12 text-center w-full">
+                  <div className="flex flex-col items-center justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mb-4"></div>
+                    <p className="text-white/70">Cargando {
+                      tipoVista === 'recepcion' ? 'recepciones' : 
+                      tipoVista === 'despacho' ? 'despachos' : 
+                      'despachos a pacientes'
+                    }...</p>
+                  </div>
+                </td>
+              </tr>
+            ) : recepciones.length === 0 ? (
+              <tr className="w-full">
+                <td colSpan="6" className="px-6 py-12 text-center">
+                  <p className="text-white/50">No se encontraron {
+                    tipoVista === 'recepcion' ? 'recepciones' : 
+                    tipoVista === 'despacho' ? 'despachos' : 
+                    'despachos a pacientes'
+                  }</p>
+                </td>
+              </tr>
+            ) : (
+              recepciones.map((recepcion, index) => {
+                // Debug para pacientes
+                if (tipoVista === 'pacientes' && index === 0) {
+                  console.log('Estructura de recepcion para pacientes:', recepcion);
+                }
+                return (
+              <tr key={recepcion.id || index} className="hover:bg-white/5">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                   {recepcion.codigo_grupo || recepcion.id || `MOV-${index + 1}`}
                 </td>
@@ -560,14 +617,14 @@ const Recepcion = () => {
                   {tipoVista === 'recepcion' 
                     ? (recepcion.origen_hospital?.nombre || recepcion.origen || 'N/A')
                     : tipoVista === 'despacho'
-                    ? (recepcion.destino_hospital?.nombre || recepcion.destino || 'N/A')
+                    ? (recepcion.destino_sede?.nombre || recepcion.destino || 'N/A')
                     : (
                         <div>
                           <div className="font-medium text-white">
-                            {recepcion.paciente_nombres} {recepcion.paciente_apellidos}
+                            {recepcion.paciente_nombres || 'Sin nombre'} {recepcion.paciente_apellidos || ''}
                           </div>
                           <div className="text-xs text-gray-400">
-                            Cédula: {recepcion.paciente_cedula}
+                            Cédula: {recepcion.paciente_cedula || 'No especificada'}
                           </div>
                         </div>
                       )
@@ -577,10 +634,13 @@ const Recepcion = () => {
                   {getStatusBadge(recepcion.estado)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
-                  {recepcion.lotes_grupos?.length || recepcion.items || 0}
+                  {tipoVista === 'pacientes' 
+                    ? (recepcion.insumos_despachados?.length || 0)
+                    : (recepcion.lotes_grupos?.length || recepcion.items || 0)
+                  }
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
-                  {recepcion.cantidad_salida_total || recepcion.total || 0}
+                  {recepcion.cantidad_salida_total || recepcion.total ||recepcion.cantidad_total_items || 0}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   {/* <button 
@@ -601,7 +661,7 @@ const Recepcion = () => {
                   >
                     Detalles
                   </button>
-                  {recepcion.estado === 'entregado'||(user.sede.tipo_almacen!=='almacenPrin'&&recepcion.estado==='despachado') && (
+                  {recepcion.estado === 'entregado'||(user?.sede?.tipo_almacen!=='almacenPrin'&&recepcion.estado==='despachado'&&!recepcion.paciente_nombres) && (
                     <button 
                       onClick={() => abrirModalRegistrar(recepcion)}
                       className="text-green-400 hover:text-green-300"
@@ -611,7 +671,9 @@ const Recepcion = () => {
                   )}
                 </td>
               </tr>
-            ))}
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>

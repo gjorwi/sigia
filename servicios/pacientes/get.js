@@ -3,10 +3,7 @@ import config from '@/config';
 
 export const getMovimientosPacientes = async (token, sede_id) => {
     try {
-        const response = await axios.get(`${config.URL_API}despachos-pacientes`, {
-            // params: {
-            //     sede_id: sede_id
-            // },
+        const response = await axios.get(`${config.URL_API}despachos-pacientes/sede/${sede_id}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`

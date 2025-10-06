@@ -19,9 +19,11 @@ import Inventario from './components/Inventario';
 import Registro from './components/Registro';
 import Reportes from './components/Reportes';
 import { useAuth } from '@/contexts/AuthContext';  
+import { getStats } from '@/servicios/estadisticas/get';
+import Modal from '@/components/Modal';
 
 export default function ClientePage() {
-  const {user} = useAuth();
+  const {user,logout} = useAuth();
   const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
   const [menuActivo, setMenuActivo] = useState('recepcion');
@@ -29,6 +31,14 @@ export default function ClientePage() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const userMenuRef = useRef(null);
   const notificationsRef = useRef(null);
+  const [estadisticas, setEstadisticas] = useState([]);
+  const [modal, setModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info', // 'info', 'error', 'success', 'warning'
+    time: null
+  });
 
   // Cerrar menús al hacer clic fuera
   useEffect(() => {
@@ -47,29 +57,53 @@ export default function ClientePage() {
     };
   }, []);
 
-  const handleLogout = () => {
-    // Aquí iría la lógica de cierre de sesión
-    router.push('/');
-  };
-
   useEffect(() => {
     setIsLoaded(true);
+    if(user){
+      handleStats();
+    }
   }, []);
+
+  const showMessage = (title, message, type = 'info', time = null) => {
+    setModal({isOpen: true, title, message, type, time});
+  };
+
+  const closeModal = () => {
+    setModal(prev => ({ ...prev, isOpen: false }));
+  };
+
+  const handleStats = async () => {
+    const {token,sede_id} = user;
+    const result = await getStats(token,sede_id);
+    console.log(JSON.stringify(result,null,2));
+    if(!result.status){
+      if(result.autenticacion === 1 || result.autenticacion === 2){
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        return;
+      }
+      showMessage('Error', result.mensaje||"Error en la solicitud", 'error', 4000);
+      return;
+    }
+    console.log(JSON.stringify(result.data,null,2));
+    setEstadisticas(result.data);
+  };
 
   const stats = [
     { 
       id: 1, 
       name: 'Total de insumos', 
-      value: '3560', 
+      value: estadisticas?.resumen_insumos?.total||0, 
       icon: Package, 
       color: 'bg-indigo-500',
-      trend: '12% más que el mes pasado',
+      trend: 'insumos',
       trendType: 'up'
     },
     { 
       id: 2, 
       name: 'Total despachos', 
-      value: '1', 
+      value: estadisticas?.resumen_movimientos?.total||0, 
       icon: Truck, 
       color: 'bg-blue-500',
       trend: 'Despachos',
@@ -78,7 +112,7 @@ export default function ClientePage() {
     { 
       id: 3, 
       name: 'Insumos en falla', 
-      value: '3', 
+      value: estadisticas?.resumen_faltantes?.total_problemas||0, 
       icon: AlertCircle, 
       color: 'bg-orange-500',
       trend: 'Insumos en falla',
@@ -87,7 +121,7 @@ export default function ClientePage() {
     { 
       id: 4, 
       name: 'Pacientes', 
-      value: '2', 
+      value: estadisticas?.resumen_pacientes?.total_despachos||0, 
       icon: AlertCircle, 
       color: 'bg-yellow-500',
       trend: 'Despachados',
@@ -97,6 +131,14 @@ export default function ClientePage() {
 
   return (
     <>
+      <Modal 
+        isOpen={modal.isOpen} 
+        onClose={closeModal} 
+        title={modal.title} 
+        message={modal.message} 
+        type={modal.type} 
+        time={modal.time}
+      />
       <div className="mb-4">
         {/* <h2 className="text-2xl font-bold text-white">Panel de Control</h2> */}
         <div className="flex md:items-center md:flex-row flex-col pl-6 py-2 mb-4 gap-2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg">
