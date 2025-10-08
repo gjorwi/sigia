@@ -9,9 +9,13 @@ import { getHospitales } from '@/servicios/hospitales/get';
 import { getUsers } from '@/servicios/users/get';
 import { getInsumos } from '@/servicios/insumos/get';
 import { getSedes } from '@/servicios/sedes/get';
+import { getSedeByHospitalId } from '@/servicios/sedes/get';
+import { getMovimientos } from '@/servicios/despachos/get';
 import MapAlmacenes from '@/components/mapAlmacenes';
 import LoadingSpinner from '@/components/LoadingSpinner';
-
+import SelectHospiModal from '@/components/SelectHospiModal';
+import SelectSedeModal from '@/components/SelectSedeModal';
+import ModalDetallesRecepcion from '@/app/cliente/components/ModalDetallesRecepcion';
 // Importar íconos dinámicamente para evitar problemas de SSR
 const Users = dynamic(() => import('lucide-react').then(mod => mod.Users), { ssr: false });
 const Hospital = dynamic(() => import('lucide-react').then(mod => mod.Hospital), { ssr: false });
@@ -41,6 +45,19 @@ const DashboardPage = () => {
   const [sedes, setSedes] = useState([]);
   const [modal, setModal] = useState({isOpen: false, title: '', message: '', type: 'info', time: null});
   
+  // Estados para filtros de despachos
+  const [selectedHospitalDespacho, setSelectedHospitalDespacho] = useState(null);
+  const [selectedSedeDespacho, setSelectedSedeDespacho] = useState(null);
+  const [showHospitalModalDespacho, setShowHospitalModalDespacho] = useState(false);
+  const [showSedeModalDespacho, setShowSedeModalDespacho] = useState(false);
+  const [sedesDespacho, setSedesDespacho] = useState([]);
+  const [movimientosDespacho, setMovimientosDespacho] = useState([]);
+  const [loadingMovimientos, setLoadingMovimientos] = useState(false);
+  
+  // Estados para el modal de detalles
+  const [showModalDetalles, setShowModalDetalles] = useState(false);
+  const [selectedMovimiento, setSelectedMovimiento] = useState(null);
+  
   useEffect(() => {
     if (user) {
       handleGetResumen(user.token);
@@ -68,14 +85,16 @@ const DashboardPage = () => {
         return
       }
       if (r?.status && r?.status !== 500 && r?.data) {
+        console.log('Hospitales cargados:', r.data.data?.length || 0, 'hospitales')
+        console.log('Lista de hospitales:', r.data.data)
         setHospitales(r.data.data || [])
       } else {
+        console.log('Error en respuesta de hospitales:', r)
         msgs.push(r?.mensaje || 'Error al cargar hospitales')
       }
     } else {
       msgs.push('Error de red al cargar hospitales')
     }
-
     // Usuarios
     if (uRes.status === 'fulfilled') {
       const r = uRes.value
@@ -124,6 +143,123 @@ const DashboardPage = () => {
 
   const showMessage = (title, message, type = 'info', time = null) => {
     setModal({isOpen: true, title, message, type, time});
+  };
+
+  // Funciones para manejo de despachos
+  const handleSelectHospitalDespacho = (hospital) => {
+    setSelectedHospitalDespacho(hospital);
+    setSelectedSedeDespacho(null); // Reset sede cuando cambia hospital
+    handleSedeDespacho(hospital.id);
+    setShowHospitalModalDespacho(false);
+  };
+
+  const handleSelectSedeDespacho = (sede) => {
+    setSelectedSedeDespacho(sede);
+    setShowSedeModalDespacho(false);
+    // Cargar movimientos de la sede seleccionada
+    handleLoadMovimientos(sede.id);
+  };
+
+  const handleSedeDespacho = async (hospitalId) => {
+    if (!user?.token) return;
+    try {
+      const sede = await getSedeByHospitalId(hospitalId, user.token);
+      if (!sede.status) {
+        if (sede.autenticacion === 1 || sede.autenticacion === 2) {
+          showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+          logout();
+          router.replace('/');
+          return;
+        }
+        showMessage('Error', sede.mensaje, 'error', 4000);
+        return;
+      }
+      if (sede.data && sede.data.data) {
+        setSedesDespacho(sede.data.data);
+        
+      }
+    } catch (error) {
+      console.error('Error al cargar sedes:', error);
+      showMessage('Error', 'Error al cargar sedes', 'error', 4000);
+    }
+  };
+
+  const openHospitalModalDespacho = () => {
+    setShowHospitalModalDespacho(true);
+  };
+
+  const openSedeModalDespacho = () => {
+    setShowSedeModalDespacho(true);
+  };
+
+  const handleLoadMovimientos = async (sedeId) => {
+    if (!user?.token || !sedeId) return;
+    
+    setLoadingMovimientos(true);
+    try {
+      console.log('Cargando movimientos para sede:', sedeId);
+      const response = await getMovimientos(user.token, sedeId);
+      
+      if (!response.status) {
+        if (response.autenticacion === 1 || response.autenticacion === 2) {
+          showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+          logout();
+          router.replace('/');
+          return;
+        }
+        showMessage('Error', response.mensaje || 'Error al cargar movimientos', 'error', 4000);
+        setMovimientosDespacho([]);
+        return;
+      }
+      
+      console.log('Movimientos cargados:', response.data?.length || 0);
+      console.log('Lista de movimientos:', response.data);
+      // Asegurar que siempre sea un array
+      const movimientos = Array.isArray(response.data?.data) ? response.data.data : 
+                         Array.isArray(response.data) ? response.data : [];
+      setMovimientosDespacho(movimientos);
+      
+    } catch (error) {
+      console.error('Error al cargar movimientos:', error);
+      showMessage('Error', 'Error al cargar movimientos', 'error', 4000);
+      setMovimientosDespacho([]);
+    } finally {
+      setLoadingMovimientos(false);
+    }
+  };
+
+  const clearFiltersDespacho = () => {
+    setSelectedHospitalDespacho(null);
+    setSelectedSedeDespacho(null);
+    setSedesDespacho([]);
+    setMovimientosDespacho([]);
+  };
+
+  // Funciones para el modal de detalles
+  const handleShowMovimientoDetalles = (movimiento) => {
+    setSelectedMovimiento(movimiento);
+    setShowModalDetalles(true);
+  };
+
+  const handleCloseModalDetalles = () => {
+    setShowModalDetalles(false);
+    setSelectedMovimiento(null);
+  };
+
+  // Función para formatear fechas
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      return new Date(dateString).toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (error) {
+      return 'Fecha inválida';
+    }
   };
 
   const stats = [
@@ -470,7 +606,73 @@ const DashboardPage = () => {
                       <div>
                         <h3 className="text-lg font-medium text-gray-900 mb-2">Gestión de Despachos</h3>
                         <p className="text-gray-500 mb-6">Seguimiento y control de despachos realizados</p>
-                        
+                        <div className="bg-white p-4 rounded-lg shadow border border-gray-200 mb-6">
+                          <h4 className="text-sm font-medium text-gray-900 mb-4">Filtros de Búsqueda</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {/* Selector de Hospital */}
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Hospital
+                              </label>
+                              <button
+                                type="button"
+                                onClick={openHospitalModalDespacho}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-left bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              >
+                                <span className={selectedHospitalDespacho ? "text-gray-900" : "text-gray-500"}>
+                                  {selectedHospitalDespacho ? selectedHospitalDespacho.nombre : "Seleccionar hospital..."}
+                                </span>
+                              </button>
+                            </div>
+                            
+                            {/* Selector de Sede */}
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Sede
+                              </label>
+                              <button
+                                type="button"
+                                onClick={openSedeModalDespacho}
+                                disabled={!selectedHospitalDespacho}
+                                className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-left bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                                  !selectedHospitalDespacho ? 'opacity-50 cursor-not-allowed' : ''
+                                }`}
+                              >
+                                <span className={selectedSedeDespacho ? "text-gray-900" : "text-gray-500"}>
+                                  {selectedSedeDespacho ? selectedSedeDespacho.nombre : 
+                                  selectedHospitalDespacho ? "Seleccionar sede..." : "Primero seleccione un hospital"}
+                                </span>
+                              </button>
+                            </div>
+                            
+                            {/* Botón para limpiar filtros */}
+                            <div className="flex items-end">
+                              <button
+                                type="button"
+                                onClick={clearFiltersDespacho}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              >
+                                Limpiar Filtros
+                              </button>
+                            </div>
+                          </div>
+                          
+                          {/* Indicadores de filtros activos */}
+                          {(selectedHospitalDespacho || selectedSedeDespacho) && (
+                            <div className="mt-4 flex flex-wrap gap-2">
+                              {selectedHospitalDespacho && (
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                  Hospital: {selectedHospitalDespacho.nombre}
+                                </span>
+                              )}
+                              {selectedSedeDespacho && (
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                  Sede: {selectedSedeDespacho.nombre}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>      
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 text-gray-700">
                           {/* Tarjeta de Resumen */}
                           <div className="bg-white p-4 rounded-lg shadow border border-blue-100">
@@ -480,7 +682,7 @@ const DashboardPage = () => {
                               </div>
                               <div>
                                 <p className="text-sm text-gray-500">Total de Despachos</p>
-                                <p className="text-2xl font-semibold">156</p>
+                                <p className="text-2xl font-semibold">{Array.isArray(movimientosDespacho) ? movimientosDespacho.length : 0}</p>
                               </div>
                             </div>
                           </div>
@@ -493,7 +695,7 @@ const DashboardPage = () => {
                               </div>
                               <div>
                                 <p className="text-sm text-gray-500">Pendientes</p>
-                                <p className="text-2xl font-semibold">8</p>
+                                <p className="text-2xl font-semibold">{Array.isArray(movimientosDespacho) ? movimientosDespacho.filter(m => m.estado === 'pendiente').length : 0}</p>
                               </div>
                             </div>
                           </div>
@@ -508,7 +710,7 @@ const DashboardPage = () => {
                               </div>
                               <div>
                                 <p className="text-sm text-gray-500">Completados (últimos 30 días)</p>
-                                <p className="text-2xl font-semibold">42</p>
+                                <p className="text-2xl font-semibold">{Array.isArray(movimientosDespacho) ? movimientosDespacho.filter(m => m.estado === 'recibido').length : 0}</p>
                               </div>
                             </div>
                           </div>
@@ -517,7 +719,9 @@ const DashboardPage = () => {
                         {/* Tabla de Despachos Recientes */}
                         <div className="bg-white rounded-lg shadow overflow-hidden">
                           <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-                            <h4 className="text-sm font-medium text-gray-500">Despachos Recientes</h4>
+                            <h4 className="text-sm font-medium text-gray-500">
+                              {selectedSedeDespacho ? `Movimientos de ${selectedSedeDespacho.nombre}` : 'Despachos Recientes'}
+                            </h4>
                             <button
                               onClick={() => router.push('/administrador/despachos/nuevo')}
                               className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -538,52 +742,42 @@ const DashboardPage = () => {
                                 </tr>
                               </thead>
                               <tbody className="bg-white divide-y divide-gray-200">
-                                {[
-                                  { 
-                                    id: 'DESP-2023-0456', 
-                                    hospital: 'Hospital General', 
-                                    fecha: '07/07/2023',
-                                    insumos: 12,
-                                    estado: 'Completado'
-                                  },
-                                  { 
-                                    id: 'DESP-2023-0455', 
-                                    hospital: 'Hospital del Niño', 
-                                    fecha: '06/07/2023',
-                                    insumos: 8,
-                                    estado: 'En tránsito'
-                                  },
-                                  { 
-                                    id: 'DESP-2023-0454', 
-                                    hospital: 'Hospital de Emergencias', 
-                                    fecha: '05/07/2023',
-                                    insumos: 15,
-                                    estado: 'Pendiente'
-                                  },
-                                  { 
-                                    id: 'DESP-2023-0453', 
-                                    hospital: 'Hospital Central', 
-                                    fecha: '04/07/2023',
-                                    insumos: 10,
-                                    estado: 'Completado'
-                                  },
-                                ].map((item, index) => (
-                                  <tr key={index} className="hover:bg-gray-50 cursor-pointer" onClick={() => router.push(`/despachos/${item.id}`)}>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{item.id}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.hospital}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.fecha}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.insumos} insumos</td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                        item.estado === 'Completado' ? 'bg-green-100 text-green-800' :
-                                        item.estado === 'En tránsito' ? 'bg-blue-100 text-blue-800' :
-                                        'bg-yellow-100 text-yellow-800'
-                                      }`}>
-                                        {item.estado}
-                                      </span>
+                                {loadingMovimientos ? (
+                                  <tr>
+                                    <td colSpan="5" className="px-6 py-4 text-center">
+                                      <div className="flex items-center justify-center">
+                                        <LoadingSpinner />
+                                        <span className="ml-2 text-gray-500">Cargando movimientos...</span>
+                                      </div>
                                     </td>
                                   </tr>
-                                ))}
+                                ) : movimientosDespacho.length > 0 ? (
+                                  movimientosDespacho.map((item, index) => (
+                                    <tr key={index} className="hover:bg-gray-50 cursor-pointer" onClick={() => handleShowMovimientoDetalles(item)}>
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{item.id}</td>
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{selectedHospitalDespacho?.nombre || 'N/A'}</td>
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(item.fecha_despacho)}</td>
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.lotes_grupos?.length || 0} insumos</td>
+                                      <td className="px-6 py-4 whitespace-nowrap">
+                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                          item.estado === 'completado' ? 'bg-green-100 text-green-800' :
+                                          item.estado === 'en_transito' ? 'bg-blue-100 text-blue-800' :
+                                          'bg-yellow-100 text-yellow-800'
+                                        }`}>
+                                          {item.estado === 'completado' ? 'Completado' : 
+                                           item.estado === 'en_transito' ? 'En tránsito' : 'Pendiente'}
+                                        </span>
+                                      </td>
+                                    </tr>
+                                  ))
+                                ) : (
+                                  <tr>
+                                    <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
+                                      {selectedSedeDespacho ? 'No hay movimientos para esta sede' : 'Seleccione una sede para ver los movimientos'}
+                                    </td>
+                                  </tr>
+                                )}
+                                
                               </tbody>
                             </table>
                           </div>
@@ -631,7 +825,7 @@ const DashboardPage = () => {
                           </div>
                         </div>
                         
-                        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
                             <h4 className="text-sm font-medium text-gray-500 mb-4">Distribución por Hospital (Mes Actual)</h4>
                             <div className="space-y-3">
@@ -683,7 +877,7 @@ const DashboardPage = () => {
                               </div>
                             </div>
                           </div>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   )}
@@ -693,6 +887,26 @@ const DashboardPage = () => {
             </div>
           </div>
         </main>
+        {/* Modales para selección de hospital y sede en despachos */}
+        <SelectHospiModal
+          isOpen={showHospitalModalDespacho}
+          onClose={() => setShowHospitalModalDespacho(false)}
+          onSelect={handleSelectHospitalDespacho}
+          hospitals={hospitales}
+          tipo="despachos"
+        />
+        <SelectSedeModal
+          isOpen={showSedeModalDespacho}
+          onClose={() => setShowSedeModalDespacho(false)}
+          onSelect={handleSelectSedeDespacho}
+          sedes={sedesDespacho}
+        />
+        <ModalDetallesRecepcion
+          isOpen={showModalDetalles}
+          recepcion={selectedMovimiento}
+          onClose={handleCloseModalDetalles}
+          formatDate={formatDate}
+        />
       </div>
     </>  
   );

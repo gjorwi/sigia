@@ -171,7 +171,7 @@ export default function LoginPageVariant() {
           </button>
         </form>
         <div className="mt-6 text-xs text-white/50 text-center">
-          Version 1.0.4
+          Version 1.0.5
         </div>
         <div className="mt-1 text-xs text-white/50 text-center">
           © {new Date().getFullYear()} SIGIA. Todos los derechos reservados.

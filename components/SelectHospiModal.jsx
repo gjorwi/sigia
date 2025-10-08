@@ -10,6 +10,9 @@ export default function SelectHospiModal({ isOpen, onClose, onSelect, hospitals,
     if (hospitals&&tipo) {
       if(tipo==='administrador'){
         hospitalsData = hospitals?.filter(hospital => hospital.tipo === 'almacen');
+      }else if(tipo==='despachos'){
+        // Para despachos, mostrar todos los hospitales
+        hospitalsData = hospitals || [];
       }else{
         hospitalsData = hospitals?.filter(hospital => hospital.tipo.includes('hospital'));
       }

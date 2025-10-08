@@ -28,6 +28,11 @@ const MovimientoInsumoCliente = ({ onBack }) => {
     nombres: '',
     apellidos: '',
     cedula: '',
+    telefono: '',
+    genero: '',
+    medico_tratante: '',
+    diagnostico: '',
+    indicaciones_medicas: '',
   });
   const [modal, setModal] = useState({
     isOpen: false,
@@ -296,44 +301,46 @@ const MovimientoInsumoCliente = ({ onBack }) => {
   return (
     <div className="space-y-6">
       {/* Selector de Tipo de Despacho */}
-      <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-white/10">
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <Package className="h-5 w-5" />
-          Tipo de Despacho
-        </h3>
-        
-        <div className="grid grid-cols-2 gap-4">
-          <button
-            onClick={() => handleTipoDespachoChange('sede')}
-            className={`p-4 rounded-lg border-2 transition-all ${
-              tipoDespacho === 'sede'
-                ? 'border-purple-400 bg-purple-500/20 text-white'
-                : 'border-white/20 bg-white/5 text-gray-300 hover:bg-white/10'
-            }`}
-          >
-            <div className="text-center">
-              <MapPin className="h-8 w-8 mx-auto mb-2" />
-              <div className="font-medium">Despacho a Sede</div>
-              <div className="text-sm opacity-80">Transferir a otra sede del hospital</div>
-            </div>
-          </button>
+      {user?.sede?.tipo_almacen!=='almacenPrin'&&
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-white/10">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <Package className="h-5 w-5" />
+            Tipo de Despacho
+          </h3>
           
-          <button
-            onClick={() => handleTipoDespachoChange('paciente')}
-            className={`p-4 rounded-lg border-2 transition-all ${
-              tipoDespacho === 'paciente'
-                ? 'border-green-400 bg-green-500/20 text-white'
-                : 'border-white/20 bg-white/5 text-gray-300 hover:bg-white/10'
-            }`}
-          >
-            <div className="text-center">
-              <Package className="h-8 w-8 mx-auto mb-2" />
-              <div className="font-medium">Despacho a Paciente</div>
-              <div className="text-sm opacity-80">Salida definitiva del almacén</div>
-            </div>
-          </button>
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              onClick={() => handleTipoDespachoChange('sede')}
+              className={`p-4 rounded-lg border-2 transition-all ${
+                tipoDespacho === 'sede'
+                  ? 'border-purple-400 bg-purple-500/20 text-white'
+                  : 'border-white/20 bg-white/5 text-gray-300 hover:bg-white/10'
+              }`}
+            >
+              <div className="text-center">
+                <MapPin className="h-8 w-8 mx-auto mb-2" />
+                <div className="font-medium">Despacho a Sede</div>
+                <div className="text-sm opacity-80">Transferir a otra sede del hospital</div>
+              </div>
+            </button>
+            
+            <button
+              onClick={() => handleTipoDespachoChange('paciente')}
+              className={`p-4 rounded-lg border-2 transition-all ${
+                tipoDespacho === 'paciente'
+                  ? 'border-green-400 bg-green-500/20 text-white'
+                  : 'border-white/20 bg-white/5 text-gray-300 hover:bg-white/10'
+              }`}
+            >
+              <div className="text-center">
+                <Package className="h-8 w-8 mx-auto mb-2" />
+                <div className="font-medium">Despacho a Paciente</div>
+                <div className="text-sm opacity-80">Salida definitiva del almacén</div>
+              </div>
+            </button>
+          </div>
         </div>
-      </div>
+      }
 
       {/* Selección de Sede Destino - Solo si es despacho a sede */}
       {tipoDespacho === 'sede' && (
@@ -422,7 +429,7 @@ const MovimientoInsumoCliente = ({ onBack }) => {
               />
             </div>
             
-            {/* <div>
+            <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Teléfono
               </label>
@@ -433,7 +440,7 @@ const MovimientoInsumoCliente = ({ onBack }) => {
                 placeholder="Número de teléfono"
                 className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40"
               />
-            </div> */}
+            </div>
             
             {/* <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -446,7 +453,7 @@ const MovimientoInsumoCliente = ({ onBack }) => {
                 placeholder="Edad del paciente"
                 className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40"
               />
-            </div>
+            </div> */}
             
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -463,7 +470,7 @@ const MovimientoInsumoCliente = ({ onBack }) => {
                 <option value="otro">Otro</option>
               </select>
             </div>
-            
+{/*             
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Dirección
@@ -475,8 +482,19 @@ const MovimientoInsumoCliente = ({ onBack }) => {
                 placeholder="Dirección del paciente"
                 className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40"
               />
-            </div>
+            </div> */}
             
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Medico Tratante
+              </label>
+              <input
+                value={datosPaciente.medico_tratante}
+                onChange={(e) => handleDatosPacienteChange('medico_tratante', e.target.value)}
+                placeholder="Medico Tratante"
+                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40"
+              />
+            </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Diagnóstico
@@ -488,7 +506,19 @@ const MovimientoInsumoCliente = ({ onBack }) => {
                 rows="3"
                 className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40"
               />
-            </div> */}
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Indicaciones Médicas
+              </label>
+              <textarea
+                value={datosPaciente.indicaciones_medicas}
+                onChange={(e) => handleDatosPacienteChange('indicaciones_medicas', e.target.value)}
+                placeholder="Indicaciones Médicas"
+                rows="3"
+                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40"
+              />
+            </div>
           </div>
         </div>
       )}

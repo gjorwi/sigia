@@ -72,7 +72,7 @@ export default function NuevoUsuario() {
     };
     
     fetchHospitals();
-  }, [user.token]);
+  }, [user?.token]);
 
   const handleFormDataChange = (newData) => {
     setFormData(newData);
