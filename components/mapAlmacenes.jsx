@@ -89,12 +89,12 @@ export default function MapAlmacenes({almacenes}) {
   // Genera un icono de almacén con colores dinámicos
   const makeWarehouseIcon = (strokeColor = '#1f2937', bgColor = 'white', borderColor = 'gray') => {
     const svg = renderToStaticMarkup(
-      <Warehouse size={24} color={strokeColor} strokeWidth={2.2} />
+      <Warehouse size={18} color={strokeColor} strokeWidth={2.2} />
     )
     return L.divIcon({
-      html: `<div style="display:flex;align-items:center;justify-content:center;width:35px;height:35px;border:1px solid ${borderColor};background:${bgColor};border-radius:100px;box-shadow:0 1px 3px rgba(0,0,0,0.25)">${svg}</div>`,
+      html: `<div style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid ${borderColor};background:${bgColor};border-radius:100px;box-shadow:0 1px 3px rgba(0,0,0,0.25)">${svg}</div>`,
       className: 'lucide-warehouse-icon',
-      iconSize: [32, 32],
+      iconSize: [20, 20],
       iconAnchor: [16, 28],
       popupAnchor: [0, -28],
     })
@@ -163,7 +163,7 @@ export default function MapAlmacenes({almacenes}) {
 
   return (
     <div ref={wrapperRef} style={{ height: '60vh', width: '100%', position: 'relative' }}>
-      <MapContainer center={start} zoom={DEFAULT_ZOOM} maxZoom={11} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
+      <MapContainer center={start} zoom={DEFAULT_ZOOM} maxZoom={14} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -171,14 +171,14 @@ export default function MapAlmacenes({almacenes}) {
         <InvalidateSizeOnMount />
         {/* Origen */}
         {filteredAlmacenes && filteredAlmacenes.map((almacen) => (
-          <Marker key={almacen?.id || `${almacen?._lat},${almacen?._lng}`} position={[almacen._lat, almacen._lng]} icon={makeWarehouseIcon('#2563eb', '#ffffff','gray')}>
+          <Marker key={almacen?.id || `${almacen?._lat},${almacen?._lng}`} position={[almacen._lat, almacen._lng]} icon={makeWarehouseIcon((almacen?.dependencia&&almacen?.dependencia.toLowerCase() === 'ivss' ? '#2563eb' : '#D93850'), '#ffffff','gray')}>
             <Popup>
               <div className='text-xs'>
                 <h2 className='text-lg font-bold'>{almacen?.nombre}</h2>
-                Estado del despacho: <span className='text-green-600'>Entregado</span>
-                <p>Fecha de envío: 2023-06-01</p>
-                <p>Recibido: 2023-06-02</p>
-                Cargado: <span className='text-green-600'>Si</span>
+                Correo: <span className='text-green-600'>{almacen?.email}</span>
+                <p>Dependencia: {almacen?.dependencia}</p>
+                <p>Tipo: {almacen?.tipo}</p>
+                Director: <span className='text-green-600'>{almacen?.nombre_contacto}</span>
               </div>
             </Popup>
           </Marker>

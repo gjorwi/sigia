@@ -85,9 +85,9 @@ const DashboardPage = () => {
         return
       }
       if (r?.status && r?.status !== 500 && r?.data) {
-        console.log('Hospitales cargados:', r.data.data?.length || 0, 'hospitales')
-        console.log('Lista de hospitales:', r.data.data)
-        setHospitales(r.data.data || [])
+        console.log('Hospitales cargados:', r.data?.length || 0, 'hospitales')
+        console.log('Lista de hospitales:', r.data)
+        setHospitales(r.data || [])
       } else {
         console.log('Error en respuesta de hospitales:', r)
         msgs.push(r?.mensaje || 'Error al cargar hospitales')
@@ -111,7 +111,7 @@ const DashboardPage = () => {
     if (iRes.status === 'fulfilled') {
       const r = iRes.value
       if (r?.status && r?.status !== 500 && r?.data) {
-        setInsumos(r.data.data || [])
+        setInsumos(r.data || [])
       } else {
         msgs.push(r?.mensaje || 'Error al cargar insumos')
       }
@@ -266,10 +266,10 @@ const DashboardPage = () => {
     { 
       name: 'Total Insumos', 
       value: insumos.length, 
-      change: '+12% desde el mes pasado', 
+      change: 'Disponibles', 
       changeType: 'positive',
       color: '#10B981', // Verde
-      icon: <Warehouse className="h-6 w-6" />
+      icon: <Package className="h-6 w-6" />
     },
     { 
       name: 'Sedes Registradas', 

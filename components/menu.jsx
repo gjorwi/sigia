@@ -105,7 +105,7 @@ export default function Menu() {
     { name: 'Movimientos', icon: Package, href: '/administrador/movimientos', current: false },
     { name: 'Inventario', icon: Warehouse, href: '/administrador/inventario', current: false },
     // { name: 'Mapa', icon: MapPin, href: '/administrador/mapa', current: false },
-    { name: 'Solicitudes', icon: FileText, href: '/administrador/solicitudes', current: false },
+    // { name: 'Solicitudes', icon: FileText, href: '/administrador/solicitudes', current: false },
     { name: 'Logística', icon: Truck, href: '/administrador/logistica', current: false },
     // { name: 'Reportes', icon: FileText, href: '/administrador/reportes', current: false },
     { name: 'Sedes', icon: House, href: '/administrador/sedes', current: false },
