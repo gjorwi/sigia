@@ -1,16 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Truck, MapPin, Clock, CheckCircle, AlertCircle, Search, Package, Eye } from 'lucide-react';
-import { getEnTransito } from '@/servicios/despachos/get';
-import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
 import Modal from '@/components/Modal';
 import dynamic from 'next/dynamic';
 
 // Importar MapaTracking dinámicamente para evitar problemas de SSR con Leaflet
-const MapaTracking = dynamic(() => import('./MapaTracking'), { 
+const MapaTracking = dynamic(() => import('@/app/cliente/components/MapaTracking'), { 
   ssr: false,
   loading: () => (
     <div className="flex items-center justify-center h-full">
@@ -19,106 +16,21 @@ const MapaTracking = dynamic(() => import('./MapaTracking'), {
   )
 });
 
-const Tracking = () => {
-  const { user, logout } = useAuth();
-  const router = useRouter();
+export default function TrackingEnvios({ 
+  envios = [], 
+  onRastrear, 
+  showSearch = true,
+  title = "Seguimiento de Despachos",
+  modal,
+  closeModal
+}) {
   const [trackingNumber, setTrackingNumber] = useState('');
-  const [detalleVisible, setDetalleVisible] = useState(false);
+  const [detalleVisible, setDetalleVisible] = useState({});
   const [activeTab, setActiveTab] = useState('activos');
   const [showInsumosModal, setShowInsumosModal] = useState(false);
   const [showMapaModal, setShowMapaModal] = useState(false);
   const [insumos, setInsumos] = useState([]);
-  const [envios, setEnvios] = useState([]);
   const [envioActual, setEnvioActual] = useState(null);
-  const [modal, setModal] = useState({
-    isOpen: false,
-    title: '',
-    message: '',
-    type: 'info', // 'info', 'error', 'success', 'warning'
-    time: null
-  });
-
-  useEffect(() => {
-    handleRastrear();
-  }, []);
-  
-  const handleRastrear = async () => {
-    const {token, sede_id} = user;
-    const response = await getEnTransito(token, sede_id);
-    
-    if (!response.status) {
-      if(response.autenticacion==1||response.autenticacion==2){
-        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
-        logout();
-        router.replace('/');
-        return;
-      }
-      showMessage('Error', response.mensaje||'Error en la solicitud', 'error', 4000);
-      return;
-    }
-    
-    console.log('Datos recibidos:', JSON.stringify(response, null, 2));
-    
-    // Transformar datos del backend a la estructura del componente
-    const enviosTransformados = response.data.map(movimiento => {
-      // Obtener el último seguimiento (más reciente)
-      const ultimoSeguimiento = movimiento.seguimientos && movimiento.seguimientos.length > 0 
-        ? movimiento.seguimientos[0] 
-        : null;
-      
-      // Construir historial de seguimientos
-      const historial = movimiento.seguimientos ? movimiento.seguimientos.map(seg => ({
-        fecha: seg.created_at,
-        evento: seg.observaciones || `Estado: ${seg.estado}`,
-        ubicacion: (seg.ubicacion && typeof seg.ubicacion === 'object') 
-          ? (seg.ubicacion.direccion || `Lat: ${seg.ubicacion.lat}, Lng: ${seg.ubicacion.lng}`)
-          : (seg.ubicacion || `Actualización por ${seg.despachador?.nombre || 'Despachador'}`)
-      })).reverse() : []; // Invertir para mostrar del más antiguo al más reciente
-      
-      return {
-        id: movimiento.codigo_grupo || `MOV-${movimiento.id}`,
-        origen: movimiento.origen_hospital?.nombre || movimiento.origen_sede?.nombre || 'Origen no especificado',
-        destino: movimiento.destino_hospital?.nombre || movimiento.destino_sede?.nombre || 'Destino no especificado',
-        fechaEnvio: movimiento.fecha_despacho,
-        fechaEstimada: movimiento.fecha_recepcion,
-        fechaEntrega: movimiento.fecha_recepcion,
-        estado: movimiento.estado,
-        transportista: ultimoSeguimiento?.despachador?.nombre || 'No asignado',
-        guia: movimiento.codigo_grupo,
-        items: movimiento.cantidad_salida_total,
-        ubicacionActual: (ultimoSeguimiento?.ubicacion && typeof ultimoSeguimiento.ubicacion === 'object')
-          ? (ultimoSeguimiento.ubicacion.direccion || `Lat: ${ultimoSeguimiento.ubicacion.lat}, Lng: ${ultimoSeguimiento.ubicacion.lng}`)
-          : (ultimoSeguimiento?.ubicacion || 'En tránsito'),
-        receptor: movimiento.user_id_receptor ? 'Recibido' : null,
-        historial: historial,
-        // Datos adicionales del backend
-        movimientoId: movimiento.id,
-        tipo: movimiento.tipo,
-        tipoMovimiento: movimiento.tipo_movimiento,
-        origenAlmacenTipo: movimiento.origen_almacen_tipo,
-        destinoAlmacenTipo: movimiento.destino_almacen_tipo,
-        observaciones: movimiento.observaciones,
-        seguimientos: movimiento.seguimientos,
-        lotes_grupos: movimiento.lotes_grupos || [],
-        // Datos completos para el mapa
-        origen_hospital: movimiento.origen_hospital,
-        origen_sede: movimiento.origen_sede,
-        destino_hospital: movimiento.destino_hospital,
-        destino_sede: movimiento.destino_sede
-      };
-    });
-    
-    setEnvios(enviosTransformados);
-    // showMessage('Éxito', `${enviosTransformados.length} envío(s) en tránsito encontrado(s)`, 'success', 4000);
-  }
-  const showMessage = (title, message, type = 'info', time = null) => {
-    setModal({isOpen: true, title, message, type, time});
-  };
-
-  const closeModal = () => {
-    setModal(prev => ({ ...prev, isOpen: false }));
-  };
-  
 
   const getStatusBadge = (status) => {
     const statusConfig = {
@@ -181,15 +93,12 @@ const Tracking = () => {
   };
 
   const handleVerInsumos = (envioId) => {
-    // Encontrar el envío y extraer los insumos de lotes_grupos
     const envio = envios.find(e => e.id === envioId);
     
     if (!envio || !envio.lotes_grupos || envio.lotes_grupos.length === 0) {
-      showMessage('Información', 'No hay insumos disponibles para este envío', 'info', 3000);
       return;
     }
     
-    // Transformar lotes_grupos a estructura de insumos para el modal
     const insumosTransformados = envio.lotes_grupos.map(loteGrupo => ({
       id: loteGrupo.id,
       nombre: loteGrupo.lote?.insumo?.nombre || 'Insumo sin nombre',
@@ -211,7 +120,6 @@ const Tracking = () => {
   };
 
   const handleVerMapa = (envioId) => {
-    // Encontrar el envío actual para mostrar sus datos
     const envio = envios.find(e => e.id === envioId);
     setEnvioActual(envio);
     setShowMapaModal(true);
@@ -222,17 +130,16 @@ const Tracking = () => {
     setInsumos([]);
   };
 
+  const toggleDetalle = (envioId) => {
+    setDetalleVisible(prev => ({
+      ...prev,
+      [envioId]: !prev[envioId]
+    }));
+  };
+
   const renderHistorial = (historial, envio) => {
     return (
       <>
-        <Modal 
-          isOpen={modal.isOpen} 
-          onClose={closeModal} 
-          title={modal.title} 
-          message={modal.message} 
-          type={modal.type} 
-          time={modal.time} 
-        />
         <div className="flex justify-start items-center mt-4">
           <div className="relative flex flex-col md:flex-row gap-2">
             <span 
@@ -256,16 +163,20 @@ const Tracking = () => {
           <div className="relative">
             <div className="absolute left-4 h-full w-0.5 bg-gray-600"></div>
             <div className="space-y-6">
-              {historial.map((evento, index) => (
-                <div key={index} className="relative flex items-start">
-                  <div className="absolute left-0 mt-1.5 ml-3 h-3 w-3 rounded-full bg-indigo-500"></div>
-                  <div className="ml-8">
-                    <p className="text-sm font-medium text-gray-800">{evento.evento}</p>
-                    <p className="text-xs text-gray-500">{formatDate(evento.fecha)}</p>
-                    <p className="text-xs text-gray-500">{evento.ubicacion}</p>
+              {historial && historial.length > 0 ? (
+                historial.map((evento, index) => (
+                  <div key={index} className="relative flex items-start">
+                    <div className="absolute left-0 mt-1.5 ml-3 h-3 w-3 rounded-full bg-indigo-500"></div>
+                    <div className="ml-8">
+                      <p className="text-sm font-medium text-gray-800">{evento.evento}</p>
+                      <p className="text-xs text-gray-500">{formatDate(evento.fecha)}</p>
+                      <p className="text-xs text-gray-500">{evento.ubicacion}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-sm text-gray-500 ml-8">No hay historial de seguimiento disponible</p>
+              )}
             </div>
           </div>
         </div>
@@ -273,54 +184,88 @@ const Tracking = () => {
     );
   };
 
+  // Filtrar envíos por estado
+  const enviosActivos = envios.filter(e => 
+    ['en_transito', 'en_camino', 'despachado', 'pendiente'].includes(e.estado)
+  );
+  const enviosHistorial = envios.filter(e => 
+    ['entregado', 'recibido'].includes(e.estado)
+  );
+
+  const enviosMostrar = activeTab === 'activos' ? enviosActivos : enviosHistorial;
+
   return (
     <div className="space-y-6">
-      <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-white/10">
-        <h2 className="text-xl font-semibold text-white mb-6">Seguimiento de Despachos</h2>
-        
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <div className="flex-1 relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
-            </div>
-            <input
-              type="text"
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="Número de guía o ID de envío"
-              value={trackingNumber}
-              onChange={(e) => setTrackingNumber(e.target.value)}
-            />
-          </div>
-          <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
-            Rastrear
-          </button>
-        </div>
-      </div>
+      {modal && (
+        <Modal 
+          isOpen={modal.isOpen} 
+          onClose={closeModal} 
+          title={modal.title} 
+          message={modal.message} 
+          type={modal.type}
+          time={modal.time}
+        />
+      )}
 
-      <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg border border-white/10 overflow-hidden">
-        <div className="border-b border-white/10">
+      {showSearch && (
+        <div className="rounded-2xl p-6 shadow-lg border border-gray-100 bg-white">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 flex">
+              <div className="pl-3 -mr-8 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                placeholder="Número de guía o ID de envío"
+                value={trackingNumber}
+                onChange={(e) => setTrackingNumber(e.target.value)}
+              />
+            </div>
+            <button 
+              onClick={() => onRastrear && onRastrear(trackingNumber)}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              Rastrear
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+        <div className="border-b border-gray-200">
           <nav className="flex -mb-px">
             <button
               onClick={() => setActiveTab('activos')}
-              className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${activeTab === 'activos' ? 'border-indigo-700 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'}`}
+              className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${
+                activeTab === 'activos' 
+                  ? 'border-indigo-700 text-gray-800' 
+                  : 'border-transparent text-gray-500 hover:text-gray-800'
+              }`}
             >
-              Envíos Activos
+              Envíos Activos ({enviosActivos.length})
             </button>
             <button
               onClick={() => setActiveTab('historial')}
-              className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${activeTab === 'historial' ? 'border-indigo-700 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'}`}
+              className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${
+                activeTab === 'historial' 
+                  ? 'border-indigo-700 text-gray-800' 
+                  : 'border-transparent text-gray-500 hover:text-gray-800'
+              }`}
             >
-              Historial
+              Historial ({enviosHistorial.length})
             </button>
           </nav>
         </div>
 
         <div className="p-6">
-          {envios && envios.length === 0 ? (
+          {enviosMostrar.length === 0 ? (
             <div className="text-center py-12">
               <Package className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-200">No hay envíos {activeTab === 'activos' ? 'activos' : 'en el historial'}</h3>
-              <p className="mt-1 text-sm text-gray-400">
+              <h3 className="mt-2 text-sm font-medium text-gray-500">
+                No hay envíos {activeTab === 'activos' ? 'activos' : 'en el historial'}
+              </h3>
+              <p className="mt-1 text-sm text-gray-500">
                 {activeTab === 'activos' 
                   ? 'Actualmente no hay envíos en curso.' 
                   : 'No se encontraron envíos anteriores.'}
@@ -328,39 +273,54 @@ const Tracking = () => {
             </div>
           ) : (
             <div className="space-y-6">
-              {envios && envios.map((envio) => (
+              {enviosMostrar.map((envio) => (
                 <div key={envio.id} className="bg-white rounded-lg p-4 border border-indigo-700">
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                     <div className="flex-1">
-                      <div className="flex flex-col md:flex-row items-start md:items-center space-x-3">
+                      <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-3">
                         <h3 className="text-lg font-medium text-gray-800">Envío #{envio.id}</h3>
                         {getStatusBadge(envio.estado)}
                       </div>
                       <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                         <div>
-                          <p className="text-indigo-500">Origen</p>
+                          <p className="text-indigo-500 font-medium">Origen</p>
                           <p className="text-gray-800">{envio.origen}</p>
                         </div>
                         <div>
-                          <p className="text-indigo-500">Destino</p>
+                          <p className="text-indigo-500 font-medium">Destino</p>
                           <p className="text-gray-800">{envio.destino}</p>
                         </div>
                         <div>
-                          <p className="text-indigo-500">Transportista</p>
+                          <p className="text-indigo-500 font-medium">Transportista</p>
                           <p className="text-gray-800">{envio.transportista}</p>
+                        </div>
+                      </div>
+                      <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div>
+                          <p className="text-indigo-500 font-medium">Fecha Envío</p>
+                          <p className="text-gray-800">{formatDate(envio.fechaEnvio)}</p>
+                        </div>
+                        <div>
+                          <p className="text-indigo-500 font-medium">Fecha Estimada</p>
+                          <p className="text-gray-800">{formatDate(envio.fechaEstimada)}</p>
+                        </div>
+                        <div>
+                          <p className="text-indigo-500 font-medium">Items</p>
+                          <p className="text-gray-800">{envio.items || 0} insumos</p>
                         </div>
                       </div>
                     </div>
                     <div className="mt-4 md:mt-0 md:ml-4">
                       <button 
-                        onClick={() => setDetalleVisible(!detalleVisible)}
-                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm">
-                        Ver Detalles
+                        onClick={() => toggleDetalle(envio.id)}
+                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm"
+                      >
+                        {detalleVisible[envio.id] ? 'Ocultar Detalles' : 'Ver Detalles'}
                       </button>
                     </div>
                   </div>
-                  {detalleVisible && (
-                    <div className="mt-4">
+                  {detalleVisible[envio.id] && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
                       {renderHistorial(envio.historial, envio)}
                     </div>
                   )}
@@ -370,10 +330,10 @@ const Tracking = () => {
           )}
         </div>
       </div>
-      
+
       {/* Modal de Insumos */}
       {showInsumosModal && (
-        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed ml-64 inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col">
             <div className="flex justify-between items-center p-4 border-b">
               <h3 className="text-lg font-semibold text-gray-800">Insumos Despachados</h3>
@@ -502,8 +462,8 @@ const Tracking = () => {
           </div>
         </div>
       )}
-      
-      {/* Modal de Mapa de Seguimiento */}
+
+      {/* Modal de Mapa */}
       {showMapaModal && envioActual && typeof document !== 'undefined' && createPortal(
         <div className="fixed inset-0 z-[10002] overflow-y-auto">
           {/* Backdrop */}
@@ -601,6 +561,4 @@ const Tracking = () => {
       )}
     </div>
   );
-};
-
-export default Tracking;
+}

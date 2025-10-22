@@ -41,7 +41,7 @@ export default function EditarUsuario() {
   // Cargar automáticamente los datos del hospital si hay uno seleccionado
   useEffect(() => {
     if (selectedHospital) {
-      setSearchTerm(selectedHospital.rif);
+      setSearchTerm(selectedHospital.cod_sicm);
       handleSearch(null, true);
     }
     
@@ -99,12 +99,12 @@ export default function EditarUsuario() {
       return;
     }
     
-    const rifToSearch = skipValidation ? selectedHospital.rif : searchTerm.trim();
+    const cod_sicmToSearch = skipValidation ? selectedHospital.cod_sicm : searchTerm.trim();
     
     setSearching(true);
     setHospitalFound(false);
     
-    const result = await getHospitalById(rifToSearch, token);
+    const result = await getHospitalById(cod_sicmToSearch, token);
     
     if (!result.status) {
       if(result.autenticacion==1||result.autenticacion==2){

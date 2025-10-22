@@ -445,6 +445,11 @@ const Recepcion = () => {
         icon: <CheckCircle2 className="h-4 w-4" />,
         label: 'Entregado'
       },
+      en_camino: { 
+        bg: 'bg-pink-100 text-pink-800',
+        icon: <Truck className="h-4 w-4" />,
+        label: 'En Camino'
+      },
       recibido: { 
         bg: 'bg-green-100 text-green-800',
         icon: <CheckCheck className="h-4 w-4" />,
@@ -661,7 +666,7 @@ const Recepcion = () => {
                   >
                     Detalles
                   </button>
-                  {recepcion.estado === 'entregado'||(user?.sede?.tipo_almacen!=='almacenPrin'&&recepcion.estado==='despachado'&&!recepcion.paciente_nombres) && (
+                  {(recepcion.estado === 'entregado'||(user?.sede?.tipo_almacen!=='almacenPrin'&&recepcion.estado==='despachado'&&!recepcion.paciente_nombres)) && (
                     <button 
                       onClick={() => abrirModalRegistrar(recepcion)}
                       className="text-green-400 hover:text-green-300"

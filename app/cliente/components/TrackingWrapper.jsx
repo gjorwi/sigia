@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getEnTransitoAdmin } from '@/servicios/despachos/get';
+import { getEnTransito } from '@/servicios/despachos/get';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import TrackingEnvios from '@/components/TrackingEnvios';
 
-export default function Logistica() {
+const TrackingWrapper = () => {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [envios, setEnvios] = useState([]);
@@ -24,7 +24,7 @@ export default function Logistica() {
   
   const handleRastrear = async () => {
     const {token, sede_id} = user;
-    const response = await getEnTransitoAdmin(token, sede_id);
+    const response = await getEnTransito(token, sede_id);
     
     if (!response.status) {
       if(response.autenticacion==1||response.autenticacion==2){
@@ -37,11 +37,16 @@ export default function Logistica() {
       return;
     }
     
+    console.log('Datos recibidos:', JSON.stringify(response, null, 2));
+    
+    // Transformar datos del backend a la estructura del componente
     const enviosTransformados = response.data.map(movimiento => {
+      // Obtener el último seguimiento (más reciente)
       const ultimoSeguimiento = movimiento.seguimientos && movimiento.seguimientos.length > 0 
         ? movimiento.seguimientos[0] 
         : null;
       
+      // Construir historial de seguimientos
       const historial = movimiento.seguimientos ? movimiento.seguimientos.map(seg => ({
         fecha: seg.created_at,
         evento: seg.observaciones || `Estado: ${seg.estado}`,
@@ -56,6 +61,7 @@ export default function Logistica() {
         destino: movimiento.destino_hospital?.nombre || movimiento.destino_sede?.nombre || 'Destino no especificado',
         fechaEnvio: movimiento.fecha_despacho,
         fechaEstimada: movimiento.fecha_recepcion,
+        fechaEntrega: movimiento.fecha_recepcion,
         estado: movimiento.estado,
         transportista: ultimoSeguimiento?.despachador?.nombre || 'No asignado',
         guia: movimiento.codigo_grupo,
@@ -63,13 +69,20 @@ export default function Logistica() {
         ubicacionActual: (ultimoSeguimiento?.ubicacion && typeof ultimoSeguimiento.ubicacion === 'object')
           ? (ultimoSeguimiento.ubicacion.direccion || `Lat: ${ultimoSeguimiento.ubicacion.lat}, Lng: ${ultimoSeguimiento.ubicacion.lng}`)
           : (ultimoSeguimiento?.ubicacion || 'En tránsito'),
+        receptor: movimiento.user_id_receptor ? 'Recibido' : null,
         historial: historial,
+        movimientoId: movimiento.id,
+        tipo: movimiento.tipo,
+        tipoMovimiento: movimiento.tipo_movimiento,
+        origenAlmacenTipo: movimiento.origen_almacen_tipo,
+        destinoAlmacenTipo: movimiento.destino_almacen_tipo,
+        observaciones: movimiento.observaciones,
+        seguimientos: movimiento.seguimientos,
         lotes_grupos: movimiento.lotes_grupos || [],
         origen_hospital: movimiento.origen_hospital,
         origen_sede: movimiento.origen_sede,
         destino_hospital: movimiento.destino_hospital,
-        destino_sede: movimiento.destino_sede,
-        seguimientos: movimiento.seguimientos
+        destino_sede: movimiento.destino_sede
       };
     });
     
@@ -85,14 +98,14 @@ export default function Logistica() {
   };
 
   return (
-    <div className="md:ml-64 space-y-6 p-6">
-      <TrackingEnvios 
-        envios={envios}
-        onRastrear={handleRastrear}
-        showSearch={true}
-        modal={modal}
-        closeModal={closeModal}
-      />
-    </div>
+    <TrackingEnvios 
+      envios={envios}
+      onRastrear={handleRastrear}
+      showSearch={true}
+      modal={modal}
+      closeModal={closeModal}
+    />
   );
-}
+};
+
+export default TrackingWrapper;

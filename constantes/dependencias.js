@@ -1,4 +1,4 @@
 export const dependencias = [
-    { id: 'ministerio', nombre: 'Ministerio' },
+    { id: 'mpps', nombre: 'MPPS' },
     { id: 'ivss', nombre: 'IVSS' },
 ];

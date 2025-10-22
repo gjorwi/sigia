@@ -12,12 +12,8 @@ export const getMovimientos = async (token,idSede) => {
         const data = response.data;
         return data;
     } catch (error) {
-        console.error('Error al obtener despachos:', error);
-        const errorData = {
-            success: false,
-            data: null
-        }
-        return errorData;
+        console.log('Error al obtener despachos:', error);
+        return error;
     }
 };
 export const getMovimientosRecepcion = async (token, idSede, page = 1) => {
@@ -31,12 +27,40 @@ export const getMovimientosRecepcion = async (token, idSede, page = 1) => {
         const data = response.data;
         return data;
     } catch (error) {
-        console.error('Error al obtener despachos:', error);
-        const errorData = {
-            success: false,
-            message: "Cliente->Server Error al obtener los despachos",
-            data: null
-        }
-        return errorData;
+        console.log('Error al obtener despachos:', error);
+        return error;
     }
 };
+export const getEnTransito = async (token, idSede) => {
+    console.log('token', token);
+    console.log('idSede', idSede);
+    try {
+        const response = await axios.get(`${config.URL_API}repartidor/movimientos-en-camino/${idSede}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+        const data = response.data;
+        return data;
+    } catch (error) {
+        console.log('Error al obtener despachos:', error);
+        return error;
+    }
+};
+export const getEnTransitoAdmin = async (token, idSede) => {
+    try {
+        const response = await axios.get(`${config.URL_API}repartidor/movimientos-en-camino/origen/${idSede}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+        const data = response.data;
+        return data;
+    } catch (error) {
+        console.log('Error al obtener despachos:', error);
+        return error;
+    }
+};
+    

@@ -22,9 +22,9 @@ export const getHospitales = async (token) => {
     }
 };
 
-export const getHospitalById = async (rif,token) => {
+export const getHospitalById = async (cod_sicm,token) => {
     try {
-        const response = await axios.get(`${config.URL_API}hospitales/rif/${rif}`, {
+        const response = await axios.get(`${config.URL_API}hospitales/cod_sicm/${cod_sicm}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'

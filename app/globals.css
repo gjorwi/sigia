@@ -26,6 +26,36 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Estilos para Leaflet Maps */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+}
+
+.leaflet-tile-container {
+  pointer-events: auto;
+}
+
+.leaflet-tile {
+  width: 256px !important;
+  height: 256px !important;
+  max-width: none !important;
+}
+
+.leaflet-tile-container img {
+  width: 256px !important;
+  height: 256px !important;
+  max-width: none !important;
+}
+
+.leaflet-pane {
+  z-index: auto;
+}
+
+.leaflet-map-pane {
+  z-index: auto;
+}
 
 /* Para Edge */
 @supports (-ms-ime-align: auto) {

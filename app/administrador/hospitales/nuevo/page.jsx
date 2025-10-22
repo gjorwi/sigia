@@ -29,7 +29,7 @@ const initialFormData = {
 };
 
 export default function NuevoHospital() {
-  const {user, getUser} = useAuth();
+  const {user, getUser, logout} = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
@@ -55,6 +55,12 @@ export default function NuevoHospital() {
     const result = await postHospital(formData,token);  
     // Mostrar mensaje de éxito y redirigir
     if (!result.status) {
+      if (result.autenticacion === 1 || result.autenticacion === 2) {
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        return;
+      }
       showMessage('Error', result.mensaje, 'error', 4000);
       setLoading(false);
       return;

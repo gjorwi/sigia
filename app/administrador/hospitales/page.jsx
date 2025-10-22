@@ -1,6 +1,6 @@
 'use client';
 import { hospiActions } from '@/constantes/hospiActions';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { getHospitales } from '@/servicios/hospitales/get';
 import Modal from '@/components/Modal';
 import { useRouter } from 'next/navigation';
@@ -15,6 +15,8 @@ export default function Hospitales() {
   const [allHospitales, setAllHospitales] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [displayedCount, setDisplayedCount] = useState(10); // Cantidad inicial a mostrar
+  const observerTarget = useRef(null);
   const [modal, setModal] = useState({
     isOpen: false,
     title: '',
@@ -49,8 +51,9 @@ export default function Hospitales() {
       showMessage('Error', response.mensaje||"Error en la solicitud", 'error', 4000);
       return;
     }
-    setAllHospitales(response.data.data);
-    setHospitales(response.data.data);
+    console.log(JSON.stringify(response?.data, null, 2));
+    setAllHospitales(response?.data);
+    setHospitales(response?.data);
     setIsLoading(false);
   };
 
@@ -64,6 +67,45 @@ export default function Hospitales() {
       (hospital?.email && hospital.email.toLowerCase().includes(term))
     );
   }) : [];
+
+  // Hospitales a mostrar según el scroll
+  const displayedHospitales = filteredHospitales.slice(0, displayedCount);
+  const hasMore = displayedCount < filteredHospitales.length;
+
+  // Cargar más hospitales cuando se hace scroll
+  const loadMore = useCallback(() => {
+    if (hasMore && !isLoading) {
+      setDisplayedCount(prev => prev + 10);
+    }
+  }, [hasMore, isLoading]);
+
+  // Intersection Observer para detectar cuando llega al final
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [loadMore]);
+
+  // Resetear el contador cuando cambia el filtro
+  useEffect(() => {
+    setDisplayedCount(10);
+  }, [searchTerm]);
 
   return (
     <div className="md:pl-64 flex flex-col">
@@ -163,38 +205,60 @@ export default function Hospitales() {
                     {filteredHospitales.length === 0 ? (
                       <div className="px-4 py-12 text-center">
                         <p className="text-sm text-gray-500">
-                          No hay hospitales registrados
+                          {searchTerm ? 'No se encontraron hospitales con ese criterio' : 'No hay hospitales registrados'}
                         </p>
                       </div>
                     ) : (
-                      filteredHospitales.map((hospital) => (
-                        <div key={hospital.id} className="px-4 py-5 sm:px-6">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                              <div className="flex-shrink-0 h-12 w-12">
-                                <Hospital className="h-8 w-8 text-gray-600" />
+                      <>
+                        {displayedHospitales.map((hospital) => (
+                          <div key={hospital.id} className="px-4 py-5 sm:px-6">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <div className="flex-shrink-0 h-12 w-12">
+                                  <Hospital className="h-8 w-8 text-gray-600" />
+                                </div>
+                                <div className="ml-4">
+                                  <div className="text-sm text-gray-500 uppercase">SICM: {hospital.cod_sicm}</div>
+                                  <div className="text-sm text-gray-500 uppercase">{hospital.rif}</div>
+                                  <div className="text-sm font-medium text-gray-900">{hospital.nombre}</div>
+                                  <div className="text-sm text-gray-500">{hospital.email_contacto}</div>
+                                </div>
                               </div>
-                              <div className="ml-4">
-                                <div className="text-sm text-gray-500 uppercase">{hospital.rif}</div>
-                                <div className="text-sm font-medium text-gray-900">{hospital.nombre}</div>
-                                <div className="text-sm text-gray-500">{hospital.email}</div>
+                              <div className="ml-4 flex-shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    selectHospital(hospital);
+                                    router.push('/administrador/hospitales/editar');
+                                  }}
+                                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                  Editar
+                                </button>
                               </div>
-                            </div>
-                            <div className="ml-4 flex-shrink-0">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  selectHospital(hospital);
-                                  router.push('/administrador/hospitales/editar');
-                                }}
-                                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                              >
-                                Editar
-                              </button>
                             </div>
                           </div>
-                        </div>
-                      ))
+                        ))}
+                        {/* Elemento observador para infinite scroll */}
+                        {hasMore && (
+                          <div ref={observerTarget} className="px-4 py-4 text-center">
+                            <div className="inline-flex items-center">
+                              <svg className="animate-spin h-5 w-5 text-indigo-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              <span className="text-sm text-gray-500">Cargando más hospitales...</span>
+                            </div>
+                          </div>
+                        )}
+                        {!hasMore && filteredHospitales.length > 10 && (
+                          <div className="px-4 py-4 text-center">
+                            <p className="text-sm text-gray-500">
+                              Mostrando {displayedHospitales.length} de {filteredHospitales.length} hospitales
+                            </p>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 )}

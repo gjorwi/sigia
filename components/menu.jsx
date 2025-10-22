@@ -107,6 +107,7 @@ export default function Menu() {
     // { name: 'Mapa', icon: MapPin, href: '/administrador/mapa', current: false },
     { name: 'Solicitudes', icon: FileText, href: '/administrador/solicitudes', current: false },
     { name: 'Logística', icon: Truck, href: '/administrador/logistica', current: false },
+    // { name: 'Reportes', icon: FileText, href: '/administrador/reportes', current: false },
     { name: 'Sedes', icon: House, href: '/administrador/sedes', current: false },
     { name: 'Hospitales', icon: Hospital, href: '/administrador/hospitales', current: false },
     { name: 'Insumos', icon: Package, href: '/administrador/insumos', current: false },

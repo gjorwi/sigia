@@ -1,6 +1,6 @@
 'use client';
 import { insumoActions } from '@/constantes/insumoActions';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { getInsumos } from '@/servicios/insumos/get';
 import Modal from '@/components/Modal';
 import { useRouter } from 'next/navigation';
@@ -13,6 +13,8 @@ export default function Insumos() {
   const { user, logout, selectInsumo } = useAuth();
   const [insumos, setInsumos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [displayedCount, setDisplayedCount] = useState(10); // Cantidad inicial a mostrar
+  const observerTarget = useRef(null);
   const [modal, setModal] = useState({
     isOpen: false,
     title: '',
@@ -49,12 +51,44 @@ export default function Insumos() {
       showMessage('Error', response.mensaje||"Error en la solicitud", 'error', 4000);
       return;
     }
-    setInsumos(response.data.data);
+    setInsumos(response?.data);
     setIsLoading(false);
     
-  };
+  }; 
 
-  
+  // Insumos a mostrar según el scroll
+  const displayedInsumos = Array.isArray(insumos) ? insumos.slice(0, displayedCount) : [];
+  const hasMore = displayedCount < (Array.isArray(insumos) ? insumos.length : 0);
+
+  // Cargar más insumos cuando se hace scroll
+  const loadMore = useCallback(() => {
+    if (hasMore && !isLoading) {
+      setDisplayedCount(prev => prev + 10);
+    }
+  }, [hasMore, isLoading]);
+
+  // Intersection Observer para detectar cuando llega al final
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [loadMore]);
 
   return (
     <div className="md:pl-64 flex flex-col">
@@ -114,16 +148,16 @@ export default function Insumos() {
                 {isLoading ? (
                   <LoadingSpinner message="Cargando insumos..." />
                 ) : (
-                  <div>
-                    {insumos.length === 0 ? (
+                  <div className="divide-y divide-gray-200">
+                    {!Array.isArray(insumos) || insumos.length === 0 ? (
                       <div className="px-4 py-12 text-center">
                         <p className="text-sm text-gray-500">
                           No hay insumos registrados
                         </p>
                       </div>
                     ) : (
-                      <div className="px-4 py-12 text-center">
-                        {insumos.map((insumo) => (
+                      <>
+                        {displayedInsumos.map((insumo) => (
                           <div key={insumo.id} className="px-4 py-5 sm:px-6">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center">
@@ -150,7 +184,26 @@ export default function Insumos() {
                             </div>
                           </div>
                         ))}
-                      </div>
+                        {/* Elemento observador para infinite scroll */}
+                        {hasMore && (
+                          <div ref={observerTarget} className="px-4 py-4 text-center">
+                            <div className="inline-flex items-center">
+                              <svg className="animate-spin h-5 w-5 text-indigo-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              <span className="text-sm text-gray-500">Cargando más insumos...</span>
+                            </div>
+                          </div>
+                        )}
+                        {!hasMore && insumos.length > 10 && (
+                          <div className="px-4 py-4 text-center">
+                            <p className="text-sm text-gray-500">
+                              Mostrando {displayedInsumos.length} de {insumos.length} insumos
+                            </p>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 )}

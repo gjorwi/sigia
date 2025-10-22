@@ -8,9 +8,10 @@ import { useEffect } from 'react';
 const insumoPresentacionFarmaceutica = [
   { id: 1, idPresentacion: 'ampolla', nombre: 'Ampolla' },
   { id: 2, idPresentacion: 'botella', nombre: 'Botella' },
-  { id: 3, idPresentacion: 'jarabe', nombre: 'Jarabe' },
-  { id: 5, idPresentacion: 'tableta', nombre: 'Tableta' },
-  { id: 6, idPresentacion: 'suspension', nombre: 'Suspension' },
+  { id: 3, idPresentacion: 'tableta', nombre: 'Tableta' },
+  { id: 4, idPresentacion: 'suspension', nombre: 'Suspension' },
+  { id: 5, idPresentacion: 'gotas', nombre: 'Gotas' },
+  { id: 6, idPresentacion: 'crema', nombre: 'Crema' },
   { id: 7, idPresentacion: 'vial', nombre: 'Vial' },
   { id: 8, idPresentacion: 'inyeccion', nombre: 'Inyeccion' },
   { id: 9, idPresentacion: 'solucion_acuosa', nombre: 'Solucion acuosa' },

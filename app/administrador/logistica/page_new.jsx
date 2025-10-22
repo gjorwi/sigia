@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getEnTransitoAdmin } from '@/servicios/despachos/get';
+import { getEnTransito } from '@/servicios/despachos/get';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import TrackingEnvios from '@/components/TrackingEnvios';
@@ -24,7 +24,7 @@ export default function Logistica() {
   
   const handleRastrear = async () => {
     const {token, sede_id} = user;
-    const response = await getEnTransitoAdmin(token, sede_id);
+    const response = await getEnTransito(token, sede_id);
     
     if (!response.status) {
       if(response.autenticacion==1||response.autenticacion==2){
@@ -45,9 +45,7 @@ export default function Logistica() {
       const historial = movimiento.seguimientos ? movimiento.seguimientos.map(seg => ({
         fecha: seg.created_at,
         evento: seg.observaciones || `Estado: ${seg.estado}`,
-        ubicacion: (seg.ubicacion && typeof seg.ubicacion === 'object') 
-          ? (seg.ubicacion.direccion || `Lat: ${seg.ubicacion.lat}, Lng: ${seg.ubicacion.lng}`)
-          : (seg.ubicacion || `Actualización por ${seg.despachador?.nombre || 'Despachador'}`)
+        ubicacion: seg.ubicacion || `Actualización por ${seg.despachador?.nombre || 'Despachador'}`
       })).reverse() : [];
       
       return {
@@ -60,9 +58,7 @@ export default function Logistica() {
         transportista: ultimoSeguimiento?.despachador?.nombre || 'No asignado',
         guia: movimiento.codigo_grupo,
         items: movimiento.cantidad_salida_total,
-        ubicacionActual: (ultimoSeguimiento?.ubicacion && typeof ultimoSeguimiento.ubicacion === 'object')
-          ? (ultimoSeguimiento.ubicacion.direccion || `Lat: ${ultimoSeguimiento.ubicacion.lat}, Lng: ${ultimoSeguimiento.ubicacion.lng}`)
-          : (ultimoSeguimiento?.ubicacion || 'En tránsito'),
+        ubicacionActual: ultimoSeguimiento?.ubicacion || 'En tránsito',
         historial: historial,
         lotes_grupos: movimiento.lotes_grupos || [],
         origen_hospital: movimiento.origen_hospital,
