@@ -2,7 +2,7 @@ import axios from 'axios';
 import config from '@/config';
 export const putHospital = async (formData, token) => {
   try {
-    const response = await axios.put(`${config.URL_API}hospitales/rif/${formData.rif}`, formData, {
+    const response = await axios.put(`${config.URL_API}hospitales/cod_sicm/${formData.cod_sicm}`, formData, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'

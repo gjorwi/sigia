@@ -11,6 +11,7 @@ import { getInsumos } from '@/servicios/insumos/get';
 import { getSedes } from '@/servicios/sedes/get';
 import { getSedeByHospitalId } from '@/servicios/sedes/get';
 import { getMovimientos } from '@/servicios/despachos/get';
+import { getInsumosPorVencer } from '@/servicios/inventario/get';
 import MapAlmacenes from '@/components/mapAlmacenes';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import SelectHospiModal from '@/components/SelectHospiModal';
@@ -58,11 +59,29 @@ const DashboardPage = () => {
   const [showModalDetalles, setShowModalDetalles] = useState(false);
   const [selectedMovimiento, setSelectedMovimiento] = useState(null);
   
+  // Estados para insumos por vencer
+  const [selectedHospitalVencer, setSelectedHospitalVencer] = useState(null);
+  const [showHospitalModalVencer, setShowHospitalModalVencer] = useState(false);
+  const [insumosPorVencer, setInsumosPorVencer] = useState([]);
+  const [loadingInsumosPorVencer, setLoadingInsumosPorVencer] = useState(false);
+  
   useEffect(() => {
     if (user) {
       handleGetResumen(user.token);
     }
   }, [user]);
+
+  // Cargar insumos por vencer del almacén central por defecto
+  useEffect(() => {
+    if (user && hospitales.length > 0 && !selectedHospitalVencer) {
+      // Buscar el almacén central (hospital_id = 1)
+      const almacenCentral = hospitales.find(h => h.id === 1);
+      if (almacenCentral) {
+        setSelectedHospitalVencer(almacenCentral);
+        handleLoadInsumosPorVencer(1);
+      }
+    }
+  }, [user, hospitales]);
 
   const handleGetResumen = async (token) => {
     setIsLoadingAlmacenes(false);
@@ -182,6 +201,44 @@ const DashboardPage = () => {
       console.error('Error al cargar sedes:', error);
       showMessage('Error', 'Error al cargar sedes', 'error', 4000);
     }
+  };
+
+  // Funciones para manejo de insumos por vencer
+  const handleSelectHospitalVencer = async (hospital) => {
+    setSelectedHospitalVencer(hospital);
+    setShowHospitalModalVencer(false);
+    // Cargar insumos por vencer del hospital seleccionado
+    await handleLoadInsumosPorVencer(hospital.id);
+  };
+
+  const handleLoadInsumosPorVencer = async (hospitalId) => {
+    if (!user?.token) return;
+    setLoadingInsumosPorVencer(true);
+    try {
+      const response = await getInsumosPorVencer(user.token, hospitalId, 5);
+      if (!response.status) {
+        if (response.autenticacion === 1 || response.autenticacion === 2) {
+          showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+          logout();
+          router.replace('/');
+          return;
+        }
+        showMessage('Error', response.mensaje || 'Error al cargar insumos por vencer', 'error', 4000);
+        setInsumosPorVencer([]);
+        return;
+      }
+      setInsumosPorVencer(response.data || []);
+    } catch (error) {
+      console.error('Error al cargar insumos por vencer:', error);
+      showMessage('Error', 'Error al cargar insumos por vencer', 'error', 4000);
+      setInsumosPorVencer([]);
+    } finally {
+      setLoadingInsumosPorVencer(false);
+    }
+  };
+
+  const openHospitalModalVencer = () => {
+    setShowHospitalModalVencer(true);
   };
 
   const openHospitalModalDespacho = () => {
@@ -444,111 +501,121 @@ const DashboardPage = () => {
                         </div>
                       </div>
                       <div>
-                        <h3 className="text-lg font-medium mb-4 text-gray-900">Resumen de Inventario</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {/* Nivel de Inventario */}
-                          <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
-                            <h4 className="text-sm font-medium text-gray-500 mb-2">Nivel de Inventario</h4>
-                            <div className="space-y-3 text-gray-500">
-                              <div>
-                                <div className="flex justify-between text-sm mb-1">
-                                  <span className="text-green-600">Alto</span>
-                                  <span>42%</span>
-                                </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                  <div className="bg-green-500 h-2 rounded-full" style={{ width: '42%' }}></div>
-                                </div>
-                              </div>
-                              <div>
-                                <div className="flex justify-between text-sm mb-1">
-                                  <span className="text-yellow-500">Medio</span>
-                                  <span>35%</span>
-                                </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                  <div className="bg-yellow-500 h-2 rounded-full" style={{ width: '35%' }}></div>
-                                </div>
-                              </div>
-                              <div>
-                                <div className="flex justify-between text-sm mb-1">
-                                  <span className="text-red-500">Bajo</span>
-                                  <span>23%</span>
-                                </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                  <div className="bg-red-500 h-2 rounded-full" style={{ width: '23%' }}></div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          
-
-                          {/* Insumos en Alerta */}
-                          <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
-                            <h4 className="text-sm font-medium text-gray-500 mb-4">Insumos en Alerta</h4>
-                            <div className="space-y-3">
-                              {[
-                                { name: 'Mascarillas N95', percent: 85, color: 'bg-red-500' },
-                                { name: 'Guantes de Látex', percent: 72, color: 'bg-yellow-500' },
-                                { name: 'Jeringas 3ml', percent: 45, color: 'bg-blue-500' },
-                              ].map((item, index) => (
-                                <div key={index}>
-                                  <div className="flex justify-between text-sm mb-1 text-gray-500">
-                                    <span>{item.name}</span>
-                                    <span className="font-medium">{item.percent}%</span>
-                                  </div>
-                                  <div className="w-full bg-gray-200 rounded-full h-2">
-                                    <div 
-                                      className={`${item.color} h-2 rounded-full`} 
-                                      style={{ width: `${item.percent}%` }}
-                                    ></div>
-                                  </div>
-                                </div>
-                              ))}
+                        <h3 className="text-lg font-medium mb-4 text-gray-900">Insumos Próximos a Vencer</h3>
+                        
+                        {/* Selector de Hospital */}
+                        <div className="bg-white p-4 rounded-lg shadow border border-gray-200 mb-6">
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Seleccionar Hospital
+                              </label>
+                              <button
+                                onClick={openHospitalModalVencer}
+                                className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                              >
+                                {selectedHospitalVencer ? (
+                                  <>
+                                    <Hospital className="h-5 w-5 mr-2 text-indigo-600" />
+                                    {selectedHospitalVencer.nombre}
+                                  </>
+                                ) : (
+                                  <>
+                                    <Hospital className="h-5 w-5 mr-2 text-gray-400" />
+                                    Seleccionar hospital
+                                  </>
+                                )}
+                              </button>
                             </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Tabla de Insumos Próximos a Vencer */}
-                      <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
-                        <h4 className="text-sm font-medium text-gray-500 mb-4">Insumos Próximos a Vencer</h4>
-                        <div className="overflow-x-auto">
-                          <table className="min-w-full divide-y divide-gray-200">
-                            <thead>
-                              <tr>
-                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Insumo</th>
-                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lote</th>
-                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
-                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vence</th>
-                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                              </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                              {[
-                                { id: 1, name: 'Mascarillas N95', lote: 'LTE-2023-001', cantidad: 120, vence: '15/07/2023', estado: 'Próximo a vencer' },
-                                { id: 2, name: 'Guantes de Látex', lote: 'GLX-2023-045', cantidad: 85, vence: '20/07/2023', estado: 'Próximo a vencer' },
-                                { id: 3, name: 'Jeringas 3ml', lote: 'JER-2023-102', cantidad: 200, vence: '25/07/2023', estado: 'En buen estado' },
-                                { id: 4, name: 'Alcohol en Gel', lote: 'ALC-2023-056', cantidad: 45, vence: '05/08/2023', estado: 'En buen estado' },
-                              ].map((item) => (
-                                <tr key={item.id} className="hover:bg-gray-50">
-                                  <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">{item.name}</td>
-                                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">{item.lote}</td>
-                                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">{item.cantidad}</td>
-                                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">{item.vence}</td>
-                                  <td className="px-4 py-2 whitespace-nowrap">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                      item.estado === 'Próximo a vencer' 
-                                        ? 'bg-yellow-100 text-yellow-800' 
-                                        : 'bg-green-100 text-green-800'
-                                    }`}>
-                                      {item.estado}
-                                    </span>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
+                        {/* Lista de Insumos por Vencer */}
+                        {loadingInsumosPorVencer ? (
+                          <div className="bg-white p-8 rounded-lg shadow border border-gray-200">
+                            <LoadingSpinner message="Cargando insumos por vencer..." />
+                          </div>
+                        ) : selectedHospitalVencer && insumosPorVencer.length > 0 ? (
+                          <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+                            <div className="overflow-x-auto">
+                              <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
+                                  <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                      Insumo
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                      Lote
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                      Cantidad
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                      Fecha Vencimiento
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                      Estado
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                  {insumosPorVencer.map((item, index) => {
+                                    const diasRestantes = Math.ceil((new Date(item.fecha_vencimiento) - new Date()) / (1000 * 60 * 60 * 24));
+                                    const isUrgente = diasRestantes <= 30;
+                                    const isProximo = diasRestantes > 30 && diasRestantes <= 90;
+                                    
+                                    return (
+                                      <tr key={index} className="hover:bg-gray-50">
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                          <div className="flex items-center">
+                                            <Package className="h-5 w-5 text-gray-400 mr-2" />
+                                            <div className="text-sm font-medium text-gray-900">
+                                              {item.insumo?.nombre || 'N/A'}
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                          {item.numero_lote || 'N/A'}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                                          {item.cantidad || 0}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                          {new Date(item.fecha_vencimiento).toLocaleDateString('es-VE')}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                            isUrgente 
+                                              ? 'bg-red-100 text-red-800' 
+                                              : isProximo 
+                                              ? 'bg-yellow-100 text-yellow-800' 
+                                              : 'bg-green-100 text-green-800'
+                                          }`}>
+                                            {isUrgente 
+                                              ? `${diasRestantes} días` 
+                                              : isProximo 
+                                              ? `${diasRestantes} días` 
+                                              : `${diasRestantes} días`}
+                                          </span>
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        ) : selectedHospitalVencer ? (
+                          <div className="bg-white p-8 rounded-lg shadow border border-gray-200 text-center">
+                            <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                            <p className="text-gray-500">No hay insumos próximos a vencer en este hospital</p>
+                          </div>
+                        ) : (
+                          <div className="bg-white p-8 rounded-lg shadow border border-gray-200 text-center">
+                            <Hospital className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                            <p className="text-gray-500">Seleccione un hospital para ver los insumos próximos a vencer</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -900,6 +967,14 @@ const DashboardPage = () => {
           onClose={() => setShowSedeModalDespacho(false)}
           onSelect={handleSelectSedeDespacho}
           sedes={sedesDespacho}
+        />
+        {/* Modal para selección de hospital para insumos por vencer */}
+        <SelectHospiModal
+          isOpen={showHospitalModalVencer}
+          onClose={() => setShowHospitalModalVencer(false)}
+          onSelect={handleSelectHospitalVencer}
+          hospitals={hospitales}
+          tipo="insumos por vencer"
         />
         <ModalDetallesRecepcion
           isOpen={showModalDetalles}

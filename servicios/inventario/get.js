@@ -6,6 +6,7 @@ export const getInventario = async (token,id) => {
   try {
     const response = await axios.get(`${config.URL_API}inventario/sede/${id}`, {
       headers: {
+        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       }
     });
@@ -13,6 +14,25 @@ export const getInventario = async (token,id) => {
     return data;
   } catch (error) {
     console.log('Error al obtener el inventario:', error);  
+    return error;
+  }
+};
+
+export const getInsumosPorVencer = async (token, hospitalId, limite = 5) => {
+  try {
+    const response = await axios.get(`${config.URL_API}inventario/hospital/${hospitalId}/por-vencer`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      params: {
+        limite
+      }
+    });
+    const data = response.data;
+    return data;
+  } catch (error) {
+    console.log('Error al obtener insumos por vencer:', error);  
     return error;
   }
 };

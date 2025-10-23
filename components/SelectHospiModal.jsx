@@ -1,5 +1,6 @@
 import { X, Search } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 export default function SelectHospiModal({ isOpen, onClose, onSelect, hospitals, tipo }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -26,20 +27,51 @@ export default function SelectHospiModal({ isOpen, onClose, onSelect, hospitals,
     setSearchTerm(term);
     
     if (!term) {
-      setFilteredHospitals(hospitals);
+      // Restaurar la lista filtrada según el tipo
+      let hospitalsData = [];
+      if (hospitals && tipo) {
+        if (tipo === 'administrador') {
+          hospitalsData = hospitals?.filter(hospital => hospital.tipo === 'almacen');
+        } else if (tipo === 'despachos' || tipo === 'insumos por vencer') {
+          hospitalsData = hospitals || [];
+        } else {
+          hospitalsData = hospitals?.filter(hospital => hospital.tipo.includes('hospital'));
+        }
+      }
+      setFilteredHospitals(hospitalsData);
       return;
     }
-    const filtered = hospitals.filter(hospital => 
-      hospital.nombre.toLowerCase().includes(term) ||
-      hospital.rif.toLowerCase().includes(term)
+    
+    // Filtrar sobre la lista ya filtrada por tipo
+    const baseList = filteredHospitals.length > 0 ? filteredHospitals : hospitals;
+    const filtered = baseList.filter(hospital => 
+      hospital.nombre?.toLowerCase().includes(term) ||
+      hospital.rif?.toLowerCase().includes(term) ||
+      hospital.cod_sicm?.toLowerCase().includes(term)
     );
     setFilteredHospitals(filtered);
   };
 
+  const clearSearch = () => {
+    setSearchTerm('');
+    // Restaurar la lista filtrada según el tipo
+    let hospitalsData = [];
+    if (hospitals && tipo) {
+      if (tipo === 'administrador') {
+        hospitalsData = hospitals?.filter(hospital => hospital.tipo === 'almacen');
+      } else if (tipo === 'despachos' || tipo === 'insumos por vencer') {
+        hospitalsData = hospitals || [];
+      } else {
+        hospitalsData = hospitals?.filter(hospital => hospital.tipo.includes('hospital'));
+      }
+    }
+    setFilteredHospitals(hospitalsData);
+  };
+
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed top-0 md:ml-64 left-0 bg-black/50 right-0 bottom-0 flex items-center justify-center z-[9999]">
+  return createPortal(
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden m-4">
         {/* Header */}
         <div className="flex justify-between items-center p-4 border-b">
@@ -60,11 +92,22 @@ export default function SelectHospiModal({ isOpen, onClose, onSelect, hospitals,
             </div>
             <input
               type="text"
-              className="block w-full pl-10 pr-3 py-2 border text-gray-700 border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="block w-full pl-10 pr-10 py-2 border text-gray-700 border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               placeholder="Buscar hospital..."
               value={searchTerm}
               onChange={handleSearch}
             />
+            {searchTerm && (
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                <button
+                  type="button"
+                  onClick={clearSearch}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
         
@@ -111,6 +154,7 @@ export default function SelectHospiModal({ isOpen, onClose, onSelect, hospitals,
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

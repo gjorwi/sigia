@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { getInsumos } from '@/servicios/insumos/get';
 import Modal from '@/components/Modal';
 import { useRouter } from 'next/navigation';
-import { Package } from 'lucide-react';
+import { Package, Search, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
@@ -12,6 +12,7 @@ export default function Insumos() {
   const router = useRouter();
   const { user, logout, selectInsumo } = useAuth();
   const [insumos, setInsumos] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [displayedCount, setDisplayedCount] = useState(10); // Cantidad inicial a mostrar
   const observerTarget = useRef(null);
@@ -56,9 +57,25 @@ export default function Insumos() {
     
   }; 
 
+  // Filtrar insumos según el término de búsqueda
+  const filteredInsumos = Array.isArray(insumos) ? insumos.filter(insumo => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      insumo.codigo?.toLowerCase().includes(searchLower) ||
+      insumo.nombre?.toLowerCase().includes(searchLower) ||
+      insumo.descripcion?.toLowerCase().includes(searchLower) ||
+      insumo.unidad_medida?.toLowerCase().includes(searchLower)
+    );
+  }) : [];
+
   // Insumos a mostrar según el scroll
-  const displayedInsumos = Array.isArray(insumos) ? insumos.slice(0, displayedCount) : [];
-  const hasMore = displayedCount < (Array.isArray(insumos) ? insumos.length : 0);
+  const displayedInsumos = filteredInsumos.slice(0, displayedCount);
+  const hasMore = displayedCount < filteredInsumos.length;
+
+  // Resetear displayedCount cuando cambia el término de búsqueda
+  useEffect(() => {
+    setDisplayedCount(10);
+  }, [searchTerm]);
 
   // Cargar más insumos cuando se hace scroll
   const loadMore = useCallback(() => {
@@ -139,10 +156,39 @@ export default function Insumos() {
           <div className="mt-8">
             <div className="bg-white shadow overflow-hidden sm:rounded-lg">
               <div className="px-4 py-5 sm:px-6">
-                <h3 className="text-lg font-medium leading-6 text-gray-900">Lista de Insumos</h3>
-                <p className="mt-1 text-sm text-gray-500">
-                  Vista previa de los insumos registrados en el sistema
-                </p>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h3 className="text-lg font-medium leading-6 text-gray-900">Lista de Insumos</h3>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Vista previa de los insumos registrados en el sistema
+                    </p>
+                  </div>
+                  <div className="mt-4 sm:mt-0 sm:ml-4">
+                    <div className="relative rounded-md shadow-sm">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Search className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="focus:ring-indigo-500 focus:border-indigo-500 text-gray-700 block w-full pl-10 pr-10 py-2 sm:text-sm border-gray-300 rounded-md"
+                        placeholder="Buscar insumos..."
+                      />
+                      {searchTerm && (
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                          <button
+                            type="button"
+                            onClick={() => setSearchTerm('')}
+                            className="text-gray-400 hover:text-gray-600"
+                          >
+                            <X className="h-5 w-5" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
               <div className="border-t border-gray-200">
                 {isLoading ? (
@@ -153,6 +199,12 @@ export default function Insumos() {
                       <div className="px-4 py-12 text-center">
                         <p className="text-sm text-gray-500">
                           No hay insumos registrados
+                        </p>
+                      </div>
+                    ) : filteredInsumos.length === 0 ? (
+                      <div className="px-4 py-12 text-center">
+                        <p className="text-sm text-gray-500">
+                          No se encontraron insumos que coincidan con &quot;{searchTerm}&quot;
                         </p>
                       </div>
                     ) : (
@@ -196,10 +248,10 @@ export default function Insumos() {
                             </div>
                           </div>
                         )}
-                        {!hasMore && insumos.length > 10 && (
+                        {!hasMore && filteredInsumos.length > 10 && (
                           <div className="px-4 py-4 text-center">
                             <p className="text-sm text-gray-500">
-                              Mostrando {displayedInsumos.length} de {insumos.length} insumos
+                              Mostrando {displayedInsumos.length} de {filteredInsumos.length} insumos{searchTerm && ` (filtrados de ${insumos.length} totales)`}
                             </p>
                           </div>
                         )}

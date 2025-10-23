@@ -3,7 +3,7 @@ import { inventActions } from '@/constantes/inventActions';
 import { useEffect, useState } from 'react';
 import Modal from '@/components/Modal';
 import { useRouter } from 'next/navigation';
-import { Package } from 'lucide-react';
+import { Package, Search, X } from 'lucide-react';
 import { getInventario } from '@/servicios/inventario/get';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -11,6 +11,7 @@ export default function Inventario() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [inventario, setInventario] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [expandedItems, setExpandedItems] = useState({});
   const [modal, setModal] = useState({
     isOpen: false,
@@ -57,6 +58,19 @@ export default function Inventario() {
       setInventario(response?.data);
     }
   };
+
+  // Filtrar inventario según el término de búsqueda
+  const filteredInventario = inventario.filter(item => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      item?.insumo?.nombre?.toLowerCase().includes(searchLower) ||
+      item?.insumo?.codigo?.toLowerCase().includes(searchLower) ||
+      item?.insumo?.descripcion?.toLowerCase().includes(searchLower) ||
+      item?.unidad_medida?.toLowerCase().includes(searchLower) ||
+      item?.categoria?.toLowerCase().includes(searchLower) ||
+      item?.cantidad_total?.toString().includes(searchLower)
+    );
+  });
 
   return (
     <div className="md:pl-64 flex flex-col">
@@ -107,10 +121,39 @@ export default function Inventario() {
           <div className="mt-8">
             <div className="bg-white shadow overflow-hidden sm:rounded-lg">
               <div className="px-4 py-5 sm:px-6">
-                <h3 className="text-lg font-medium leading-6 text-gray-900">Lista de lotes de insumos</h3>
-                <p className="mt-1 text-sm text-gray-500">
-                  Vista previa de los lotes de insumos registrados en el sistema
-                </p>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h3 className="text-lg font-medium leading-6 text-gray-900">Lista de lotes de insumos</h3>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Vista previa de los lotes de insumos registrados en el sistema
+                    </p>
+                  </div>
+                  <div className="mt-4 sm:mt-0 sm:ml-4">
+                    <div className="relative rounded-md shadow-sm">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Search className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="focus:ring-indigo-500 focus:border-indigo-500 text-gray-700 block w-full pl-10 pr-10 py-2 sm:text-sm border-gray-300 rounded-md"
+                        placeholder="Buscar lotes..."
+                      />
+                      {searchTerm && (
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                          <button
+                            type="button"
+                            onClick={() => setSearchTerm('')}
+                            className="text-gray-400 hover:text-gray-600"
+                          >
+                            <X className="h-5 w-5" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
               <div className="border-t border-gray-200">
                 {inventario.length === 0 ? (
@@ -119,9 +162,15 @@ export default function Inventario() {
                       No hay lotes registrados
                     </p>
                   </div>
+                ) : filteredInventario.length === 0 ? (
+                  <div className="px-4 py-12 text-center">
+                    <p className="text-sm text-gray-500">
+                      No se encontraron lotes que coincidan con &quot;{searchTerm}&quot;
+                    </p>
+                  </div>
                 ) : (
                   <div className="divide-y divide-gray-200">
-                    {inventario.map((inventario,index) => (
+                    {filteredInventario.map((inventario,index) => (
                       <div key={index} className="px-4 py-5 sm:px-6">
                         {/* Información principal del item */}
                         <div className="flex items-center justify-between">

@@ -19,6 +19,7 @@ const nombreRutas = {
     '/administrador/insumos/eliminar': 'Eliminar Insumos',
     '/administrador/movimientos': 'Gestión de Movimientos',
     '/administrador/movimientos/nuevo': 'Nuevo Movimiento',
+    '/administrador/movimientos/archivo': 'Nuevo Movimiento por Archivo',
     '/administrador/movimientos/editar': 'Editar Movimiento',
     '/administrador/movimientos/activar': 'Activar/Desactivar Movimientos',
     '/administrador/movimientos/eliminar': 'Eliminar Movimientos',
