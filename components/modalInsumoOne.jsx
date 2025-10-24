@@ -221,7 +221,7 @@ export default function InsumoSelectionModalOne({ isOpen, onClose, onSelectInsum
                                   <span>Lote {lote.numero_lote}</span>
                                   <span>{lote.cantidad} unidades</span>
                                   {lote.fecha_vencimiento && (
-                                    <span>Vence: {new Date(lote.fecha_vencimiento).toLocaleDateString()}</span>
+                                    <span>Vence: {new Date(lote.fecha_vencimiento).toLocaleDateString('es-VE', { timeZone: 'UTC' })}</span>
                                   )}
                                 </div>
                               ))}
@@ -344,7 +344,7 @@ export default function InsumoSelectionModalOne({ isOpen, onClose, onSelectInsum
                             <span className="font-medium">{lote.cantidad} unidades</span>
                             {lote.fecha_vencimiento && (
                               <span className="text-blue-600">
-                                Vence: {new Date(lote.fecha_vencimiento).toLocaleDateString()}
+                                Vence: {new Date(lote.fecha_vencimiento).toLocaleDateString('es-VE', { timeZone: 'UTC' })}
                               </span>
                             )}
                           </div>

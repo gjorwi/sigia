@@ -219,7 +219,7 @@ export default function DespachoForm({ onSubmit, insumos, id, formData, onFormDa
                                   <span className="font-semibold">{lote.cantidad} unidades</span>
                                   {lote.fecha_vencimiento && (
                                     <span className="text-blue-600">
-                                      Vence: {new Date(lote.fecha_vencimiento).toLocaleDateString()}
+                                      Vence: {new Date(lote.fecha_vencimiento).toLocaleDateString('es-VE', { timeZone: 'UTC' })}
                                     </span>
                                   )}
                                 </div>

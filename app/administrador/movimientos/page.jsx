@@ -596,7 +596,8 @@ export default function Movimientos() {
                                                         new Date(loteGrupo.lote.fecha_vencimiento).toLocaleDateString('es-ES', {
                                                           day: '2-digit',
                                                           month: '2-digit',
-                                                          year: '2-digit'
+                                                          year: '2-digit',
+                                                          timeZone: 'UTC'
                                                         }) : 'N/A'
                                                       }
                                                     </div>

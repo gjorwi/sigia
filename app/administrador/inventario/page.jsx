@@ -253,7 +253,7 @@ export default function Inventario() {
                                             </div>
                                             {lote.fecha_vencimiento && (
                                               <div className="flex items-center">
-                                                <span>Vence: <strong>{new Date(lote.fecha_vencimiento).toLocaleDateString()}</strong></span>
+                                                <span>Vence: <strong>{new Date(lote.fecha_vencimiento).toLocaleDateString('es-VE', { timeZone: 'UTC' })}</strong></span>
                                               </div>
                                             )}
                                             {lote.proveedor && (

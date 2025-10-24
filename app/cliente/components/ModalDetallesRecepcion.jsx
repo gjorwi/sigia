@@ -192,7 +192,7 @@ const ModalDetallesRecepcion = ({ isOpen, recepcion, onClose, formatDate }) => {
                               <div className="text-xs text-gray-500 mt-1">
                                 ID: {loteGrupo.lote?.id} | 
                                 Vence: {loteGrupo.lote?.fecha_vencimiento ? 
-                                  new Date(loteGrupo.lote.fecha_vencimiento).toLocaleDateString() : 'N/A'}
+                                  new Date(loteGrupo.lote.fecha_vencimiento).toLocaleDateString('es-VE', { timeZone: 'UTC' }) : 'N/A'}
                               </div>
                               <div className="text-xs mt-1">
                                 <span className="font-medium text-gray-700">Salida:</span> 

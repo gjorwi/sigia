@@ -35,7 +35,7 @@ const nombreRutas = {
     '/administrador/almacenes/eliminar': 'Eliminar Almacenes',
     '/administrador/mapa': 'Mapa Georeferenciado',
     '/administrador/solicitudes': 'Gestión de Solicitudes',
-    '/administrador/logistica': 'Gestión de Logística',
+    '/administrador/logistica': 'Gestión de Seguimiento',
     '/administrador/configuracion': 'Configuración del Sistema',
     '/administrador/perfil': 'Mi Perfil'
 };

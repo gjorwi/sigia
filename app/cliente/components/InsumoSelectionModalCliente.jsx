@@ -246,7 +246,7 @@ export default function InsumoSelectionModalCliente({ isOpen, onClose, onSelectI
                                   <span className="text-blue-800">{lote.cantidad} unidades</span>
                                   {lote.fecha_vencimiento && (
                                     <span className="text-blue-600 text-xs">
-                                      Vence: {new Date(lote.fecha_vencimiento).toLocaleDateString()}
+                                      Vence: {new Date(lote.fecha_vencimiento).toLocaleDateString('es-VE', { timeZone: 'UTC' })}
                                     </span>
                                   )}
                                 </div>

@@ -227,6 +227,7 @@ const DashboardPage = () => {
         setInsumosPorVencer([]);
         return;
       }
+      console.log("Response: "+JSON.stringify(response,null,2));
       setInsumosPorVencer(response.data || []);
     } catch (error) {
       console.error('Error al cargar insumos por vencer:', error);
@@ -569,19 +570,19 @@ const DashboardPage = () => {
                                         <td className="px-6 py-4 whitespace-nowrap">
                                           <div className="flex items-center">
                                             <Package className="h-5 w-5 text-gray-400 mr-2" />
-                                            <div className="text-sm font-medium text-gray-900">
-                                              {item.insumo?.nombre || 'N/A'}
+                                            <div className="text-xs font-medium text-gray-900">
+                                              {item?.nombre || 'N/A'}
                                             </div>
                                           </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500">
                                           {item.numero_lote || 'N/A'}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                                        <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-900 font-medium">
                                           {item.cantidad || 0}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                          {new Date(item.fecha_vencimiento).toLocaleDateString('es-VE')}
+                                        <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500">
+                                          {new Date(item.fecha_vencimiento).toLocaleDateString('es-VE', { timeZone: 'UTC' })}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${

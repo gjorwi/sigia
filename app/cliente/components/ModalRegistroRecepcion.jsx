@@ -120,7 +120,7 @@ const ModalRegistroRecepcion = ({
                                   <div>ID: {loteGrupo.lote?.id}</div>
                                   <div>Enviado: <span className="font-medium">{loteGrupo.cantidad_salida}</span></div>
                                   <div>Vence: {loteGrupo.lote?.fecha_vencimiento ? 
-                                    new Date(loteGrupo.lote.fecha_vencimiento).toLocaleDateString() : 'N/A'}</div>
+                                    new Date(loteGrupo.lote.fecha_vencimiento).toLocaleDateString('es-VE', { timeZone: 'UTC' }) : 'N/A'}</div>
                                 </div>
                               </label>
                             </div>
