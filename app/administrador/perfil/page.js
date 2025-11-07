@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getUserById } from '@/servicios/users/get';
 import { putChangePassword } from '@/servicios/users/put';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Perfil() {
     const router = useRouter();
-    const [user, setUser] = useState(null);
+    const {user} = useAuth();
     const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({
         currentPassword: '',
@@ -18,25 +19,11 @@ export default function Perfil() {
     const [message, setMessage] = useState({ type: '', text: '' });
 
     useEffect(() => {
-        // TODO: Replace with actual user ID from session
-        const userId = 1; // This should come from your auth context/session
-        loadUser(userId);
-    }, []);
-
-    const loadUser = async (id) => {
-        try {
-            const result = await getUserById(id);
-            if (result.success) {
-                setUser(result.data);
-            } else {
-                setMessage({ type: 'error', text: result.message });
-            }
-        } catch (error) {
-            setMessage({ type: 'error', text: 'Error al cargar el perfil' });
-        } finally {
+        if(user){
             setLoading(false);
         }
-    };
+        console.log("User: "+JSON.stringify(user,null,2));
+    }, [user]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -103,7 +90,7 @@ export default function Perfil() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+            <div className="ml-64 min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-500 mx-auto"></div>
                     <p className="mt-4 text-lg font-medium text-gray-700">Cargando tu perfil...</p>
@@ -132,10 +119,18 @@ export default function Perfil() {
                     </div>
 
                     <div className="p-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <div className="space-y-1">
                                 <p className="text-sm font-medium text-gray-500">Nombre completo</p>
                                 <p className="text-gray-800 font-medium">{user?.nombre} {user?.apellido}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-sm font-medium text-gray-500">Cédula</p>
+                                <p className="text-gray-800">{user?.cedula || 'No especificado'}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-sm font-medium text-gray-500">Género</p>
+                                <p className="text-gray-800">{user?.genero || 'No especificado'}</p>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-sm font-medium text-gray-500">Correo electrónico</p>
@@ -144,6 +139,14 @@ export default function Perfil() {
                             <div className="space-y-1">
                                 <p className="text-sm font-medium text-gray-500">Teléfono</p>
                                 <p className="text-gray-800">{user?.telefono || 'No especificado'}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-sm font-medium text-gray-500">Dirección</p>
+                                <p className="text-gray-800">{user?.direccion || 'No especificado'}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-sm font-medium text-gray-500">Tipo de usuario</p>
+                                <p className="text-gray-800 capitalize">{user?.tipo || 'No especificado'}</p>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-sm font-medium text-gray-500">Rol en el sistema</p>
@@ -155,6 +158,249 @@ export default function Perfil() {
                                     {user?.rol === 'admin' ? 'Administrador' : 'Usuario'}
                                 </span>
                             </div>
+                            <div className="space-y-1">
+                                <p className="text-sm font-medium text-gray-500">Estado</p>
+                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                                    user?.status === 'activo' 
+                                        ? 'bg-green-100 text-green-800' 
+                                        : 'bg-red-100 text-red-800'
+                                }`}>
+                                    {user?.status === 'activo' ? 'Activo' : 'Inactivo'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Hospital and Sede Information */}
+                {(user?.hospital || user?.sede) && (
+                    <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+                        <div className="bg-gradient-to-r from-green-600 to-teal-600 px-6 py-5">
+                            <div className="flex items-center">
+                                <div className="bg-white/20 p-3 rounded-full">
+                                    <svg className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                </div>
+                                <div className="ml-4">
+                                    <h2 className="text-xl font-semibold text-white">Información de Almacen</h2>
+                                    <p className="text-green-100 text-sm">Ubicación y centro de trabajo</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {user?.hospital && (
+                                    <div className="col-span-full">
+                                        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                            <svg className="h-5 w-5 mr-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                            </svg>
+                                            Almacén
+                                        </h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg">
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-medium text-gray-500">Nombre</p>
+                                                <p className="text-gray-800 font-medium">{user.hospital.nombre}</p>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-medium text-gray-500">RIF</p>
+                                                <p className="text-gray-800">{user.hospital.rif}</p>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-medium text-gray-500">Dirección</p>
+                                                <p className="text-gray-800">{user.hospital.direccion || 'No especificado'}</p>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-medium text-gray-500">Teléfono</p>
+                                                <p className="text-gray-800">{user.hospital.telefono || 'No especificado'}</p>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-medium text-gray-500">Email</p>
+                                                <p className="text-gray-800">{user.hospital.email || 'No especificado'}</p>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-medium text-gray-500">Estado</p>
+                                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                                                    user.hospital.status === 'activo' 
+                                                        ? 'bg-green-100 text-green-800' 
+                                                        : 'bg-red-100 text-red-800'
+                                                }`}>
+                                                    {user.hospital.status === 'activo' ? 'Activo' : 'Inactivo'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {user?.sede && (
+                                    <div className="col-span-full">
+                                        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                            <svg className="h-5 w-5 mr-2 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                            Sede
+                                        </h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg">
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-medium text-gray-500">Nombre</p>
+                                                <p className="text-gray-800 font-medium">{user.sede.nombre}</p>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-medium text-gray-500">Tipo de almacén</p>
+                                                <p className="text-gray-800">{user.sede.tipo_almacen === 'almacenCent' ? 'Almacén Central' : user.sede.tipo_almacen}</p>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-medium text-gray-500">Estado</p>
+                                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                                                    user.sede.status === 'activo' 
+                                                        ? 'bg-green-100 text-green-800' 
+                                                        : 'bg-red-100 text-red-800'
+                                                }`}>
+                                                    {user.sede.status === 'activo' ? 'Activo' : 'Inactivo'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Permissions Card */}
+                <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+                    <div className="bg-gradient-to-r from-orange-600 to-red-600 px-6 py-5">
+                        <div className="flex items-center">
+                            <div className="bg-white/20 p-3 rounded-full">
+                                <svg className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                            </div>
+                            <div className="ml-4">
+                                <h2 className="text-xl font-semibold text-white">Permisos del Usuario</h2>
+                                <p className="text-orange-100 text-sm">Accesos y capacidades en el sistema</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="p-6">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                                <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                                    user?.can_view ? 'bg-green-100' : 'bg-red-100'
+                                }`}>
+                                    {user?.can_view ? (
+                                        <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    ) : (
+                                        <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    )}
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-gray-900">Ver</p>
+                                    <p className="text-xs text-gray-500">Visualizar datos</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                                <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                                    user?.can_create ? 'bg-green-100' : 'bg-red-100'
+                                }`}>
+                                    {user?.can_create ? (
+                                        <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    ) : (
+                                        <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    )}
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-gray-900">Crear</p>
+                                    <p className="text-xs text-gray-500">Agregar registros</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                                <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                                    user?.can_update ? 'bg-green-100' : 'bg-red-100'
+                                }`}>
+                                    {user?.can_update ? (
+                                        <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    ) : (
+                                        <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    )}
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-gray-900">Actualizar</p>
+                                    <p className="text-xs text-gray-500">Editar datos</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                                <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                                    user?.can_delete ? 'bg-green-100' : 'bg-red-100'
+                                }`}>
+                                    {user?.can_delete ? (
+                                        <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    ) : (
+                                        <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    )}
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-gray-900">Eliminar</p>
+                                    <p className="text-xs text-gray-500">Borrar registros</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                                <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                                    user?.can_crud_user ? 'bg-green-100' : 'bg-red-100'
+                                }`}>
+                                    {user?.can_crud_user ? (
+                                        <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    ) : (
+                                        <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    )}
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-gray-900">Gestión Usuarios</p>
+                                    <p className="text-xs text-gray-500">CRUD usuarios</p>
+                                </div>
+                            </div>
+
+                            {user?.is_root && (
+                                <div className="flex items-center space-x-3 p-3 bg-purple-50 rounded-lg border-2 border-purple-200">
+                                    <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-purple-100">
+                                        <svg className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-purple-900">Usuario Root</p>
+                                        <p className="text-xs text-purple-600">Acceso total</p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

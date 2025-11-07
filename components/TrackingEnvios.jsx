@@ -233,7 +233,7 @@ export default function TrackingEnvios({
       )}
 
       <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-        <div className="border-b border-gray-200">
+        {/* <div className="border-b border-gray-200">
           <nav className="flex -mb-px">
             <button
               onClick={() => setActiveTab('activos')}
@@ -256,7 +256,7 @@ export default function TrackingEnvios({
               Historial ({enviosHistorial.length})
             </button>
           </nav>
-        </div>
+        </div> */}
 
         <div className="p-6">
           {enviosMostrar.length === 0 ? (

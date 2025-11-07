@@ -107,7 +107,7 @@ export default function Menu() {
     // { name: 'Mapa', icon: MapPin, href: '/administrador/mapa', current: false },
     // { name: 'Solicitudes', icon: FileText, href: '/administrador/solicitudes', current: false },
     { name: 'Seguimiento', icon: Truck, href: '/administrador/logistica', current: false },
-    // { name: 'Reportes', icon: FileText, href: '/administrador/reportes', current: false },
+    { name: 'Reportes', icon: FileText, href: '/administrador/reportes', current: false },
     { name: 'Sedes', icon: House, href: '/administrador/sedes', current: false },
     { name: 'Hospitales', icon: Hospital, href: '/administrador/hospitales', current: false },
     { name: 'Insumos', icon: Package, href: '/administrador/insumos', current: false },
@@ -202,7 +202,7 @@ export default function Menu() {
           </div>
           <div className="ml-4 flex items-center md:ml-6">
             {/* Notifications Dropdown */}
-            <div className="relative ml-4 text-gray-700" ref={notificationsRef}>
+            {/* <div className="relative ml-4 text-gray-700" ref={notificationsRef}>
               <button
                 type="button"
                 onClick={toggleNotifications}
@@ -214,14 +214,12 @@ export default function Menu() {
                 <Bell className="h-6 w-6" />
                 <span className="absolute -top-0 -right-0 h-4 w-4 rounded-full bg-blue-500 text-xs text-white flex items-center justify-center">1</span>
               </button>
-              {/* Dropdown panel - show/hide with state */} 
               <div className={`${isNotificationsOpen ? 'block' : 'hidden'} absolute right-0 mt-2 w-80 bg-white border-1 border-gray-300 rounded-md shadow-lg overflow-hidden z-50`}>
                 <div className="py-1">
                   <div className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 border-b border-gray-100">
                     Notificaciones
                   </div>
                   <div className="max-h-96 overflow-y-auto">
-                    {/* Notification items would go here */}
                     <div className="px-4 py-3 hover:bg-gray-50 cursor-pointer">
                       <div className="flex items-start">
                         <div className="flex-shrink-0 pt-0.5">
@@ -244,7 +242,7 @@ export default function Menu() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Profile dropdown */}
             <div className="ml-4 relative z-20" ref={dropdownRef}>
@@ -285,13 +283,13 @@ export default function Menu() {
                   >
                     Mi perfil
                   </a>
-                  <a
+                  {/* <a
                     onClick={() => router.push('/administrador/configuracion')}
                     className="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100"
                     role="menuitem"
                   >
                     Configuración
-                  </a>
+                  </a> */}
                     <button
                       onClick={handleLogout}
                       className="w-full text-left rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"

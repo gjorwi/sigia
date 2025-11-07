@@ -8,6 +8,7 @@ import { getSedeByHospitalId } from '@/servicios/sedes/get';
 import { getInventario } from '@/servicios/inventario/get';
 import { postMovimiento } from '@/servicios/despachos/post';
 import { postDespachoAPaciente } from '@/servicios/pacientes/post';
+import { consultarCedula } from '@/servicios/cedula/get';
 import { useAuth } from '@/contexts/AuthContext';
 import { createPortal } from 'react-dom';
 const MovimientoInsumoCliente = ({ onBack }) => {
@@ -15,6 +16,7 @@ const MovimientoInsumoCliente = ({ onBack }) => {
   const [loading, setLoading] = useState(false);
   const [loadingSedes, setLoadingSedes] = useState(false);
   const [loadingInsumos, setLoadingInsumos] = useState(false);
+  const [loadingCedula, setLoadingCedula] = useState(false);
   const [sedes, setSedes] = useState([]);
   const [insumos, setInsumos] = useState([]);
   const [sedeDestino, setSedeDestino] = useState(null);
@@ -70,6 +72,39 @@ const MovimientoInsumoCliente = ({ onBack }) => {
       ...prev,
       [field]: value
     }));
+  };
+
+  const handleConsultarCedula = async () => {
+    if (!datosPaciente.cedula || datosPaciente.cedula.trim() === '') {
+      showMessage('Advertencia', 'Por favor ingrese un número de cédula', 'warning', 3000);
+      return;
+    }
+    const { token } = user;
+    setLoadingCedula(true);
+      const response = await consultarCedula(datosPaciente.cedula, token);
+      
+      if (!response.status) {
+        if (response.autenticacion === 1 || response.autenticacion === 2) {
+          showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+          logout();
+          return;
+        }
+        setLoadingCedula(false);
+        showMessage('Error', response.mensaje || 'No se encontraron datos para esta cédula', 'error', 4000);
+        return;
+      }
+
+      // Autocompletar datos del paciente
+      const datos = response.data;
+      setDatosPaciente(prev => ({
+        ...prev,
+        nombres: datos.nombres || '',
+        apellidos: `${datos.primer_apellido || ''} ${datos.segundo_apellido || ''}`.trim(),
+        cedula: datos.cedula || prev.cedula
+      }));
+
+      showMessage('Éxito', 'Datos obtenidos exitosamente', 'success', 2000);
+      setLoadingCedula(false);
   };
 
   useEffect(() => {
@@ -248,7 +283,7 @@ const MovimientoInsumoCliente = ({ onBack }) => {
         };
         
         console.log('Datos despacho a sede:', JSON.stringify(dataSend, null, 2));
-        response = await postMovimiento(token, dataSend);
+        response = await postMovimiento(token,dataSend);
         
       } else if (tipoDespacho === 'paciente') {
         // Estructura para despacho a paciente (salida definitiva)
@@ -266,7 +301,7 @@ const MovimientoInsumoCliente = ({ onBack }) => {
         
         console.log('Datos despacho a paciente:', JSON.stringify(dataSend, null, 2));
         // Usar servicio específico para despacho a paciente
-        response = await postDespachoAPaciente(token, dataSend);
+        response = await postDespachoAPaciente(token,dataSend);
       }
       
       if (!response.status) {
@@ -390,6 +425,39 @@ const MovimientoInsumoCliente = ({ onBack }) => {
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Cédula *
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={datosPaciente.cedula}
+                  onChange={(e) => handleDatosPacienteChange('cedula', e.target.value)}
+                  placeholder="Número de cédula"
+                  className="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40"
+                  disabled={loadingCedula}
+                />
+                <button
+                  type="button"
+                  onClick={handleConsultarCedula}
+                  disabled={loadingCedula || !datosPaciente.cedula}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                >
+                  {loadingCedula ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Consultando...
+                    </>
+                  ) : (
+                    'Consultar'
+                  )}
+                </button>
+              </div>
+              <p className="mt-1 text-xs text-gray-400">
+                Ingrese la cédula y presione "Consultar" para autocompletar los datos
+              </p>
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Nombres *
@@ -416,18 +484,6 @@ const MovimientoInsumoCliente = ({ onBack }) => {
               />
             </div>
             
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Cédula *
-              </label>
-              <input
-                type="text"
-                value={datosPaciente.cedula}
-                onChange={(e) => handleDatosPacienteChange('cedula', e.target.value)}
-                placeholder="Número de cédula"
-                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40"
-              />
-            </div>
             
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -464,10 +520,10 @@ const MovimientoInsumoCliente = ({ onBack }) => {
                 onChange={(e) => handleDatosPacienteChange('genero', e.target.value)}
                 className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
               >
-                <option value="">Seleccionar género</option>
-                <option value="masculino">Masculino</option>
-                <option value="femenino">Femenino</option>
-                <option value="otro">Otro</option>
+                <option className="text-gray-700" value="">Seleccionar género</option>
+                <option className="text-gray-700" value="masculino">Masculino</option>
+                <option className="text-gray-700" value="femenino">Femenino</option>
+                <option className="text-gray-700" value="otro">Otro</option>
               </select>
             </div>
 {/*             

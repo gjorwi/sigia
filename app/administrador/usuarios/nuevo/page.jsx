@@ -63,8 +63,9 @@ export default function NuevoUsuario() {
     const fetchHospitals = async () => {
       try {
         const response = await getHospitales(user.token);
-        if (response.data && response.data.data) {
-          setHospitals(response.data.data);
+        console.log("Response Hospitales: "+JSON.stringify(response,null,2));
+        if (response.data) {
+          setHospitals(response.data);
         }
       } catch (error) {
         console.log('Error al cargar hospitales:', error);

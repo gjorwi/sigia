@@ -63,4 +63,36 @@ export const getEnTransitoAdmin = async (token, idSede) => {
         return error;
     }
 };
-    
+
+export const getHistorialMovimientos = async (token, idSede) => {
+    try {
+        const response = await axios.get(`${config.URL_API}movimientos-stock/historial/origen/${idSede}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+        const data = response.data;
+        return data;
+    } catch (error) {
+        console.log('Error al obtener historial:', error);
+        return error;
+    }
+};
+
+export const getMovimientosHospital = async (token, idHospital) => {
+    try {
+        const response = await axios.get(`${config.URL_API}estadisticas/movimientos/hospital/${idHospital}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+        const data = response.data;
+        return data;
+    } catch (error) {
+        console.log('Error al obtener despachos:', error);
+        return error;
+    }
+};
+

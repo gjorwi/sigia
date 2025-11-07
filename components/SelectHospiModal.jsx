@@ -19,6 +19,7 @@ export default function SelectHospiModal({ isOpen, onClose, onSelect, hospitals,
       }
       
     }
+    console.log("Hospitals Data: "+JSON.stringify(hospitalsData,null,2));
     setFilteredHospitals(hospitalsData);
   }, [hospitals,tipo]);
 

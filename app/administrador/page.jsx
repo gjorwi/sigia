@@ -402,7 +402,7 @@ const DashboardPage = () => {
                   </button>
                   <button
                       type="button"
-                      onClick={() => router.push('/administrador/despachos/nuevo')}
+                      onClick={() => router.push('/administrador/movimientos/nuevo')}
                       className="inline-flex items-center justify-center px-4 py-3 text-sm font-medium rounded-md shadow-sm text-gray-700 border-l-4 border-green-600 hover:bg-green-700/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                   >
                       <Truck className="-ml-1 mr-2 h-5 w-5 text-green-600" />

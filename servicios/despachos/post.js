@@ -1,7 +1,9 @@
 import axios from 'axios';
 import config from '@/config';
 
-export const postMovimiento = async (data,token) => {
+export const postMovimiento = async (token,data) => {
+  // console.log(JSON.stringify(data,null,2));
+  console.log(token);
   try {
     const response = await axios.post(`${config.URL_API}movimiento/almacen/salida`, data, {
       headers: {
