@@ -206,10 +206,10 @@ export default function ReporteMovimientos() {
           </div>
 
           {/* Reporte de Movimientos */}
-          {movimientos && Object.keys(movimientos).length > 0 && (
+          {movimientos && Object.keys(movimientos).length > 0 ? (
             <div className="mt-6 space-y-6">
-              {/* Movimientos como Destino */}
-              {movimientos.movimientos_como_destino && movimientos.movimientos_como_destino.length > 0 && (
+              {/* Movimientos Recibidos */}
+              {movimientos.movimientos_recibidos && movimientos.movimientos_recibidos.movimientos && movimientos.movimientos_recibidos.movimientos.length > 0 ? (
                 <div className="bg-white shadow overflow-hidden sm:rounded-lg">
                   <div 
                     className="px-4 py-5 sm:px-6 bg-blue-50 border-b border-blue-200 cursor-pointer hover:bg-blue-100 transition-colors"
@@ -222,16 +222,16 @@ export default function ReporteMovimientos() {
                         <ChevronRight className="h-5 w-5 mr-2" />
                       )}
                       <ArrowDown className="h-5 w-5 mr-2" />
-                      Movimientos Recibidos ({movimientos.movimientos_como_destino.length})
+                      Movimientos Recibidos ({movimientos.movimientos_recibidos.total})
                     </h3>
                     <p className="mt-1 text-sm text-blue-700">
-                      Despachos recibidos de otros almacenes
+                      {movimientos.movimientos_recibidos.descripcion}
                     </p>
                   </div>
                   {expandedSections.recibidos && (
                     <div className="px-4 py-5 sm:p-6 bg-blue-25">
                       <div className="space-y-6">
-                        {movimientos.movimientos_como_destino.map((movimiento, index) => (
+                        {movimientos.movimientos_recibidos.movimientos.map((movimiento, index) => (
                           <div key={movimiento.id} className="border border-gray-200 rounded-lg overflow-hidden">
                             {/* Encabezado del Movimiento */}
                             <div 
@@ -439,10 +439,30 @@ export default function ReporteMovimientos() {
                     </div>
                   )}
                 </div>
+              ) : hospitalSeleccionado && (
+                <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+                  <div className="px-4 py-5 sm:px-6 bg-blue-50 border-b border-blue-200">
+                    <h3 className="text-lg leading-6 font-medium text-blue-900 flex items-center">
+                      <ArrowDown className="h-5 w-5 mr-2" />
+                      Movimientos Recibidos (0)
+                    </h3>
+                  </div>
+                  <div className="px-4 py-12 sm:px-6 text-center">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 mb-4">
+                      <Package className="h-8 w-8 text-blue-600" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      No hay movimientos recibidos
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      Este hospital no ha recibido ningún despacho de otros almacenes.
+                    </p>
+                  </div>
+                </div>
               )}
 
-              {/* Movimientos como Origen */}
-              {movimientos.movimientos_como_origen_por_sede && movimientos.movimientos_como_origen_por_sede.length > 0 && (
+              {/* Movimientos Despachados por Almacén */}
+              {movimientos.movimientos_despachados_por_almacen && movimientos.movimientos_despachados_por_almacen.agrupados_por_tipo_almacen && movimientos.movimientos_despachados_por_almacen.agrupados_por_tipo_almacen.length > 0 ? (
                 <div className="bg-white shadow overflow-hidden sm:rounded-lg">
                   <div 
                     className="px-4 py-5 sm:px-6 bg-orange-50 border-b border-orange-200 cursor-pointer hover:bg-orange-100 transition-colors"
@@ -455,48 +475,48 @@ export default function ReporteMovimientos() {
                         <ChevronRight className="h-5 w-5 mr-2" />
                       )}
                       <ArrowUp className="h-5 w-5 mr-2" />
-                      Movimientos Despachados por Sede
+                      Movimientos Despachados por Almacén ({movimientos.movimientos_despachados_por_almacen.total})
                     </h3>
                     <p className="mt-1 text-sm text-orange-700">
-                      Despachos enviados desde este hospital
+                      {movimientos.movimientos_despachados_por_almacen.descripcion}
                     </p>
                   </div>
                   {expandedSections.despachados && (
                     <div className="px-4 py-5 sm:p-6 bg-orange-25">
                       <div className="space-y-8">
-                        {movimientos.movimientos_como_origen_por_sede.map((sedeData) => (
-                          <div key={sedeData.sede_id} className="border border-gray-200 rounded-lg overflow-hidden">
-                            {/* Encabezado de Sede */}
+                        {movimientos.movimientos_despachados_por_almacen.agrupados_por_tipo_almacen.map((almacenData) => (
+                          <div key={almacenData.tipo_almacen} className="border border-gray-200 rounded-lg overflow-hidden">
+                            {/* Encabezado de Almacén */}
                             <div 
                               className="bg-gray-100 px-4 py-3 border-b border-gray-300 cursor-pointer hover:bg-gray-200 transition-colors"
-                              onClick={() => toggleSede(sedeData.sede_id)}
+                              onClick={() => toggleSede(almacenData.tipo_almacen)}
                             >
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
-                                  {expandedSedes[sedeData.sede_id] ? (
-                                    <ChevronDown className="h-5 w-5 text-gray-600" />
+                                  {expandedSedes[almacenData.tipo_almacen] ? (
+                                    <ChevronDown className="h-5 w-5 text-gray-700" />
                                   ) : (
-                                    <ChevronRight className="h-5 w-5 text-gray-600" />
+                                    <ChevronRight className="h-5 w-5 text-gray-700" />
                                   )}
                                   <div>
                                     <h4 className="text-base font-semibold text-gray-900">
-                                      {sedeData.sede?.nombre}
+                                      {almacenData.nombre_almacen}
                                     </h4>
                                     <p className="text-xs text-gray-600 mt-1">
-                                      {sedeData.movimientos?.length || 0} movimiento(s)
+                                      Movimientos: {almacenData.total_movimientos}
                                     </p>
                                   </div>
                                 </div>
                                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-orange-100 text-orange-800">
-                                  {sedeData.sede?.tipo_almacen}
+                                  {almacenData.tipo_almacen}
                                 </span>
                               </div>
                             </div>
 
-                            {/* Movimientos de la Sede */}
-                            {expandedSedes[sedeData.sede_id] && (
+                            {/* Movimientos del Almacén */}
+                            {expandedSedes[almacenData.tipo_almacen] && (
                               <div className="px-4 py-4 space-y-4 bg-gray-50">
-                                {sedeData.movimientos && sedeData.movimientos.map((movimiento) => (
+                                {almacenData.movimientos && almacenData.movimientos.map((movimiento) => (
                                   <div key={movimiento.id} className="border border-gray-200 rounded-lg overflow-hidden">
                                     {/* Encabezado del Movimiento */}
                                     <div 
@@ -711,7 +731,46 @@ export default function ReporteMovimientos() {
                     </div>
                   )}
                 </div>
+              ) : hospitalSeleccionado && (
+                <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+                  <div className="px-4 py-5 sm:px-6 bg-orange-50 border-b border-orange-200">
+                    <h3 className="text-lg leading-6 font-medium text-orange-900 flex items-center">
+                      <ArrowUp className="h-5 w-5 mr-2" />
+                      Movimientos Despachados por Sede (0)
+                    </h3>
+                  </div>
+                  <div className="px-4 py-12 sm:px-6 text-center">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-100 mb-4">
+                      <Package className="h-8 w-8 text-orange-600" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      No hay movimientos despachados
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      Este hospital no ha despachado ningún movimiento desde sus almacenes.
+                    </p>
+                  </div>
+                </div>
               )}
+            </div>
+          ) : hospitalSeleccionado && (
+            <div className="mt-6">
+              <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+                <div className="px-4 py-12 sm:px-6 text-center">
+                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 mb-4">
+                    <TrendingUp className="h-10 w-10 text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-medium text-gray-900 mb-2">
+                    No se encontraron movimientos
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-1">
+                    No hay movimientos registrados para <span className="font-semibold">{hospitalSeleccionado.nombre}</span>
+                  </p>
+                  <p className="text-xs text-gray-400 mt-2">
+                    Consulta realizada exitosamente
+                  </p>
+                </div>
+              </div>
             </div>
           )}
         </div>

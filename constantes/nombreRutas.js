@@ -37,7 +37,13 @@ const nombreRutas = {
     '/administrador/solicitudes': 'Gestión de Solicitudes',
     '/administrador/logistica': 'Gestión de Seguimiento',
     '/administrador/configuracion': 'Configuración del Sistema',
-    '/administrador/perfil': 'Mi Perfil'
+    '/administrador/perfil': 'Mi Perfil',
+    '/administrador/reportes': 'Reportes del Sistema',
+    '/administrador/reportes/movimientos': 'Reporte de Movimientos',
+    '/administrador/reportes/inventario': 'Reporte de Inventario',
+    '/administrador/reportes/pacientes': 'Reporte de Pacientes',
+    '/administrador/reportes/traza': 'Reporte de Traza Insumo',
+    '/administrador/reportes/general': 'Reporte General',
 };
 
 export default nombreRutas;

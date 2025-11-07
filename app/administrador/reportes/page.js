@@ -9,16 +9,16 @@ export default function Reportes() {
   const [selectedReport, setSelectedReport] = useState(null);
 
   const reportes = [
-    {
-      id: 'general',
-      titulo: 'Reporte General',
-      descripcion: 'Resumen completo de todas las operaciones del sistema',
-      icono: FileText,
-      color: 'from-blue-500 to-blue-600',
-      bgColor: 'bg-blue-50',
-      iconColor: 'text-blue-600',
-      ruta: '/administrador/reportes/general'
-    },
+    // {
+    //   id: 'general',
+    //   titulo: 'Reporte General',
+    //   descripcion: 'Resumen completo de todas las operaciones del sistema',
+    //   icono: FileText,
+    //   color: 'from-blue-500 to-blue-600',
+    //   bgColor: 'bg-blue-50',
+    //   iconColor: 'text-blue-600',
+    //   ruta: '/administrador/reportes/general'
+    // },
     {
       id: 'movimientos',
       titulo: 'Reporte Movimientos',
@@ -82,7 +82,7 @@ export default function Reportes() {
         {/* Header */}
         <div className="mb-8 flex justify-between items-start">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Reportes del Sistema</h1>
+            {/* <h1 className="text-3xl font-bold text-gray-900 mb-2">Reportes del Sistema</h1> */}
             <p className="text-gray-600">Selecciona el tipo de reporte que deseas generar</p>
           </div>
           
@@ -171,7 +171,7 @@ export default function Reportes() {
             </div>
             <div className="ml-3">
               <p className="text-sm text-blue-700">
-                <span className="font-medium">Tip:</span> Selecciona una tarjeta y luego haz clic en el botón "Generar Reporte" para continuar. 
+                <span className="font-medium">Tip:</span> Selecciona una tarjeta y luego haz clic en el botón &quot;Generar Reporte&quot; para continuar. 
                 Los reportes pueden ser exportados en formato PDF o Excel.
               </p>
             </div>

@@ -2,16 +2,20 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Users, Download, Building2 } from 'lucide-react';
+import { ArrowLeft, Users, Download, Building2, Calendar, Search } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import Modal from '@/components/Modal';
 import ModalSeleccionHospitales from '@/components/ModalSeleccionHospitales';
+import { getPacientesHospital } from '@/servicios/pacientes/get';
 
 export default function ReportePacientes() {
   const router = useRouter();
   const { user, logout } = useAuth();
   const [hospitalSeleccionado, setHospitalSeleccionado] = useState(null);
   const [showModalHospitales, setShowModalHospitales] = useState(false);
+  const [pacientes, setPacientes] = useState([]);
+  const [fecha, setFecha] = useState('');
+  const [tipoFiltro, setTipoFiltro] = useState('dia');
   const [modal, setModal] = useState({
     isOpen: false,
     title: '',
@@ -31,6 +35,35 @@ export default function ReportePacientes() {
   const handleSelectHospital = (hospital) => {
     setHospitalSeleccionado(hospital);
     setShowModalHospitales(false);
+  };
+
+  const handleGetPacientesHospital = async () => {
+    if (!hospitalSeleccionado) {
+      showMessage('Advertencia', 'Por favor selecciona un hospital', 'warning', 3000);
+      return;
+    }
+    if (!fecha) {
+      showMessage('Advertencia', 'Por favor selecciona una fecha', 'warning', 3000);
+      return;
+    }
+
+    const { token } = user;
+    const response = await getPacientesHospital(token, hospitalSeleccionado.id, fecha, tipoFiltro);
+    console.log("PacientesHospital: "+JSON.stringify(response, null, 2));
+    if(!response.status){
+      if(response.autenticacion === 1 || response.autenticacion === 2){
+        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+        logout();
+        router.replace('/');
+        return;
+      }
+      showMessage('Error', response.message, 'error', 3000);
+      return;
+    }
+    console.log("Pacientes: "+JSON.stringify(response.data, null, 2));
+    if (response.data) {
+      setPacientes(response.data);
+    }
   };
 
   const handleGenerarReporte = () => {
@@ -120,7 +153,7 @@ export default function ReportePacientes() {
                       readOnly
                       value={hospitalSeleccionado ? hospitalSeleccionado.nombre : ''}
                       placeholder="Haz clic para seleccionar un hospital"
-                      className="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-orange-500 focus:border-orange-500 cursor-pointer bg-white"
+                      className="block w-full text-gray-700 px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-orange-500 focus:border-orange-500 cursor-pointer bg-white"
                     />
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                       <Building2 className="h-5 w-5 text-gray-400" />
@@ -131,25 +164,83 @@ export default function ReportePacientes() {
                   </p>
                 </div>
 
-                {/* Información adicional */}
+                {/* Filtros de búsqueda */}
                 {hospitalSeleccionado && (
-                  <div className="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-r-lg">
-                    <div className="flex">
-                      <div className="flex-shrink-0">
-                        <Building2 className="h-5 w-5 text-orange-500" />
-                      </div>
-                      <div className="ml-3">
-                        <p className="text-sm text-orange-700">
-                          <span className="font-medium">Hospital seleccionado:</span> {hospitalSeleccionado.nombre}
-                        </p>
-                        {hospitalSeleccionado.rif && (
-                          <p className="text-sm text-orange-600 mt-1">
-                            RIF: {hospitalSeleccionado.rif}
+                  <>
+                    <div className="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-r-lg">
+                      <div className="flex">
+                        <div className="flex-shrink-0">
+                          <Building2 className="h-5 w-5 text-orange-500" />
+                        </div>
+                        <div className="ml-3">
+                          <p className="text-sm text-orange-700">
+                            <span className="font-medium">Hospital seleccionado:</span> {hospitalSeleccionado.nombre}
                           </p>
-                        )}
+                          {hospitalSeleccionado.rif && (
+                            <p className="text-sm text-orange-600 mt-1">
+                              RIF: {hospitalSeleccionado.rif}
+                            </p>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Campo de fecha */}
+                      <div>
+                        <label htmlFor="fecha" className="block text-sm font-medium text-gray-700 mb-2">
+                          Fecha *
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="date"
+                            id="fecha"
+                            value={fecha}
+                            onChange={(e) => setFecha(e.target.value)}
+                            className="block w-full px-4 py-3 border text-gray-700 border-gray-300 rounded-lg shadow-sm focus:ring-orange-500 focus:border-orange-500 bg-white"
+                          />
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <Calendar className="h-5 w-5 text-gray-400" />
+                          </div>
+                        </div>
+                        <p className="mt-2 text-sm text-gray-500">
+                          Selecciona la fecha para filtrar los datos
+                        </p>
+                      </div>
+
+                      {/* Campo de tipo de filtro */}
+                      <div>
+                        <label htmlFor="tipoFiltro" className="block text-sm font-medium text-gray-700 mb-2">
+                          Tipo de Búsqueda *
+                        </label>
+                        <select
+                          id="tipoFiltro"
+                          value={tipoFiltro}
+                          onChange={(e) => setTipoFiltro(e.target.value)}
+                          className="block w-full px-4 py-3 border text-gray-700 border-gray-300 rounded-lg shadow-sm focus:ring-orange-500 focus:border-orange-500 bg-white"
+                        >
+                          <option value="dia">Día</option>
+                          <option value="mes">Mes</option>
+                          <option value="año">Año</option>
+                        </select>
+                        <p className="mt-2 text-sm text-gray-500">
+                          Define el rango temporal de la búsqueda
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Botón de búsqueda */}
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={handleGetPacientesHospital}
+                        className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition duration-150 ease-in-out"
+                      >
+                        <Search className="h-5 w-5 mr-2" />
+                        Buscar Pacientes
+                      </button>
+                    </div>
+                  </>
                 )}
               </div>
             </div>

@@ -17,3 +17,20 @@ export const getMovimientosPacientes = async (token, sede_id) => {
         return error;
     }
 };
+
+export const getPacientesHospital = async (token, hospitalId, fecha, tipoFiltro) => {
+    try {
+        const response = await axios.get(`${config.URL_API}estadisticas/despachos-pacientes/hospital/${hospitalId}?fecha=${fecha}&tipo_filtro=${tipoFiltro}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        const result = await response.data;
+        return result;
+    } catch (error) {
+        console.log('Error en getPacientesHospital:', error);
+        return error;
+    }
+};

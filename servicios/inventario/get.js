@@ -36,3 +36,19 @@ export const getInsumosPorVencer = async (token, hospitalId, limite = 5) => {
     return error;
   }
 };
+
+export const getInventarioHospital = async (token, hospitalId) => {
+  try {
+    const response = await axios.get(`${config.URL_API}estadisticas/inventario/hospital/${hospitalId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    const data = response.data;
+    return data;
+  } catch (error) {
+    console.log('Error al obtener inventario del hospital:', error);  
+    return error;
+  }
+};
