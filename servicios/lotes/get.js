@@ -1,10 +1,9 @@
 import axios from 'axios';
 import config from '@/config';
-import {lotes} from '@/bdUsers/lotes';
 
 export const getLote = async (token) => {
     try {
-        const response = await axios.get(`${config.URL_API}/lotes`, {
+        const response = await axios.get(`${config.URL_API}lotes`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -16,24 +15,15 @@ export const getLote = async (token) => {
         return error;
     }
 }
-export const getLoteById = async (id) => {
+export const getLoteById = async (id, token) => {
     try {
-        // const response = await axios.get(`/api/lotes/${id}`);
-        // const data = response.data;
-        const result = lotes.find(lote => lote.id == id);
-        if (!result) {
-            const errorData = {
-                success: true,
-                message: "Lote no encontrado",
-                data: null
+        const response = await axios.get(`${config.URL_API}lotes/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
-            return errorData;
-        }
-        const data = {
-            success: true,
-            message: "Lote obtenido correctamente",
-            data: result
-        };
+        });
+        const data = response.data;
+
         return data;
     } catch (error) {
         console.error('Error al obtener el lote:', error);

@@ -8,6 +8,7 @@ import config from '@/config';
  * @returns {Promise<Object>} - Respuesta del servidor
  */
 export const postDespachoAPaciente = async (token, data) => {
+  console.log("aqui dentro")
   try {
     const response = await axios.post(`${config.URL_API}despachos-pacientes`, data, {
       headers: {
@@ -15,7 +16,7 @@ export const postDespachoAPaciente = async (token, data) => {
         'Authorization': `Bearer ${token}`
       }
     });
-    
+    console.log("responde")
     const result = await response.data;
     return result;
   } catch (error) {

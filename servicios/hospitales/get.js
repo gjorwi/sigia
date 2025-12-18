@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { hospitales } from '@/bdUsers/hospitales';
+
 import config from '@/config';
 
 export const getHospitales = async (token) => {
@@ -22,7 +22,7 @@ export const getHospitales = async (token) => {
     }
 };
 
-export const getHospitalById = async (cod_sicm,token) => {
+export const getHospitalById = async (cod_sicm, token) => {
     try {
         const response = await axios.get(`${config.URL_API}hospitales/cod_sicm/${cod_sicm}`, {
             headers: {

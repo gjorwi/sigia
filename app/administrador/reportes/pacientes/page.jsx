@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Users, Download, Building2, Calendar, Search } from 'lucide-react';
+import { ArrowLeft, Users, Download, Building2, Calendar, Search, Package, FileText, User, Phone, MapPin, Stethoscope, ClipboardList, Pill, ChevronDown, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import Modal from '@/components/Modal';
 import ModalSeleccionHospitales from '@/components/ModalSeleccionHospitales';
@@ -16,6 +16,7 @@ export default function ReportePacientes() {
   const [pacientes, setPacientes] = useState([]);
   const [fecha, setFecha] = useState('');
   const [tipoFiltro, setTipoFiltro] = useState('dia');
+  const [expandedPacientes, setExpandedPacientes] = useState({});
   const [modal, setModal] = useState({
     isOpen: false,
     title: '',
@@ -76,6 +77,13 @@ export default function ReportePacientes() {
     showMessage('Éxito', 'Generando reporte...', 'success', 2000);
   };
 
+  const togglePaciente = (pacienteIdx) => {
+    setExpandedPacientes(prev => ({
+      ...prev,
+      [pacienteIdx]: !prev[pacienteIdx]
+    }));
+  };
+
   return (
     <div className="md:pl-64 flex flex-col">
       <Modal 
@@ -117,12 +125,13 @@ export default function ReportePacientes() {
               </button>
               <button
                 type="button"
-                onClick={handleGenerarReporte}
+                onClick={handleGetPacientesHospital}
                 className="ml-3 inline-flex items-center px-6 py-2.5 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition duration-150 ease-in-out"
               >
-                <Download className="-ml-1 mr-2 h-5 w-5" />
-                Generar Reporte
+                <Search className="h-5 w-5 mr-2" />
+                Buscar Pacientes
               </button>
+              
             </div>
           </div>
 
@@ -228,23 +237,300 @@ export default function ReportePacientes() {
                         </p>
                       </div>
                     </div>
-
-                    {/* Botón de búsqueda */}
-                    <div className="flex justify-end">
-                      <button
-                        type="button"
-                        onClick={handleGetPacientesHospital}
-                        className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition duration-150 ease-in-out"
-                      >
-                        <Search className="h-5 w-5 mr-2" />
-                        Buscar Pacientes
-                      </button>
-                    </div>
                   </>
                 )}
               </div>
             </div>
           </div>
+
+          {/* Sección de resultados */}
+          {pacientes && pacientes.despachos_por_paciente && pacientes.despachos_por_paciente.length > 0 && (
+            <div className="mt-6 bg-white shadow overflow-hidden sm:rounded-lg">
+              <div className="px-4 py-5 sm:px-6 border-b border-gray-200 bg-gradient-to-r from-orange-50 to-white">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div>
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                      <FileText className="h-5 w-5 inline-block mr-2 text-orange-500" />
+                      Resultados del Reporte
+                    </h3>
+                    <p className="mt-1 text-sm text-gray-600">
+                      Período: {pacientes.filtro?.fecha} ({pacientes.filtro?.tipo})
+                    </p>
+                  </div>
+                  <div className="flex gap-2 sm:gap-4 text-xs sm:text-sm">
+                    <div className="bg-white px-3 py-2 rounded-lg shadow-sm border border-orange-200 flex-1 sm:flex-none">
+                      <div className="text-gray-600">Total Pacientes:</div>
+                      <div className="font-bold text-orange-600 text-lg">{pacientes.total_pacientes}</div>
+                    </div>
+                    <div className="bg-white px-3 py-2 rounded-lg shadow-sm border border-orange-200 flex-1 sm:flex-none">
+                      <div className="text-gray-600">Total Despachos:</div>
+                      <div className="font-bold text-orange-600 text-lg">{pacientes.total_despachos}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-4 py-5 sm:p-6">
+                <div className="space-y-6">
+                  {pacientes.despachos_por_paciente.map((paciente, idx) => (
+                    <div key={idx} className="border border-gray-200 rounded-lg overflow-hidden">
+                      {/* Información del paciente */}
+                      <div 
+                        className="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3 border-b border-gray-200 cursor-pointer hover:from-blue-100 hover:to-indigo-100 transition-colors"
+                        onClick={() => togglePaciente(idx)}
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                          <div className="flex items-center space-x-3">
+                            <div className="flex-shrink-0">
+                              {expandedPacientes[idx] ? (
+                                <ChevronDown className="h-5 w-5 text-blue-600" />
+                              ) : (
+                                <ChevronRight className="h-5 w-5 text-blue-600" />
+                              )}
+                            </div>
+                            <div className="flex-shrink-0">
+                              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-blue-500 flex items-center justify-center">
+                                <User className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                              </div>
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <h4 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
+                                {paciente.paciente_nombres} {paciente.paciente_apellidos}
+                              </h4>
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 mt-1 space-y-1 sm:space-y-0">
+                                <span className="text-xs sm:text-sm text-gray-600">
+                                  <strong>Cédula:</strong> {paciente.paciente_cedula}
+                                </span>
+                                {paciente.paciente_telefono && (
+                                  <span className="text-xs sm:text-sm text-gray-600 flex items-center">
+                                    <Phone className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                                    {paciente.paciente_telefono}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="bg-white px-3 py-1 rounded-full border border-blue-300 self-start sm:self-center">
+                            <span className="text-xs sm:text-sm font-medium text-blue-700 whitespace-nowrap">
+                              {paciente.total_despachos} despacho{paciente.total_despachos !== 1 ? 's' : ''}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Lista de despachos */}
+                      {expandedPacientes[idx] && (
+                      <div className="divide-y divide-gray-200">
+                        {paciente.despachos.map((despacho, despachoIdx) => (
+                          <div key={despacho.id} className="p-4 hover:bg-gray-50 transition-colors">
+                            {/* Encabezado del despacho */}
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                                <div className="bg-orange-100 px-3 py-1 rounded-lg self-start">
+                                  <span className="text-xs sm:text-sm font-semibold text-orange-700">
+                                    {despacho.codigo_despacho}
+                                  </span>
+                                </div>
+                                <div className="text-xs sm:text-sm text-gray-600">
+                                  <Calendar className="h-3 w-3 sm:h-4 sm:w-4 inline mr-1" />
+                                  {new Date(despacho.fecha_despacho).toLocaleDateString('es-ES', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                  })}
+                                </div>
+                                <div className="text-xs sm:text-sm text-gray-600">
+                                  <Building2 className="h-3 w-3 sm:h-4 sm:w-4 inline mr-1" />
+                                  {despacho.sede?.nombre}
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium ${
+                                  despacho.estado === 'despachado' 
+                                    ? 'bg-green-100 text-green-800' 
+                                    : 'bg-yellow-100 text-yellow-800'
+                                }`}>
+                                  {despacho.estado}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Información adicional del despacho */}
+                            {(despacho.medico_tratante || despacho.diagnostico || despacho.indicaciones_medicas || despacho.observaciones) && (
+                              <div className="bg-blue-50 rounded-lg p-3 mb-3 space-y-2">
+                                {despacho.medico_tratante && (
+                                  <div className="flex items-start">
+                                    <Stethoscope className="h-4 w-4 text-blue-600 mr-2 mt-0.5" />
+                                    <div className="text-sm">
+                                      <span className="font-medium text-gray-700">Médico Tratante:</span>
+                                      <span className="text-gray-600 ml-1">{despacho.medico_tratante}</span>
+                                    </div>
+                                  </div>
+                                )}
+                                {despacho.diagnostico && (
+                                  <div className="flex items-start">
+                                    <ClipboardList className="h-4 w-4 text-blue-600 mr-2 mt-0.5" />
+                                    <div className="text-sm">
+                                      <span className="font-medium text-gray-700">Diagnóstico:</span>
+                                      <span className="text-gray-600 ml-1">{despacho.diagnostico}</span>
+                                    </div>
+                                  </div>
+                                )}
+                                {despacho.indicaciones_medicas && (
+                                  <div className="flex items-start">
+                                    <FileText className="h-4 w-4 text-blue-600 mr-2 mt-0.5" />
+                                    <div className="text-sm">
+                                      <span className="font-medium text-gray-700">Indicaciones:</span>
+                                      <span className="text-gray-600 ml-1">{despacho.indicaciones_medicas}</span>
+                                    </div>
+                                  </div>
+                                )}
+                                {despacho.observaciones && (
+                                  <div className="flex items-start">
+                                    <FileText className="h-4 w-4 text-blue-600 mr-2 mt-0.5" />
+                                    <div className="text-sm">
+                                      <span className="font-medium text-gray-700">Observaciones:</span>
+                                      <span className="text-gray-600 ml-1">{despacho.observaciones}</span>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Tabla de insumos despachados */}
+                            <div className="mt-3">
+                              <div className="flex items-center mb-2">
+                                <Pill className="h-4 w-4 text-purple-600 mr-2" />
+                                <h5 className="text-sm font-semibold text-gray-700">
+                                  Insumos Despachados ({despacho.total_insumos_diferentes})
+                                </h5>
+                              </div>
+                              
+                              {/* Vista de tabla para desktop */}
+                              <div className="hidden md:block overflow-x-auto">
+                                <table className="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+                                  <thead className="bg-gray-50">
+                                    <tr>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Código
+                                      </th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Insumo
+                                      </th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Presentación
+                                      </th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Lote
+                                      </th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Vencimiento
+                                      </th>
+                                      <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Cantidad
+                                      </th>
+                                    </tr>
+                                  </thead>
+                                  <tbody className="bg-white divide-y divide-gray-200">
+                                    {despacho.insumos_despachados.map((insumo, insumoIdx) => (
+                                      <tr key={insumoIdx} className="hover:bg-gray-50">
+                                        <td className="px-4 py-2 text-sm text-gray-900 font-medium">
+                                          {insumo.insumo_codigo}
+                                        </td>
+                                        <td className="px-4 py-2 text-sm text-gray-900">
+                                          {insumo.insumo_nombre}
+                                        </td>
+                                        <td className="px-4 py-2 text-sm text-gray-600">
+                                          {insumo.presentacion}
+                                        </td>
+                                        <td className="px-4 py-2 text-sm text-gray-600">
+                                          {insumo.numero_lote}
+                                        </td>
+                                        <td className="px-4 py-2 text-sm text-gray-600">
+                                          {new Date(insumo.fecha_vencimiento).toLocaleDateString('es-ES')}
+                                        </td>
+                                        <td className="px-4 py-2 text-sm text-center">
+                                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            {insumo.cantidad_salida}
+                                          </span>
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+
+                              {/* Vista de tarjetas para móvil */}
+                              <div className="md:hidden space-y-3">
+                                {despacho.insumos_despachados.map((insumo, insumoIdx) => (
+                                  <div key={insumoIdx} className="bg-white border border-gray-200 rounded-lg p-3 space-y-2">
+                                    <div className="flex items-start justify-between">
+                                      <div className="flex-1 min-w-0">
+                                        <div className="text-sm font-semibold text-gray-900 mb-1">
+                                          {insumo.insumo_nombre}
+                                        </div>
+                                        <div className="text-xs text-gray-600">
+                                          <span className="font-medium">Código:</span> {insumo.insumo_codigo}
+                                        </div>
+                                      </div>
+                                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 ml-2">
+                                        {insumo.cantidad_salida}
+                                      </span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2 text-xs">
+                                      <div>
+                                        <span className="text-gray-500">Presentación:</span>
+                                        <div className="text-gray-900 font-medium">{insumo.presentacion}</div>
+                                      </div>
+                                      <div>
+                                        <span className="text-gray-500">Lote:</span>
+                                        <div className="text-gray-900 font-medium">{insumo.numero_lote}</div>
+                                      </div>
+                                      <div className="col-span-2">
+                                        <span className="text-gray-500">Vencimiento:</span>
+                                        <div className="text-gray-900 font-medium">
+                                          {new Date(insumo.fecha_vencimiento).toLocaleDateString('es-ES')}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Usuario que realizó el despacho */}
+                            <div className="mt-3 pt-3 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-gray-500">
+                              <div className="flex items-center">
+                                <User className="h-3 w-3 mr-1 flex-shrink-0" />
+                                <span className="truncate">Despachado por: <strong>{despacho.usuario?.nombre} {despacho.usuario?.apellido}</strong></span>
+                              </div>
+                              <div className="text-xs">
+                                <span>Registrado: {new Date(despacho.created_at).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Mensaje cuando no hay resultados */}
+          {pacientes && pacientes.despachos_por_paciente && pacientes.despachos_por_paciente.length === 0 && (
+            <div className="mt-6 bg-white shadow overflow-hidden sm:rounded-lg">
+              <div className="px-4 py-12 text-center">
+                <Users className="mx-auto h-12 w-12 text-gray-400" />
+                <h3 className="mt-2 text-sm font-medium text-gray-900">No se encontraron resultados</h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  No hay despachos registrados para los criterios de búsqueda seleccionados.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

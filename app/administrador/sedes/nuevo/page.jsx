@@ -206,7 +206,7 @@ export default function Sede() {
                           id="rif"
                           value={searchTerm}
                           onChange={handleSearchChange}
-                          placeholder="Ingrese el número de rif"
+                          placeholder="Ingrese el codigo sicm"
                           className={`block w-full px-4 py-2 text-base border ${
                             searchError 
                               ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
@@ -310,47 +310,6 @@ export default function Sede() {
                           </select>
                         </dd>
                       </div>
-                      {/* campo para seleccionar tipo de sede */}
-                      {/* <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt className="text-sm font-medium text-gray-500">
-                          Tipo de Sede
-                        </dt>
-                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                          <select
-                            value={dataSetForm.tipo}
-                            onChange={(e) => setDataSetForm({ ...dataSetForm, tipo: e.target.value })}
-                            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
-                          >
-                            <option value="">Seleccione un tipo de sede</option>
-                            {tipo.map((tipo) => (
-                              <option key={tipo.idSede} value={tipo.idSede}>
-                                {tipo.nombre}
-                              </option>
-                            ))}
-                          </select>
-                        </dd>
-                      </div> */}
-                      
-                      {/* <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt className="text-sm font-medium text-gray-500">
-                          Rol
-                        </dt>
-                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                          <select
-                            value={selectedRole}
-                            onChange={(e) => handleSelectedRole(e.target.value)}
-                            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
-                          >
-                            <option value="">Seleccionar rol</option>
-                            {roles.filter(role => role.idType === dataSetForm.tipo).map((role) => (
-                              <option key={role.id} value={role.id}>
-                                {role.nombre}
-                              </option>
-                            ))}
-                          </select>
-                        </dd>
-                      </div> */}
-                      
                     </dl>
                   </div>
                 </div>
@@ -359,14 +318,6 @@ export default function Sede() {
           </div>
         </div>
       </div>
-      
-      {/* Modal de selección de hospital
-      <SelectHospiModal
-        isOpen={showHospitalModal}
-        onClose={() => setShowHospitalModal(false)}
-        onSelect={handleSelectHospital}
-        hospitals={hospitals}
-      /> */}
     </>
   );
 }

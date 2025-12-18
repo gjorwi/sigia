@@ -59,7 +59,13 @@ const MovimientoInsumoCliente = ({ onBack }) => {
       setDatosPaciente({
         nombres: '',
         apellidos: '',
-        cedula: ''});
+        cedula: '',
+        telefono: '',
+        genero: '',
+        medico_tratante: '',
+        diagnostico: '',
+        indicaciones_medicas: '',
+      });
       setInsumosSeleccionados([]);
     } else {
       setInsumosSeleccionados([]);
@@ -296,14 +302,19 @@ const MovimientoInsumoCliente = ({ onBack }) => {
           paciente_nombres: datosPaciente.nombres,
           paciente_apellidos: datosPaciente.apellidos,
           paciente_cedula: datosPaciente.cedula,
+          paciente_telefono: datosPaciente.telefono,
+          genero: datosPaciente.genero==="masculino"?"M":"F",
+          medico_tratante: datosPaciente.medico_tratante,
+          diagnostico: datosPaciente.diagnostico,
+          indicaciones_medicas: datosPaciente.indicaciones_medicas,
           items: itemsParaEnviar
         };
         
-        console.log('Datos despacho a paciente:', JSON.stringify(dataSend, null, 2));
+        console.log('Datos despacho a paciente 1:', JSON.stringify(dataSend, null, 2));
         // Usar servicio específico para despacho a paciente
         response = await postDespachoAPaciente(token,dataSend);
       }
-      
+      console.log('Respuesta despacho:', JSON.stringify(response, null, 2));
       if (!response.status) {
         setLoading(false);
         if (response.autenticacion === 1 || response.autenticacion === 2) {
@@ -327,7 +338,12 @@ const MovimientoInsumoCliente = ({ onBack }) => {
       setDatosPaciente({
         nombres: '',
         apellidos: '',
-        cedula: ''
+        cedula: '',
+        telefono: '',
+        genero: '',
+        medico_tratante: '',
+        diagnostico: '',
+        indicaciones_medicas: '',
       });
       fetchInsumos(); // Recargar inventario actualizado
       setLoading(false);
@@ -343,7 +359,7 @@ const MovimientoInsumoCliente = ({ onBack }) => {
             Tipo de Despacho
           </h3>
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button
               onClick={() => handleTipoDespachoChange('sede')}
               className={`p-4 rounded-lg border-2 transition-all ${
@@ -353,9 +369,9 @@ const MovimientoInsumoCliente = ({ onBack }) => {
               }`}
             >
               <div className="text-center">
-                <MapPin className="h-8 w-8 mx-auto mb-2" />
-                <div className="font-medium">Despacho a Sede</div>
-                <div className="text-sm opacity-80">Transferir a otra sede del hospital</div>
+                <MapPin className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2" />
+                <div className="font-medium text-sm sm:text-base">Despacho a Sede</div>
+                <div className="text-xs sm:text-sm opacity-80">Transferir a otra sede del hospital</div>
               </div>
             </button>
             
@@ -368,9 +384,9 @@ const MovimientoInsumoCliente = ({ onBack }) => {
               }`}
             >
               <div className="text-center">
-                <Package className="h-8 w-8 mx-auto mb-2" />
-                <div className="font-medium">Despacho a Paciente</div>
-                <div className="text-sm opacity-80">Salida definitiva del almacén</div>
+                <Package className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2" />
+                <div className="font-medium text-sm sm:text-base">Despacho a Paciente</div>
+                <div className="text-xs sm:text-sm opacity-80">Salida definitiva del almacén</div>
               </div>
             </button>
           </div>
@@ -385,7 +401,7 @@ const MovimientoInsumoCliente = ({ onBack }) => {
             Sede Destino
           </h3>
         
-        <div className="flex gap-4 items-end">
+        <div className="flex flex-col sm:flex-row gap-4 sm:items-end">
           <div className="flex-1">
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Sede Seleccionada
@@ -403,7 +419,7 @@ const MovimientoInsumoCliente = ({ onBack }) => {
           <button
             onClick={() => setShowSedeModal(true)}
             disabled={loadingSedes}
-            className="px-6 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white rounded-lg transition-colors flex items-center gap-2"
+            className="w-full sm:w-auto px-6 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
           >
             {loadingSedes ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -429,7 +445,7 @@ const MovimientoInsumoCliente = ({ onBack }) => {
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Cédula *
               </label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="text"
                   value={datosPaciente.cedula}
@@ -442,12 +458,13 @@ const MovimientoInsumoCliente = ({ onBack }) => {
                   type="button"
                   onClick={handleConsultarCedula}
                   disabled={loadingCedula || !datosPaciente.cedula}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                  className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
                 >
                   {loadingCedula ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      Consultando...
+                      <span className="hidden sm:inline">Consultando...</span>
+                      <span className="sm:hidden">Consultando...</span>
                     </>
                   ) : (
                     'Consultar'
@@ -670,10 +687,10 @@ const MovimientoInsumoCliente = ({ onBack }) => {
 
       {/* Botones de Acción */}
       <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-white/10">
-        <div className="flex justify-end gap-4">
+        <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4">
           <button
             onClick={onBack}
-            className="px-6 py-2 bg-gray-400 hover:bg-gray-500 text-white border border-gray-500 rounded-lg transition-colors"
+            className="w-full sm:w-auto px-6 py-2.5 bg-gray-400 hover:bg-gray-500 text-white border border-gray-500 rounded-lg transition-colors order-2 sm:order-1"
           >
             Cancelar
           </button>
@@ -685,7 +702,7 @@ const MovimientoInsumoCliente = ({ onBack }) => {
               (tipoDespacho === 'sede' && !sedeDestino) ||
               (tipoDespacho === 'paciente' && (!datosPaciente.nombres || !datosPaciente.apellidos || !datosPaciente.cedula))
             }
-            className="px-6 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center gap-2"
+            className="w-full sm:w-auto px-6 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center justify-center gap-2 order-1 sm:order-2"
           >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />

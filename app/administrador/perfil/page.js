@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getUserById } from '@/servicios/users/get';
 import { putChangePassword } from '@/servicios/users/put';
 import { useAuth } from '@/contexts/AuthContext';
+import Modal from '@/components/Modal';
 
 export default function Perfil() {
     const router = useRouter();
-    const {user} = useAuth();
+    const {user, logout} = useAuth();
     const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({
         currentPassword: '',
@@ -16,7 +16,25 @@ export default function Perfil() {
         confirmPassword: ''
     });
     const [errors, setErrors] = useState({});
-    const [message, setMessage] = useState({ type: '', text: '' });
+    const [modal, setModal] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        type: 'info',
+        time: null
+    });
+    const [showPasswords, setShowPasswords] = useState({
+        current: false,
+        new: false,
+        confirm: false
+    });
+
+    const togglePasswordVisibility = (field) => {
+        setShowPasswords(prev => ({
+            ...prev,
+            [field]: !prev[field]
+        }));
+    };
 
     useEffect(() => {
         if(user){
@@ -57,35 +75,49 @@ export default function Perfil() {
         return Object.keys(newErrors).length === 0;
     };
 
+    const closeModal = () => {
+        setModal(prev => ({ ...prev, isOpen: false }));
+    };
+
+    const showMessage = (title, message, type, time) => {
+        setModal({ isOpen: true, title, message, type, time });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const {token, id} = user;
         
         if (!validateForm()) return;
         
-        try {
-            // TODO: Replace with actual user ID from session
-            const userId = 1;
-            const result = await putChangePassword({
-                id: userId,
-                currentPassword: formData.currentPassword,
-                newPassword: formData.newPassword
-            });
-            
-            if (result.success) {
-                setMessage({ type: 'success', text: 'Contraseña actualizada correctamente' });
-                // Clear form
-                setFormData({
-                    currentPassword: '',
-                    newPassword: '',
-                    confirmPassword: ''
-                });
-            } else {
-                setMessage({ type: 'error', text: result.message || 'Error al actualizar la contraseña' });
+        setLoading(true);
+        
+        const result = await putChangePassword({
+            id: id,
+            currentPassword: formData.currentPassword,
+            newPassword: formData.newPassword
+        }, token);
+        
+        if (!result.status) {
+            if (result.autenticacion === 1 || result.autenticacion === 2) {
+                showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+                logout();
+                router.replace('/');
+                return;
             }
-        } catch (error) {
-            console.error('Error:', error);
-            setMessage({ type: 'error', text: 'Error al procesar la solicitud' });
+            showMessage('Error', result.mensaje || 'Error al actualizar la contraseña', 'error', 4000);
+            setLoading(false);
+            return;
         }
+        
+        showMessage('Éxito', result.mensaje || 'Contraseña actualizada correctamente', 'success', 3000);
+        setLoading(false);
+        
+        // Limpiar formulario
+        setFormData({
+            currentPassword: '',
+            newPassword: '',
+            confirmPassword: ''
+        });
     };
 
     if (loading) {
@@ -422,29 +454,6 @@ export default function Perfil() {
                     </div>
 
                     <div className="p-6">
-                        {message.text && (
-                            <div className={`mb-6 p-4 rounded-lg ${
-                                message.type === 'error' 
-                                    ? 'bg-red-50 text-red-700 border-l-4 border-red-500' 
-                                    : 'bg-green-50 text-green-700 border-l-4 border-green-500'
-                            }`}>
-                                <div className="flex">
-                                    <div className="flex-shrink-0">
-                                        <svg className={`h-5 w-5 ${message.type === 'error' ? 'text-red-500' : 'text-green-500'}`} viewBox="0 0 20 20" fill="currentColor">
-                                            {message.type === 'error' ? (
-                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                                            ) : (
-                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                            )}
-                                        </svg>
-                                    </div>
-                                    <div className="ml-3">
-                                        <p className="text-sm font-medium">{message.text}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="space-y-6">
                                 <div>
@@ -455,21 +464,34 @@ export default function Perfil() {
                                         <input
                                             id="currentPassword"
                                             name="currentPassword"
-                                            type="password"
-                                            autoComplete="current-password"
+                                            type={showPasswords.current ? "text" : "password"}
+                                            autoComplete="new-password"
                                             value={formData.currentPassword}
                                             onChange={handleChange}
-                                            className={`block w-full px-4 py-3 rounded-lg border ${
+                                            className={`block w-full pr-10 px-4 py-3 rounded-lg text-gray-700 border ${
                                                 errors.currentPassword 
                                                     ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                                                     : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
                                             } shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-1 transition duration-150`}
                                             placeholder="Ingresa tu contraseña actual"
                                         />
-                                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                            <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                            </svg>
+                                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                            <button
+                                                type="button"
+                                                onClick={() => togglePasswordVisibility('current')}
+                                                className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                                            >
+                                                {showPasswords.current ? (
+                                                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                                    </svg>
+                                                ) : (
+                                                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                    </svg>
+                                                )}
+                                            </button>
                                         </div>
                                     </div>
                                     {errors.currentPassword && (
@@ -491,21 +513,34 @@ export default function Perfil() {
                                             <input
                                                 id="newPassword"
                                                 name="newPassword"
-                                                type="password"
+                                                type={showPasswords.new ? "text" : "password"}
                                                 autoComplete="new-password"
                                                 value={formData.newPassword}
                                                 onChange={handleChange}
-                                                className={`block w-full px-4 py-3 rounded-lg border ${
+                                                className={`block w-full pr-10 px-4 py-3 text-gray-700 rounded-lg border ${
                                                     errors.newPassword 
                                                         ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                                                         : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
                                                 } shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-1 transition duration-150`}
                                                 placeholder="Crea una nueva contraseña"
                                             />
-                                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                                </svg>
+                                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => togglePasswordVisibility('new')}
+                                                    className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                                                >
+                                                    {showPasswords.new ? (
+                                                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                                        </svg>
+                                                    ) : (
+                                                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                        </svg>
+                                                    )}
+                                                </button>
                                             </div>
                                         </div>
                                         {errors.newPassword && (
@@ -526,21 +561,34 @@ export default function Perfil() {
                                             <input
                                                 id="confirmPassword"
                                                 name="confirmPassword"
-                                                type="password"
+                                                type={showPasswords.confirm ? "text" : "password"}
                                                 autoComplete="new-password"
                                                 value={formData.confirmPassword}
                                                 onChange={handleChange}
-                                                className={`block w-full px-4 py-3 rounded-lg border ${
+                                                className={`block w-full pr-10 px-4 py-3 text-gray-700 rounded-lg border ${
                                                     errors.confirmPassword 
                                                         ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                                                         : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
                                                 } shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-1 transition duration-150`}
                                                 placeholder="Confirma tu nueva contraseña"
                                             />
-                                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
+                                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => togglePasswordVisibility('confirm')}
+                                                    className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                                                >
+                                                    {showPasswords.confirm ? (
+                                                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                                        </svg>
+                                                    ) : (
+                                                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                        </svg>
+                                                    )}
+                                                </button>
                                             </div>
                                         </div>
                                         {errors.confirmPassword && (
@@ -570,6 +618,16 @@ export default function Perfil() {
                     </div>
                 </div>
             </div>
+
+            {/* Modal de mensajes */}
+            <Modal
+                isOpen={modal.isOpen}
+                onClose={closeModal}
+                title={modal.title}
+                message={modal.message}
+                type={modal.type}
+                time={modal.time}
+            />
         </div>
     );
 }

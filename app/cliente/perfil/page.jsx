@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getUserById } from '@/servicios/users/get';
 import { putChangePassword } from '@/servicios/users/put';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import Modal from '@/components/Modal';
 
 export default function Perfil() {
     const router = useRouter();
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         currentPassword: '',
@@ -17,28 +17,13 @@ export default function Perfil() {
         confirmPassword: ''
     });
     const [errors, setErrors] = useState({});
-    const [message, setMessage] = useState({ type: '', text: '' });
-
-    // useEffect(() => {
-    //     // TODO: Replace with actual user ID from session
-    //     const userId = 1; // This should come from your auth context/session
-    //     loadUser(userId);
-    // }, []);
-
-    // const loadUser = async (id) => {
-    //     try {
-    //         const result = await getUserById(id);
-    //         if (result.success) {
-    //             setUser(result.data);
-    //         } else {
-    //             setMessage({ type: 'error', text: result.message });
-    //         }
-    //     } catch (error) {
-    //         setMessage({ type: 'error', text: 'Error al cargar el perfil' });
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
+    const [modal, setModal] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        type: 'info',
+        time: null
+    });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -72,35 +57,49 @@ export default function Perfil() {
         return Object.keys(newErrors).length === 0;
     };
 
+    const closeModal = () => {
+        setModal(prev => ({ ...prev, isOpen: false }));
+    };
+
+    const showMessage = (title, message, type, time) => {
+        setModal({ isOpen: true, title, message, type, time });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const {token, id} = user;
         
         if (!validateForm()) return;
         
-        try {
-            // TODO: Replace with actual user ID from session
-            const userId = 1;
-            const result = await putChangePassword({
-                id: userId,
-                currentPassword: formData.currentPassword,
-                newPassword: formData.newPassword
-            });
-            
-            if (result.success) {
-                setMessage({ type: 'success', text: 'Contraseña actualizada correctamente' });
-                // Clear form
-                setFormData({
-                    currentPassword: '',
-                    newPassword: '',
-                    confirmPassword: ''
-                });
-            } else {
-                setMessage({ type: 'error', text: result.message || 'Error al actualizar la contraseña' });
+        setLoading(true);
+        
+        const result = await putChangePassword({
+            id: id,
+            currentPassword: formData.currentPassword,
+            newPassword: formData.newPassword
+        }, token);
+        
+        if (!result.status) {
+            if (result.autenticacion === 1 || result.autenticacion === 2) {
+                showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+                logout();
+                router.replace('/');
+                return;
             }
-        } catch (error) {
-            console.error('Error:', error);
-            setMessage({ type: 'error', text: 'Error al procesar la solicitud' });
+            showMessage('Error', result.mensaje || 'Error al actualizar la contraseña', 'error', 4000);
+            setLoading(false);
+            return;
         }
+        
+        showMessage('Éxito', result.mensaje || 'Contraseña actualizada correctamente', 'success', 3000);
+        setLoading(false);
+        
+        // Limpiar formulario
+        setFormData({
+            currentPassword: '',
+            newPassword: '',
+            confirmPassword: ''
+        });
     };
 
     if (loading) {
@@ -178,29 +177,6 @@ export default function Perfil() {
                     </div>
 
                     <div className="">
-                        {message.text && (
-                            <div className={`mb-6 p-4 rounded-lg ${
-                                message.type === 'error' 
-                                    ? 'bg-red-50 text-red-700 border-l-4 border-red-500' 
-                                    : 'bg-green-50 text-green-700 border-l-4 border-green-500'
-                            }`}>
-                                <div className="flex">
-                                    <div className="flex-shrink-0">
-                                        <svg className={`h-5 w-5 ${message.type === 'error' ? 'text-red-500' : 'text-green-500'}`} viewBox="0 0 20 20" fill="currentColor">
-                                            {message.type === 'error' ? (
-                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                                            ) : (
-                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                            )}
-                                        </svg>
-                                    </div>
-                                    <div className="ml-3">
-                                        <p className="text-sm font-medium">{message.text}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
                         <form onSubmit={handleSubmit} className="space-y-6 p-6 bg-white/20 backdrop-blur-sm">
                             <div className="space-y-6">
                                 <div>
@@ -326,6 +302,16 @@ export default function Perfil() {
                     </div>
                 </div>
             </div>
+
+            {/* Modal de mensajes */}
+            <Modal
+                isOpen={modal.isOpen}
+                onClose={closeModal}
+                title={modal.title}
+                message={modal.message}
+                type={modal.type}
+                time={modal.time}
+            />
         </div>
     );
 }

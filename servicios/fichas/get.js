@@ -1,19 +1,15 @@
 import axios from "axios";
-import { fichas } from "@/bdUsers/fichas";
+import config from '@/config';
 
-export const getFichaById = async (id) => {
+export const getFichaById = async (id, token) => {
   try {
-    // const response = await axios.get(`http://localhost:3000/api/fichas/${id}`);
-    // const data = response.data;
-    const data = fichas.find(ficha => ficha.idHospital == id);
-    if (!data) {
-      const errorData = {
-        success: true,
-        message: "Ficha no encontrada",
-        data: null
+    const response = await axios.get(`${config.URL_API}fichas/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
       }
-      return errorData;
-    }
+    });
+    const data = response.data;
+
     const fichaData = {
       success: true,
       message: "Ficha obtenida correctamente",
@@ -30,4 +26,3 @@ export const getFichaById = async (id) => {
     return errorData;
   }
 };
-   

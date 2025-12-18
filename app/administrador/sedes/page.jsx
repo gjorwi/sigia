@@ -251,6 +251,7 @@ export default function Sede() {
                                 <div className="ml-4">
                                   <div className="text-md font-bold text-gray-700">{grupo.datosHospital.nombre}</div>
                                   <div className="text-sm font-medium text-gray-500 uppercase">RIF: {grupo.datosHospital.rif}</div>
+                                  <div className="text-sm font-medium text-gray-500 uppercase">SICM: {grupo.datosHospital.codigo_sicm}</div>
                                   <div className="text-sm text-gray-500">Estado: {provincias.find((provincia) => provincia.id === grupo.datosHospital.estado)?.nombre}</div>
                                   <div className="text-sm text-gray-500">{grupo.data.length} sede(s)</div>
                                 </div>
