@@ -39,9 +39,14 @@ export const postInventarioDirecto = async (data, token) => {
   }
 };
 
-export const postInventarioDirectoFile = async (token,file) => {
+export const postInventarioDirectoFile = async (token, file, hospital_id, sede_id) => {
  try {
-    const response = await axios.post(`${config.URL_API}ingresos-directos-file`, file, {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (hospital_id) formData.append('hospital_id', hospital_id);
+    if (sede_id) formData.append('sede_id', sede_id);
+
+    const response = await axios.post(`${config.URL_API}hospital/insumos/import`, formData, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'multipart/form-data'

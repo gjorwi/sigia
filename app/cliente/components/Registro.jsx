@@ -2,15 +2,17 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, Upload, Save, X, CheckCircle, AlertCircle, Package, Calendar, Hash, DollarSign, Info, Search, ArrowLeft, Loader2 } from 'lucide-react';
+import { Plus, Upload, Save, X, CheckCircle, AlertCircle, Package, Calendar, Hash, DollarSign, Info, Search, ArrowLeft, Loader2, Download } from 'lucide-react';
 import ClientInsumoForm from './clientInsumoForm';
 import { getInsumoById } from '@/servicios/insumos/get';
+import { getInsumos } from '@/servicios/insumos/get';
 import Modal from '@/components/Modal';
 import MovimientoInsumoCliente from './MovimientoInsumoCliente';
 import ModalSeleccionInsumo from '@/components/ModalSeleccionInsumo';
 import { postInventarioDirecto } from '@/servicios/inventario/post';
 import { useAuth } from '@/contexts/AuthContext';
 import { postInventarioDirectoFile } from '@/servicios/inventario/post';
+import * as XLSX from 'xlsx';
 
 const Registro = () => {
   const { user, logout } = useAuth();
@@ -27,6 +29,7 @@ const Registro = () => {
   const [archivoIngreso, setArchivoIngreso] = useState(null);
   const [showIngresoArchivoModal, setShowIngresoArchivoModal] = useState(false);
   const [loadingIngresoMultiple, setLoadingIngresoMultiple] = useState(false);
+  const [loadingPlantillaIngreso, setLoadingPlantillaIngreso] = useState(false);
 
   const [formData, setFormData] = useState({
     lote_cod: '',
@@ -46,6 +49,10 @@ const Registro = () => {
 
   const closeModal = () => {
     setModal(prev => ({ ...prev, isOpen: false }));
+  };
+
+  const showMessage = (title, message, type = 'info', time = null) => {
+    setModal({ isOpen: true, title, message, type, time });
   };
 
   useEffect(() => {
@@ -112,28 +119,144 @@ const Registro = () => {
     ingresoArchivoInputRef.current.click();
   };
 
+  const handleDescargarPlantillaIngreso = async () => {
+    setLoadingPlantillaIngreso(true);
+    try {
+      const response = await getInsumos(user.token);
+      const insumos = response?.data || [];
+
+      const wsIngreso = XLSX.utils.json_to_sheet(
+        insumos.map((i) => ({
+          insumo_id: i?.id,
+          nombre: i?.nombre || '',
+          cantidad: '',
+          numero_lote: '',
+          fecha_vencimiento: '',
+          fecha_ingreso: '',
+          tipo_ingreso: ''
+        }))
+      );
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, wsIngreso, 'Plantilla Ingreso');
+
+      const fileName = `plantilla_ingreso_insumos_${new Date().toISOString().split('T')[0]}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+    } catch (error) {
+      console.log('Error al descargar plantilla:', error);
+      setModal({
+        isOpen: true,
+        title: 'Error',
+        message: 'No se pudo generar la plantilla',
+        type: 'error',
+        time: 4000
+      });
+    } finally {
+      setLoadingPlantillaIngreso(false);
+    }
+  };
+
+  const convertirFechaAFormato = (fecha) => {
+    if (!fecha) return '';
+    
+    try {
+      // Si es un número de Excel (serial date)
+      if (typeof fecha === 'number') {
+        const date = new Date((fecha - 25569) * 86400 * 1000);
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const year = date.getUTCFullYear();
+        return `${day}/${month}/${year}`;
+      }
+      
+      // Si es string en formato YYYY-MM-DD o similar
+      const date = new Date(fecha);
+      if (isNaN(date.getTime())) return fecha; // Si no es válida, devolver original
+      
+      const day = String(date.getUTCDate()).padStart(2, '0');
+      const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+      const year = date.getUTCFullYear();
+      return `${day}/${month}/${year}`;
+    } catch (error) {
+      console.error('Error al convertir fecha:', error);
+      return fecha;
+    }
+  };
+
   const handleEnviarIngresoMultiple = async () => {
     if (!archivoIngreso) return;
 
-    const {token}=user;
-    const file=archivoIngreso;
-    const result= await postInventarioDirectoFile(token,file)
+    setLoadingIngresoMultiple(true);
 
-    if(!result.status){
-      if(result.autenticacion==1 || result.autenticacion==2){
-        showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
-        logout();
-        router.replace('/');
+    try {
+      const {token, hospital_id, sede_id} = user;
+      
+      // Leer el archivo Excel subido por el usuario
+      const fileData = await archivoIngreso.arrayBuffer();
+      const workbook = XLSX.read(fileData, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+      // Filtrar solo las filas que tienen datos (cantidad > 0 o lote lleno)
+      const filasConDatos = jsonData.filter(row => 
+        row.cantidad && row.cantidad > 0 && row.numero_lote
+      );
+
+      if (filasConDatos.length === 0) {
+        setLoadingIngresoMultiple(false);
+        showMessage('Error', 'No hay datos válidos en el archivo. Asegúrate de llenar cantidad y número de lote.', 'error', 4000);
         return;
       }
-      setLoading(false);
-      showMessage('Error', result.mensaje || 'Error al registrar entrada', 'error', 4000);
-      return;
+
+      // Reorganizar las columnas al formato esperado por el backend
+      const datosTransformados = filasConDatos.map(row => ({
+        id_insumo: row.insumo_id,
+        lote: row.numero_lote || '',
+        fecha_vencimiento: convertirFechaAFormato(row.fecha_vencimiento),
+        fecha_registro: convertirFechaAFormato(row.fecha_ingreso),
+        tipo_ingreso: row.tipo_ingreso || 'donacion',
+        cantidad: row.cantidad || 0
+      }));
+
+      // Crear nuevo archivo Excel con el formato correcto
+      const wsTransformado = XLSX.utils.json_to_sheet(datosTransformados);
+      const wbTransformado = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wbTransformado, wsTransformado, 'Ingreso');
+
+      // Descargar preview del archivo transformado
+      const previewFileName = `preview_ingreso_${new Date().toISOString().split('T')[0]}_${Date.now()}.xlsx`;
+      XLSX.writeFile(wbTransformado, previewFileName);
+
+      // Convertir a Blob para enviar
+      const excelBuffer = XLSX.write(wbTransformado, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const archivoTransformado = new File([blob], archivoIngreso.name, { type: blob.type });
+
+      // Enviar al backend
+      const result = await postInventarioDirectoFile(token, archivoTransformado, hospital_id, sede_id);
+
+      if(!result.status){
+        if(result.autenticacion==1 || result.autenticacion==2){
+          showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+          logout();
+          return;
+        }
+        setLoadingIngresoMultiple(false);
+        showMessage('Error', result.mensaje || 'Error al registrar entrada', 'error', 4000);
+        return;
+      }
+      
+      setLoadingIngresoMultiple(false);
+      console.log("Result: "+JSON.stringify(result.data, null, 2))
+      showMessage('Éxito', result.mensaje, 'success', 3000);
+      setShowIngresoArchivoModal(false);
+      setArchivoIngreso(null);
+    } catch (error) {
+      console.error('Error al procesar el archivo:', error);
+      setLoadingIngresoMultiple(false);
+      showMessage('Error', 'No se pudo procesar el archivo Excel. Verifica el formato.', 'error', 4000);
     }
-    setLoading(false);
-    showMessage('Éxito', result.mensaje, 'success', 3000);
-    setShowIngresoArchivoModal(false);
-    setArchivoIngreso(null);
   };
 
   const handleSubmitEntrada = async (e) => {
@@ -156,7 +279,7 @@ const Registro = () => {
       items: [
         {
           insumo_id: selectedInsumo.id,
-          cantidad: parseInt(formData.cantidad),
+          cantidad: parseInt(formData.cantidad), 
           numero_lote: formData.lote_cod,
           fecha_vencimiento: formData.fecha_vencimiento
         }
@@ -244,16 +367,32 @@ const Registro = () => {
 
                 <div className="flex items-center justify-between mb-3">
                   <label className="block text-sm font-medium text-gray-700">Archivo Excel *</label>
-                  {archivoIngreso && (
+                  <div className="flex items-center gap-3">
                     <button
                       type="button"
-                      onClick={handleLimpiarArchivoIngreso}
-                      className="text-sm text-red-600 hover:text-red-800 flex items-center"
+                      onClick={handleDescargarPlantillaIngreso}
+                      disabled={loadingPlantillaIngreso}
+                      className="text-sm text-indigo-600 hover:text-indigo-800 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <X className="h-4 w-4 mr-1" />
-                      Quitar
+                      {loadingPlantillaIngreso ? (
+                        <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                      ) : (
+                        <Download className="h-4 w-4 mr-1" />
+                      )}
+                      Descargar plantilla
                     </button>
-                  )}
+
+                    {archivoIngreso && (
+                      <button
+                        type="button"
+                        onClick={handleLimpiarArchivoIngreso}
+                        className="text-sm text-red-600 hover:text-red-800 flex items-center"
+                      >
+                        <X className="h-4 w-4 mr-1" />
+                        Quitar
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {!archivoIngreso ? (
@@ -601,6 +740,7 @@ const Registro = () => {
                             <option value="donacion" className="bg-[#1a1f2e] text-white">Donación</option>
                             <option value="almacenado" className="bg-[#1a1f2e] text-white">Almacenado</option>
                             <option value="adquirido" className="bg-[#1a1f2e] text-white">Adquirido</option>
+                            <option value="devolucion" className="bg-[#1a1f2e] text-white">Devolución</option>
                             <option value="otro" className="bg-[#1a1f2e] text-white">Otro</option>
                           </select>
                           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
