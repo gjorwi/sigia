@@ -332,7 +332,7 @@ const Inventario = ({setMenuActivo}) => {
                         <div className="font-medium">{insumo.lotes.length} lote(s)</div>
                         <div className="space-y-1 mt-2">
                           {insumo.lotes.map((lote, idx) => (
-                            <div key={lote.lote_id} className="text-xs bg-white/10 rounded px-2 py-1">
+                            <div key={`${insumo.id}-${lote.lote_id}-${idx}`} className="text-xs bg-white/10 rounded px-2 py-1">
                               <div className="flex justify-between items-center">
                                 <span className="font-medium">{lote.numero_lote}</span>
                                 <span className="text-white/70">{lote.cantidad} und.</span>
