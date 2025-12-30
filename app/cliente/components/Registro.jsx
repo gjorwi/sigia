@@ -211,6 +211,7 @@ const Registro = () => {
 
       // Reorganizar las columnas al formato esperado por el backend
       const datosTransformados = filasConDatos.map(row => ({
+        id_sede: sede_id,
         id_insumo: row.insumo_id,
         lote: row.numero_lote || '',
         fecha_vencimiento: convertirFechaAFormato(row.fecha_vencimiento),

@@ -46,16 +46,29 @@ const Inventario = ({setMenuActivo}) => {
       // Transformar datos para el componente
       const insumosConLotes = response.data
         .filter(item => item.cantidad_total > 0) // Solo insumos con stock
-        .map(item => ({
-          id: item.id || item.insumo_id,
-          nombre: item?.insumo?.nombre || 'Sin nombre',
-          codigo: item.codigo || item.insumo?.codigo || 'Sin código',
-          cantidad_total: item.cantidad_total || 0,
-          lotes: (item.lotes || []).filter(lote => lote.cantidad > 0).map(lote => ({
-            ...lote,
-            cantidad_seleccionada: 0
-          }))
-        }));
+        .map(item => {
+          // Eliminar lotes duplicados basándose en lote_id
+          const lotesUnicos = (item.lotes || [])
+            .filter(lote => lote.cantidad > 0)
+            .reduce((acc, lote) => {
+              const existe = acc.find(l => l.lote_id === lote.lote_id);
+              if (!existe) {
+                acc.push({
+                  ...lote,
+                  cantidad_seleccionada: 0
+                });
+              }
+              return acc;
+            }, []);
+
+          return {
+            id: item.id || item.insumo_id,
+            nombre: item?.insumo?.nombre || 'Sin nombre',
+            codigo: item.codigo || item.insumo?.codigo || 'Sin código',
+            cantidad_total: item.cantidad_total || 0,
+            lotes: lotesUnicos
+          };
+        });
       console.log("Insumos con lotes: "+JSON.stringify(insumosConLotes, null, 2));
       setInsumos(insumosConLotes);
     }
@@ -327,19 +340,23 @@ const Inventario = ({setMenuActivo}) => {
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-white">
-                        <div className="font-medium">{insumo.lotes.length} lote(s)</div>
-                        <div className="space-y-1 mt-2">
+                    <td className="px-4 py-4">
+                      <div className="text-sm text-white w-48">
+                        <div className="font-medium mb-2 flex items-center gap-2">
+                          <span className="bg-white/20 px-2 py-0.5 rounded text-xs">
+                            {insumo.lotes.length} lote{insumo.lotes.length !== 1 ? 's' : ''}
+                          </span>
+                        </div>
+                        <div className="max-h-32 overflow-y-auto space-y-1.5 pr-1 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
                           {insumo.lotes.map((lote, idx) => (
-                            <div key={`${insumo.id}-${lote.lote_id}-${idx}`} className="text-xs bg-white/10 rounded px-2 py-1">
-                              <div className="flex justify-between items-center">
-                                <span className="font-medium">{lote.numero_lote}</span>
-                                <span className="text-white/70">{lote.cantidad} und.</span>
+                            <div key={`${insumo.id}-${lote.lote_id}-${idx}`} className="text-xs bg-white/10 rounded px-2 py-1.5">
+                              <div className="flex justify-between items-center gap-2">
+                                <span className="font-medium truncate">{lote.numero_lote}</span>
+                                <span className="text-white/70 whitespace-nowrap text-[10px]">{lote.cantidad} u.</span>
                               </div>
-                              <div className="flex justify-between items-center mt-1">
-                                <span className="text-white/50">Vence:</span>
-                                <span className={`text-xs ${
+                              <div className="flex justify-between items-center gap-2 mt-0.5">
+                                <span className="text-white/50 text-[10px]">Vence:</span>
+                                <span className={`text-[10px] whitespace-nowrap ${
                                   isVencido(lote.fecha_vencimiento) ? 'text-red-400 font-bold' :
                                   isProximoAVencer(lote.fecha_vencimiento) ? 'text-yellow-400 font-medium' :
                                   'text-white/70'
