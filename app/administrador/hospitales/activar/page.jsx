@@ -79,7 +79,7 @@ export default function Activar() {
     setIsSaving(true);
     const {token} = user;
     const data={
-      rif:dataSetForm.rif,
+      cod_sicm:dataSetForm.cod_sicm,
       status:dataSetForm.status
     }
     const result = await putHospital(data,token);
@@ -167,7 +167,7 @@ export default function Activar() {
                 <p className="mt-1 max-w-2xl text-sm text-gray-500">
                   {hospitalFound 
                     ? 'Revise y active o desactive el hospital.'
-                    : 'Ingrese el número de RIF para buscar un hospital.'}
+                    : 'Ingrese el Codigo SICM para buscar un hospital.'}
                 </p>
                 
                 {/* Campo de búsqueda de RIF */}
@@ -181,7 +181,7 @@ export default function Activar() {
                           id="rif"
                           value={searchTerm}
                           onChange={handleSearchChange}
-                          placeholder="Ingrese el número de RIF"
+                          placeholder="Ingrese el Codigo SICM"
                           className={`block w-full px-4 py-2 text-base border ${
                             searchError 
                               ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 

@@ -1,10 +1,12 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Save, Loader2, Search, Plus, X, UserSearch } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, Search, Plus, X, UserSearch, FileText, CheckSquare } from 'lucide-react';
 import Modal from '@/components/Modal';
 import { getHospitalById } from '@/servicios/hospitales/get';
-import { postFicha } from '@/servicios/fichas/post';
+import { postFicha, postGenerarFicha } from '@/servicios/fichas/post';
+import { getInsumos } from '@/servicios/insumos/get';
+import { getFichaById } from '@/servicios/fichas/get';
 import { useAuth } from '@/contexts/AuthContext';
 const initialFormData = {
   nombre: '',
@@ -30,13 +32,9 @@ export default function EditarUsuario() {
   const [showInsumosModal, setShowInsumosModal] = useState(false);
   const [insumosFicha, setInsumosFicha] = useState([]);
   const [selectedInsumos, setSelectedInsumos] = useState([]);
-  const [insumosDisponibles] = useState([
-    { id: 1, nombre: 'Mascarillas N95', cantidad: 0 },
-    { id: 2, nombre: 'Guantes de látex', cantidad: 0 },
-    { id: 3, nombre: 'Jeringas', cantidad: 0 },
-    { id: 4, nombre: 'Algodón', cantidad: 0 },
-    { id: 5, nombre: 'Gasas', cantidad: 0 },
-  ]);
+  const [insumosDisponibles, setInsumosDisponibles] = useState([]);
+  const [tieneFicha, setTieneFicha] = useState(false);
+  const [generandoFicha, setGenerandoFicha] = useState(false);
   const [modal, setModal] = useState({
     isOpen: false,
     title: '',
@@ -93,16 +91,65 @@ export default function EditarUsuario() {
       setLoading(false);
       return;
     }
+    console.log(JSON.stringify(result,null,2))
     setDataSetForm(result.data);
     const type=result.data? 'success': 'info';
     const title=result.data? 'Éxito': 'Información';
     showMessage(title, result.mensaje, type, 2000);
     if (result.data) {
       setHospitalFound(true);
+      // Verificar si tiene ficha
+      await verificarFicha(result.data.id, token);
     }
     setSearching(false);
     setLoading(false);
     
+  };
+
+  const verificarFicha = async (hospitalId, token) => {
+    try {
+      const result = await getFichaById(hospitalId, token);
+      console.log('Resultado de verificar ficha:', JSON.stringify(result, null, 2));
+      
+      // Solo establecer tieneFicha como true si hay datos válidos
+      if (result.success && result.data && result.data.insumos && result.data.insumos.length > 0) {
+        setTieneFicha(true);
+        setInsumosFicha(result.data.insumos);
+      } else {
+        setTieneFicha(false);
+        setInsumosFicha([]);
+      }
+    } catch (error) {
+      console.error('Error al verificar ficha:', error);
+      setTieneFicha(false);
+      setInsumosFicha([]);
+    }
+  };
+
+  const handleGenerarFicha = async () => {
+    const {token} = user;
+    setGenerandoFicha(true);
+    try {
+      const result = await postGenerarFicha(dataSetForm.id, token);
+      if (!result.status) {
+        if(result.autenticacion==1||result.autenticacion==2){
+          showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+          logout();
+          router.replace('/');
+          return;
+        }
+        showMessage('Error', result.mensaje || 'Error al generar ficha', 'error', 4000);
+        return;
+      }
+      showMessage('Éxito', result.mensaje || 'Ficha generada correctamente', 'success', 3000);
+      // Recargar la ficha
+      await verificarFicha(dataSetForm.id, token);
+    } catch (error) {
+      console.error('Error al generar ficha:', error);
+      showMessage('Error', 'Error al generar ficha de insumos', 'error', 4000);
+    } finally {
+      setGenerandoFicha(false);
+    }
   };
   
   const handleSearchChange = (e) => {
@@ -115,6 +162,8 @@ export default function EditarUsuario() {
     setSearchError('');
     setDataSetForm(initialFormData);
     setHospitalFound(false);
+    setTieneFicha(false);
+    setInsumosFicha([]);
   };
   const agregarInsumos = () => {
     setInsumosFicha(prev => {
@@ -282,45 +331,71 @@ export default function EditarUsuario() {
                       RIF: {dataSetForm?.rif}
                     </p>
                   </div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-medium text-gray-900">Insumos del Hospital</h3>
-                    <button
-                      type="button"
-                      onClick={() => setShowInsumosModal(true)}
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                    >
-                      <Plus className="-ml-1 mr-2 h-4 w-4" />
-                      Agregar Insumos
-                    </button>
-                  </div>
-
-                  {insumosFicha.length > 0 ? (
-                    <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                      <ul className="divide-y divide-gray-200">
-                        {insumosFicha.map((insumo) => (
-                          <li key={insumo.id}>
-                            <div className="px-4 py-4 flex items-center justify-between">
-                              <div>
-                                <p className="text-sm font-medium text-gray-900">{insumo.nombre}</p>
-                                <p className="text-sm text-gray-500">Cantidad: {insumo.cantidad}</p>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setInsumosFicha(prev => prev.filter(i => i.id !== insumo.id));
-                                }}
-                                className="text-red-600 hover:text-red-800"
-                              >
-                                <X className="h-5 w-5" />
-                              </button>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
+                  {!tieneFicha ? (
+                    <div>
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-medium text-gray-900">Insumos del Hospital</h3>
+                      </div>
+                      <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+                        <FileText className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                        <p className="text-gray-500 mb-4">Este hospital no tiene una ficha de insumos asignada</p>
+                        <button
+                          type="button"
+                          onClick={handleGenerarFicha}
+                          disabled={generandoFicha}
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                        >
+                          {generandoFicha ? (
+                            <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4" />
+                          ) : (
+                            <FileText className="-ml-1 mr-2 h-4 w-4" />
+                          )}
+                          Generar Ficha de Insumos
+                        </button>
+                      </div>
                     </div>
                   ) : (
-                    <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
-                      <p className="text-gray-500">No hay insumos registrados</p>
+                    <div>
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-medium text-gray-900">Insumos del Hospital</h3>
+                        <button
+                          type="button"
+                          onClick={() => setShowInsumosModal(true)}
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                        >
+                          <Plus className="-ml-1 mr-2 h-4 w-4" />
+                          Agregar Insumos
+                        </button>
+                      </div>
+                      {insumosFicha.length > 0 ? (
+                        <div className="bg-white shadow overflow-hidden sm:rounded-md">
+                          <ul className="divide-y divide-gray-200">
+                            {insumosFicha.map((insumo) => (
+                              <li key={insumo.id}>
+                                <div className="px-4 py-4 flex items-center justify-between">
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-900">{insumo.nombre}</p>
+                                    <p className="text-sm text-gray-500">Cantidad: {insumo.cantidad}</p>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setInsumosFicha(prev => prev.filter(i => i.id !== insumo.id));
+                                    }}
+                                    className="text-red-600 hover:text-red-800"
+                                  >
+                                    <X className="h-5 w-5" />
+                                  </button>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : (
+                        <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+                          <p className="text-gray-500">No hay insumos en la ficha</p>
+                        </div>
+                      )}
                     </div>
                   )}
 

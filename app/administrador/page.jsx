@@ -355,6 +355,90 @@ const DashboardPage = () => {
     },
   ];
 
+  // Calcular distribución de hospitales por tipo (solo activos)
+  const hospitalTipo1 = hospitales.filter(h => (h.tipo === 'hospital_tipo1' || h.tipo === 1 || h.tipo === 'I') && h.status === 'activo').length;
+  const hospitalTipo2 = hospitales.filter(h => (h.tipo === 'hospital_tipo2' || h.tipo === 2 || h.tipo === 'II') && h.status === 'activo').length;
+  const hospitalTipo3 = hospitales.filter(h => (h.tipo === 'hospital_tipo3' || h.tipo === 3 || h.tipo === 'III') && h.status === 'activo').length;
+  const hospitalTipo4 = hospitales.filter(h => (h.tipo === 'hospital_tipo4' || h.tipo === 4 || h.tipo === 'IV') && h.status === 'activo').length;
+  const totalHospitales = hospitales.filter(h => h.status === 'activo').length || 1; // Evitar división por cero
+
+  const hospitalTypeStats = [
+    { 
+      name: 'Tipo I', 
+      value: hospitalTipo1, 
+      change: '15%', 
+      changeType: 'neutral',
+      color: '#8B5CF6', // Violeta
+      icon: <Hospital className="h-6 w-6" />
+    },
+    { 
+      name: 'Tipo II', 
+      value: hospitalTipo2, 
+      change: '15%', 
+      changeType: 'neutral',
+      color: '#EC4899', // Rosa
+      icon: <Hospital className="h-6 w-6" />
+    },
+    { 
+      name: 'Tipo III', 
+      value: hospitalTipo3, 
+      change: '30%', 
+      changeType: 'neutral',
+      color: '#14B8A6', // Teal
+      icon: <Hospital className="h-6 w-6" />
+    },
+    { 
+      name: 'Tipo IV', 
+      value: hospitalTipo4, 
+      change: '40%', 
+      changeType: 'neutral',
+      color: '#F97316', // Naranja
+      icon: <Hospital className="h-6 w-6" />
+    },
+  ];
+
+  // Calcular porcentaje de distribución individual por hospital
+  const calcularPorcentajeIndividual = (porcentajeTipo, cantidadHospitales) => {
+    if (cantidadHospitales === 0) return '0.00';
+    const porcentaje = parseFloat(porcentajeTipo) / cantidadHospitales;
+    return porcentaje.toFixed(2);
+  };
+
+  const hospitalIndividualStats = [
+    { 
+      name: 'Tipo I', 
+      value: hospitalTipo1 > 0 ? `${calcularPorcentajeIndividual('15', hospitalTipo1)}%` : 'N/A',
+      change: `Por hospital`, 
+      changeType: 'neutral',
+      color: '#8B5CF6',
+      icon: <Hospital className="h-6 w-6" />
+    },
+    { 
+      name: 'Tipo II', 
+      value: hospitalTipo2 > 0 ? `${calcularPorcentajeIndividual('15', hospitalTipo2)}%` : 'N/A',
+      change: `Por hospital`, 
+      changeType: 'neutral',
+      color: '#EC4899',
+      icon: <Hospital className="h-6 w-6" />
+    },
+    { 
+      name: 'Tipo III', 
+      value: hospitalTipo3 > 0 ? `${calcularPorcentajeIndividual('30', hospitalTipo3)}%` : 'N/A',
+      change: `Por hospital`, 
+      changeType: 'neutral',
+      color: '#14B8A6',
+      icon: <Hospital className="h-6 w-6" />
+    },
+    { 
+      name: 'Tipo IV', 
+      value: hospitalTipo4 > 0 ? `${calcularPorcentajeIndividual('40', hospitalTipo4)}%` : 'N/A',
+      change: `Por hospital`, 
+      changeType: 'neutral',
+      color: '#F97316',
+      icon: <Hospital className="h-6 w-6" />
+    },
+  ];
+
   const topSupplies = [
     { id: 1, name: 'Mascarillas N95', quantity: 1200, status: 'Bajo' },
     { id: 2, name: 'Guantes de Látex', quantity: 980, status: 'Bajo' },
@@ -496,6 +580,45 @@ const DashboardPage = () => {
                                 <p className={`mt-1 text-sm text-gray-500`}>
                                   {stat.change}
                                 </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Distribución por Tipo de Hospital */}
+                      <div className="mt-6">
+                        <h3 className="text-lg font-medium mb-4 text-gray-900">Distribución por Tipo de Hospital</h3>
+                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                          {hospitalTypeStats.map((stat) => (
+                            <div key={stat.name} className="relative bg-white overflow-hidden rounded-lg shadow">
+                              <div className="absolute left-0 top-0 h-full w-1" style={{ backgroundColor: stat.color }} />
+                              <div className="px-5 py-4">
+                                <div className="flex items-center justify-between">
+                                  <h3 className="text-sm font-medium text-gray-500">{stat.name}</h3>
+                                  <div className="text-2xl" style={{ color: stat.color }}>
+                                    {stat.icon}
+                                  </div>
+                                </div>
+                                <p className="mt-2 text-3xl font-semibold text-gray-900">{stat.value}</p>
+                                <p className={`mt-1 text-sm text-gray-500`}>
+                                  {stat.change}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Porcentaje de Distribución Individual */}
+                      <div className="mt-6">
+                        <h3 className="text-lg font-medium mb-4 text-gray-900">Porcentaje de Distribución Individual</h3>
+                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                          {hospitalIndividualStats.map((stat) => (
+                            <div key={stat.name} className="relative bg-white overflow-hidden rounded-lg shadow">
+                              <div className="absolute left-0 top-0 h-full w-1" style={{ backgroundColor: stat.color }} />
+                              <div className="px-5 py-4 flex items-center justify-center">
+                                <p className="text-3xl font-bold text-gray-600">{stat.value}</p>
                               </div>
                             </div>
                           ))}
