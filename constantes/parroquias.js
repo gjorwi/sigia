@@ -1,1754 +1,1757 @@
 export const parroquias = [
-  // Distrito Capital - Municipio Libertador (dc-1)
-  { id: 'dc-1-1', nombre: '23 de Enero', municipioId: 'dc-1' },
-  { id: 'dc-1-2', nombre: 'Altagracia', municipioId: 'dc-1' },
-  { id: 'dc-1-3', nombre: 'Antímano', municipioId: 'dc-1' },
-  { id: 'dc-1-4', nombre: 'Caricuao', municipioId: 'dc-1' },
-  { id: 'dc-1-5', nombre: 'Catedral', municipioId: 'dc-1' },
-  { id: 'dc-1-6', nombre: 'Coche', municipioId: 'dc-1' },
-  { id: 'dc-1-7', nombre: 'El Junquito', municipioId: 'dc-1' },
-  { id: 'dc-1-8', nombre: 'El Paraíso', municipioId: 'dc-1' },
-  { id: 'dc-1-9', nombre: 'El Recreo', municipioId: 'dc-1' },
-  { id: 'dc-1-10', nombre: 'El Valle', municipioId: 'dc-1' },
-  { id: 'dc-1-11', nombre: 'Candelaria', municipioId: 'dc-1' },
-  { id: 'dc-1-12', nombre: 'La Pastora', municipioId: 'dc-1' },
-  { id: 'dc-1-13', nombre: 'La Vega', municipioId: 'dc-1' },
-  { id: 'dc-1-14', nombre: 'Macarao', municipioId: 'dc-1' },
-  { id: 'dc-1-15', nombre: 'San Agustín', municipioId: 'dc-1' },
-  { id: 'dc-1-16', nombre: 'San Bernardino', municipioId: 'dc-1' },
-  { id: 'dc-1-17', nombre: 'San José', municipioId: 'dc-1' },
-  { id: 'dc-1-18', nombre: 'San Juan', municipioId: 'dc-1' },
-  { id: 'dc-1-19', nombre: 'San Pedro', municipioId: 'dc-1' },
-  { id: 'dc-1-20', nombre: 'Santa Rosalía', municipioId: 'dc-1' },
-  { id: 'dc-1-21', nombre: 'Santa Teresa', municipioId: 'dc-1' },
-  { id: 'dc-1-22', nombre: 'Sucre', municipioId: 'dc-1' },
-  { id: 'dc-1-27', nombre: 'El Recreo', municipioId: 'dc-1' },
-  { id: 'dc-1-28', nombre: 'La Florida', municipioId: 'dc-1' },
-  { id: 'dc-1-29', nombre: 'La Granja', municipioId: 'dc-1' },
-  { id: 'dc-1-30', nombre: 'La Yaguara', municipioId: 'dc-1' },
-  
-  // Amazonas - Municipio Alto Orinoco (amz-1)
-  { id: 'amz-1-1', nombre: 'La Esmeralda', municipioId: 'amz-1' },
-  { id: 'amz-1-2', nombre: 'Huachamacare', municipioId: 'amz-1' },
-  { id: 'amz-1-3', nombre: 'Marawaka', municipioId: 'amz-1' },
-  { id: 'amz-1-4', nombre: 'Mavaka', municipioId: 'amz-1' },
-  { id: 'amz-1-5', nombre: 'Sierra Parima', municipioId: 'amz-1' },
-  
-  // Amazonas - Municipio Atabapo (amz-2)
-  { id: 'amz-2-1', nombre: 'Atabapo', municipioId: 'amz-2' },
-  { id: 'amz-2-2', nombre: 'Ucata', municipioId: 'amz-2' },
-  { id: 'amz-2-3', nombre: 'Yapacana', municipioId: 'amz-2' },
-  { id: 'amz-2-4', nombre: 'Caname', municipioId: 'amz-2' },
-  
-  // Amazonas - Municipio Atures (amz-3)
-  { id: 'amz-3-1', nombre: 'Fernando Girón Tovar', municipioId: 'amz-3' },
-  { id: 'amz-3-2', nombre: 'Luis Alberto Gómez', municipioId: 'amz-3' },
-  { id: 'amz-3-3', nombre: 'Pahueña', municipioId: 'amz-3' },
-  { id: 'amz-3-4', nombre: 'Platanillal', municipioId: 'amz-3' },
-  
-  // Amazonas - Municipio Autana (amz-4)
-  { id: 'amz-4-1', nombre: 'Samariapo', municipioId: 'amz-4' },
-  { id: 'amz-4-2', nombre: 'Sipapo', municipioId: 'amz-4' },
-  { id: 'amz-4-3', nombre: 'Munduapo', municipioId: 'amz-4' },
-  { id: 'amz-4-4', nombre: 'Guayapo', municipioId: 'amz-4' },
-  { id: 'amz-4-5', nombre: 'Isla Ratón', municipioId: 'amz-4' },
-  
-  // Amazonas - Municipio Manapiare (amz-5)
-  { id: 'amz-5-1', nombre: 'Alto Ventuari', municipioId: 'amz-5' },
-  { id: 'amz-5-2', nombre: 'Medio Ventuari', municipioId: 'amz-5' },
-  { id: 'amz-5-3', nombre: 'Bajo Ventuari', municipioId: 'amz-5' },
-  { id: 'amz-5-4', nombre: 'Manapiare', municipioId: 'amz-5' },
-  
-  // Amazonas - Municipio Maroa (amz-6)
-  { id: 'amz-6-1', nombre: 'Maroa', municipioId: 'amz-6' },
-  { id: 'amz-6-2', nombre: 'Victorino', municipioId: 'amz-6' },
-  { id: 'amz-6-3', nombre: 'Comunidad', municipioId: 'amz-6' },
-  
-  // Amazonas - Municipio Río Negro (amz-7)
-  { id: 'amz-7-1', nombre: 'Casiquiare', municipioId: 'amz-7' },
-  { id: 'amz-7-2', nombre: 'Cocuy', municipioId: 'amz-7' },
-  { id: 'amz-7-3', nombre: 'San Carlos de Río Negro', municipioId: 'amz-7' },
-  { id: 'amz-7-4', nombre: 'Solano', municipioId: 'amz-7' },
-  
-  // Anzoátegui - Municipio Anaco (anz-1)
-  { id: 'anz-1-1', nombre: 'Anaco', municipioId: 'anz-1' },
-  { id: 'anz-1-2', nombre: 'San Joaquín', municipioId: 'anz-1' },
-  { id: 'anz-1-3', nombre: 'Buena Vista', municipioId: 'anz-1' },
-  
-  // Anzoátegui - Municipio Aragua (anz-2)
-  { id: 'anz-2-1', nombre: 'Aragua de Barcelona', municipioId: 'anz-2' },
-  { id: 'anz-2-2', nombre: 'Cachipo', municipioId: 'anz-2' },
-  { id: 'anz-2-3', nombre: 'El Chaparro', municipioId: 'anz-2' },
-  
-  // Anzoátegui - Municipio Bolívar (anz-3)
-  { id: 'anz-3-1', nombre: 'El Carmen', municipioId: 'anz-3' },
-  { id: 'anz-3-2', nombre: 'San Cristóbal', municipioId: 'anz-3' },
-  { id: 'anz-3-3', nombre: 'Bergantín', municipioId: 'anz-3' },
-  { id: 'anz-3-4', nombre: 'Caigua', municipioId: 'anz-3' },
-  { id: 'anz-3-5', nombre: 'El Pilar', municipioId: 'anz-3' },
-  { id: 'anz-3-6', nombre: 'Naricual', municipioId: 'anz-3' },
-  
-  // Anzoátegui - Municipio Bruzual (anz-4)
-  { id: 'anz-4-1', nombre: 'Clarines', municipioId: 'anz-4' },
-  { id: 'anz-4-2', nombre: 'Guanape', municipioId: 'anz-4' },
-  { id: 'anz-4-3', nombre: 'Sabana de Uchire', municipioId: 'anz-4' },
-  { id: 'anz-4-4', nombre: 'San Mateo', municipioId: 'anz-4' },
-  
-  // Anzoátegui - Municipio Carvajal (anz-5)
-  { id: 'anz-5-1', nombre: 'Valle de Guanape', municipioId: 'anz-5' },
-  { id: 'anz-5-2', nombre: 'Santa Bárbara', municipioId: 'anz-5' },
-  { id: 'anz-5-3', nombre: 'El Carito', municipioId: 'anz-5' },
-  
-  // Anzoátegui - Municipio Cajigal (anz-6)
-  { id: 'anz-6-1', nombre: 'Onoto', municipioId: 'anz-6' },
-  { id: 'anz-6-2', nombre: 'San Pablo', municipioId: 'anz-6' },
-  
-  // Anzoátegui - Municipio Freites (anz-7)
-  { id: 'anz-7-1', nombre: 'Cantaura', municipioId: 'anz-7' },
-  { id: 'anz-7-2', nombre: 'Libertador', municipioId: 'anz-7' },
-  { id: 'anz-7-3', nombre: 'Santa Rosa', municipioId: 'anz-7' },
-  { id: 'anz-7-4', nombre: 'Urica', municipioId: 'anz-7' },
-  { id: 'anz-7-5', nombre: 'Mundo Nuevo', municipioId: 'anz-7' },
-  
-  // Anzoátegui - Municipio Guanipa (anz-8)
-  { id: 'anz-8-1', nombre: 'Guanipa', municipioId: 'anz-8' },
-  
-  // Anzoátegui - Municipio Guanta (anz-9)
-  { id: 'anz-9-1', nombre: 'Guanta', municipioId: 'anz-9' },
-  { id: 'anz-9-2', nombre: 'Chorrerón', municipioId: 'anz-9' },
-  { id: 'anz-9-3', nombre: 'Pertigalete', municipioId: 'anz-9' },
-  
-  // Anzoátegui - Municipio Independencia (anz-10)
-  { id: 'anz-10-1', nombre: 'Soledad', municipioId: 'anz-10' },
-  { id: 'anz-10-2', nombre: 'Mamo', municipioId: 'anz-10' },
-  { id: 'anz-10-3', nombre: 'Carapa', municipioId: 'anz-10' },
-  
-  // Anzoátegui - Municipio Libertad (anz-11)
-  { id: 'anz-11-1', nombre: 'San Mateo', municipioId: 'anz-11' },
-  { id: 'anz-11-2', nombre: 'Santa Inés', municipioId: 'anz-11' },
-  
-  // Anzoátegui - Municipio McGregor (anz-12)
-  { id: 'anz-12-1', nombre: 'El Chaparro', municipioId: 'anz-12' },
-  { id: 'anz-12-2', nombre: 'Tomás Alfaro Calatrava', municipioId: 'anz-12' },
-  
-  // Anzoátegui - Municipio Miranda (anz-13)
-  { id: 'anz-13-1', nombre: 'Pariaguán', municipioId: 'anz-13' },
-  { id: 'anz-13-2', nombre: 'Atapirire', municipioId: 'anz-13' },
-  { id: 'anz-13-3', nombre: 'El Pao', municipioId: 'anz-13' },
-  { id: 'anz-13-4', nombre: 'Múcura', municipioId: 'anz-13' },
-  { id: 'anz-13-5', nombre: 'Boca del Pao', municipioId: 'anz-13' },
-  
-  // Anzoátegui - Municipio Monagas (anz-14)
-  { id: 'anz-14-1', nombre: 'Mapire', municipioId: 'anz-14' },
-  { id: 'anz-14-2', nombre: 'Piar', municipioId: 'anz-14' },
-  { id: 'anz-14-3', nombre: 'Santa Clara', municipioId: 'anz-14' },
-  { id: 'anz-14-4', nombre: 'San Diego de Cabrutica', municipioId: 'anz-14' },
-  { id: 'anz-14-5', nombre: 'Uverito', municipioId: 'anz-14' },
-  { id: 'anz-14-6', nombre: 'Zuata', municipioId: 'anz-14' },
-  
-  // Anzoátegui - Municipio Peñalver (anz-15)
-  { id: 'anz-15-1', nombre: 'Puerto Píritu', municipioId: 'anz-15' },
-  { id: 'anz-15-2', nombre: 'San Miguel', municipioId: 'anz-15' },
-  { id: 'anz-15-3', nombre: 'Sucre', municipioId: 'anz-15' },
-  
-  // Anzoátegui - Municipio Píritu (anz-16)
-  { id: 'anz-16-1', nombre: 'Píritu', municipioId: 'anz-16' },
-  { id: 'anz-16-2', nombre: 'San Francisco', municipioId: 'anz-16' },
-  { id: 'anz-16-3', nombre: 'San José', municipioId: 'anz-16' },
-  
-  // Anzoátegui - Municipio Capistrano (anz-17)
-  { id: 'anz-17-1', nombre: 'Boca de Uchire', municipioId: 'anz-17' },
-  { id: 'anz-17-2', nombre: 'Boca de Chávez', municipioId: 'anz-17' },
-  
-  // Anzoátegui - Municipio Santa Ana (anz-18)
-  { id: 'anz-18-1', nombre: 'Santa Ana', municipioId: 'anz-18' },
-  { id: 'anz-18-2', nombre: 'Pueblo Nuevo', municipioId: 'anz-18' },
-  
-  // Anzoátegui - Municipio Simón Rodríguez (anz-19)
-  { id: 'anz-19-1', nombre: 'El Pilar', municipioId: 'anz-19' },
-  
-  // Anzoátegui - Municipio Sotillo (anz-20)
-  { id: 'anz-20-1', nombre: 'Puerto La Cruz', municipioId: 'anz-20' },
-  { id: 'anz-20-2', nombre: 'Pozuelos', municipioId: 'anz-20' },
-  { id: 'anz-20-3', nombre: 'Guanta', municipioId: 'anz-20' },
-  
-  // Anzoátegui - Municipio Urbaneja (anz-21)
-  { id: 'anz-21-1', nombre: 'Lecherías', municipioId: 'anz-21' },
-  { id: 'anz-21-2', nombre: 'El Morro', municipioId: 'anz-21' },
-  
-  // Apure - Municipio Achaguas (apr-1)
-  { id: 'apr-1-1', nombre: 'Achaguas', municipioId: 'apr-1' },
-  { id: 'apr-1-2', nombre: 'Apurito', municipioId: 'apr-1' },
-  { id: 'apr-1-3', nombre: 'El Yagual', municipioId: 'apr-1' },
-  { id: 'apr-1-4', nombre: 'Guachara', municipioId: 'apr-1' },
-  { id: 'apr-1-5', nombre: 'Mucuritas', municipioId: 'apr-1' },
-  { id: 'apr-1-6', nombre: 'Queseras del Medio', municipioId: 'apr-1' },
-  
-  // Apure - Municipio Biruaca (apr-2)
-  { id: 'apr-2-1', nombre: 'Biruaca', municipioId: 'apr-2' },
-  
-  // Apure - Municipio Muñoz (apr-3)
-  { id: 'apr-3-1', nombre: 'Mantecal', municipioId: 'apr-3' },
-  { id: 'apr-3-2', nombre: 'Bruzual', municipioId: 'apr-3' },
-  { id: 'apr-3-3', nombre: 'Quintero', municipioId: 'apr-3' },
-  { id: 'apr-3-4', nombre: 'Rincón Hondo', municipioId: 'apr-3' },
-  { id: 'apr-3-5', nombre: 'San Vicente', municipioId: 'apr-3' },
-  
-  // Apure - Municipio Páez (apr-4)
-  { id: 'apr-4-1', nombre: 'Guasdualito', municipioId: 'apr-4' },
-  { id: 'apr-4-2', nombre: 'Aramendi', municipioId: 'apr-4' },
-  { id: 'apr-4-3', nombre: 'El Amparo', municipioId: 'apr-4' },
-  { id: 'apr-4-4', nombre: 'San Camilo', municipioId: 'apr-4' },
-  { id: 'apr-4-5', nombre: 'Urdaneta', municipioId: 'apr-4' },
-  { id: 'apr-4-6', nombre: 'El Nula', municipioId: 'apr-4' },
-  { id: 'apr-4-7', nombre: 'Palmarito', municipioId: 'apr-4' },
-  
-  // Apure - Municipio Pedro Camejo (apr-5)
-  { id: 'apr-5-1', nombre: 'San Juan de Payara', municipioId: 'apr-5' },
-  { id: 'apr-5-2', nombre: 'Codazzi', municipioId: 'apr-5' },
-  { id: 'apr-5-3', nombre: 'Cunaviche', municipioId: 'apr-5' },
-  { id: 'apr-5-4', nombre: 'Puerto Páez', municipioId: 'apr-5' },
-  
-  // Apure - Municipio Rómulo Gallegos (apr-6)
-  { id: 'apr-6-1', nombre: 'Elorza', municipioId: 'apr-6' },
-  { id: 'apr-6-2', nombre: 'La Trinidad', municipioId: 'apr-6' },
-  { id: 'apr-6-3', nombre: 'La Trinidad de Orichuna', municipioId: 'apr-6' },
-  
-  // Apure - Municipio San Fernando (apr-7)
-  { id: 'apr-7-1', nombre: 'San Fernando', municipioId: 'apr-7' },
-  { id: 'apr-7-2', nombre: 'El Recreo', municipioId: 'apr-7' },
-  { id: 'apr-7-3', nombre: 'Peñalver', municipioId: 'apr-7' },
-  { id: 'apr-7-4', nombre: 'San Rafael de Atamaica', municipioId: 'apr-7' },
-  { id: 'apr-7-5', nombre: 'Arichuna', municipioId: 'apr-7' },
-  
-  // Aragua - Municipio Bolívar (ara-1)
-  { id: 'ara-1-1', nombre: 'San Mateo', municipioId: 'ara-1' },
-  { id: 'ara-1-2', nombre: 'Camatagua', municipioId: 'ara-1' },
-  { id: 'ara-1-3', nombre: 'Carmen de Cura', municipioId: 'ara-1' },
-  
-  // Aragua - Municipio Camatagua (ara-2)
-  { id: 'ara-2-1', nombre: 'Camatagua', municipioId: 'ara-2' },
-  { id: 'ara-2-2', nombre: 'Carmen de Cura', municipioId: 'ara-2' },
-  
-  // Aragua - Municipio Francisco Linares Alcántara (ara-3)
-  { id: 'ara-3-1', nombre: 'Francisco Linares Alcántara', municipioId: 'ara-3' },
-  { id: 'ara-3-2', nombre: 'Francisco de Miranda', municipioId: 'ara-3' },
-  { id: 'ara-3-3', nombre: 'Monseñor Feliciano González', municipioId: 'ara-3' },
-  { id: 'ara-3-4', nombre: 'Parapal', municipioId: 'ara-3' },
-  
-  // Aragua - Municipio Girardot (ara-4)
-  { id: 'ara-4-1', nombre: 'Los Tacariguas', municipioId: 'ara-4' },
-  { id: 'ara-4-2', nombre: 'José Casanova Godoy', municipioId: 'ara-4' },
-  { id: 'ara-4-3', nombre: 'Pedro José Ovalles', municipioId: 'ara-4' },
-  { id: 'ara-4-4', nombre: 'Madre María de San José', municipioId: 'ara-4' },
-  { id: 'ara-4-5', nombre: 'Las Delicias', municipioId: 'ara-4' },
-  { id: 'ara-4-6', nombre: 'Andrés Eloy Blanco', municipioId: 'ara-4' },
-  { id: 'ara-4-7', nombre: 'Joaquín Crespo', municipioId: 'ara-4' },
-  { id: 'ara-4-8', nombre: 'Choroní', municipioId: 'ara-4' },
-  { id: 'ara-4-9', nombre: 'Maracay', municipioId: 'ara-4' },
-  
-  // Aragua - Municipio José Ángel Lamas (ara-5)
-  { id: 'ara-5-1', nombre: 'Santa Cruz', municipioId: 'ara-5' },
-  
-  // Aragua - Municipio José Félix Ribas (ara-6)
-  { id: 'ara-6-1', nombre: 'Juan Vicente Bolívar', municipioId: 'ara-6' },
-  { id: 'ara-6-2', nombre: 'Castor Nieves Ríos', municipioId: 'ara-6' },
-  { id: 'ara-6-3', nombre: 'Zuata', municipioId: 'ara-6' },
-  { id: 'ara-6-4', nombre: 'Las Guacamayas', municipioId: 'ara-6' },
-  { id: 'ara-6-5', nombre: 'Pao de Zárate', municipioId: 'ara-6' },
-  
-  // Aragua - Municipio José Rafael Revenga (ara-7)
-  { id: 'ara-7-1', nombre: 'El Consejo', municipioId: 'ara-7' },
-  
-  // Aragua - Municipio Libertador (ara-8)
-  { id: 'ara-8-1', nombre: 'San Martín de Porres', municipioId: 'ara-8' },
-  { id: 'ara-8-2', nombre: 'Palo Negro', municipioId: 'ara-8' },
-  
-  // Aragua - Municipio Mario Briceño Iragorry (ara-9)
-  { id: 'ara-9-1', nombre: 'Caña de Azúcar', municipioId: 'ara-9' },
-  { id: 'ara-9-2', nombre: 'El Limón', municipioId: 'ara-9' },
-  
-  // Aragua - Municipio Ocumare de la Costa de Oro (ara-10)
-  { id: 'ara-10-1', nombre: 'Ocumare de la Costa', municipioId: 'ara-10' },
-  
-  // Aragua - Municipio San Casimiro (ara-11)
-  { id: 'ara-11-1', nombre: 'San Casimiro', municipioId: 'ara-11' },
-  { id: 'ara-11-2', nombre: 'Güiripa', municipioId: 'ara-11' },
-  { id: 'ara-11-3', nombre: 'Ollas de Caramacate', municipioId: 'ara-11' },
-  { id: 'ara-11-4', nombre: 'Valle Morín', municipioId: 'ara-11' },
-  
-  // Aragua - Municipio San Sebastián (ara-12)
-  { id: 'ara-12-1', nombre: 'San Sebastián de los Reyes', municipioId: 'ara-12' },
-  
-  // Aragua - Municipio Santiago Mariño (ara-13)
-  { id: 'ara-13-1', nombre: 'Samán de Güere', municipioId: 'ara-13' },
-  { id: 'ara-13-2', nombre: 'Turmero', municipioId: 'ara-13' },
-  { id: 'ara-13-3', nombre: 'Arévalo Aponte', municipioId: 'ara-13' },
-  { id: 'ara-13-4', nombre: 'Alfredo Pacheco Miranda', municipioId: 'ara-13' },
-  { id: 'ara-13-5', nombre: 'Chuao', municipioId: 'ara-13' },
-  
-  // Aragua - Municipio Santos Michelena (ara-14)
-  { id: 'ara-14-1', nombre: 'Las Tejerías', municipioId: 'ara-14' },
-  { id: 'ara-14-2', nombre: 'Tiara', municipioId: 'ara-14' },
-  
-  // Aragua - Municipio Sucre (ara-15)
-  { id: 'ara-15-1', nombre: 'Cagua', municipioId: 'ara-15' },
-  { id: 'ara-15-2', nombre: 'Bella Vista', municipioId: 'ara-15' },
-  
-  // Aragua - Municipio Tovar (ara-16)
-  { id: 'ara-16-1', nombre: 'Colonia Tovar', municipioId: 'ara-16' },
-  
-  // Aragua - Municipio Urdaneta (ara-17)
-  { id: 'ara-17-1', nombre: 'Barbacoas', municipioId: 'ara-17' },
-  { id: 'ara-17-2', nombre: 'Las Peñitas', municipioId: 'ara-17' },
-  { id: 'ara-17-3', nombre: 'San Francisco de Cara', municipioId: 'ara-17' },
-  { id: 'ara-17-4', nombre: 'Taguay', municipioId: 'ara-17' },
-  
-  // Aragua - Municipio Zamora (ara-18)
-  { id: 'ara-18-1', nombre: 'Villa de Cura', municipioId: 'ara-18' },
-  { id: 'ara-18-2', nombre: 'Magdaleno', municipioId: 'ara-18' },
-  { id: 'ara-18-3', nombre: 'San Francisco de Asís', municipioId: 'ara-18' },
-  { id: 'ara-18-4', nombre: 'Valles de Tucutunemo', municipioId: 'ara-18' },
-  { id: 'ara-18-5', nombre: 'Augusto Mijares', municipioId: 'ara-18' },
-  { id: 'ara-18-6', nombre: 'Tocorón', municipioId: 'ara-18' },
-  
-  // Barinas - Municipio Alberto Arvelo Torrealba (bar-1)
-  { id: 'bar-1-1', nombre: 'Sabaneta', municipioId: 'bar-1' },
-  { id: 'bar-1-2', nombre: 'Juan Antonio Rodríguez Domínguez', municipioId: 'bar-1' },
-  
-  // Barinas - Municipio Andrés Eloy Blanco (bar-2)
-  { id: 'bar-2-1', nombre: 'El Cantón', municipioId: 'bar-2' },
-  { id: 'bar-2-2', nombre: 'Santa Cruz de Guacas', municipioId: 'bar-2' },
-  { id: 'bar-2-3', nombre: 'Puerto Vivas', municipioId: 'bar-2' },
-  
-  // Barinas - Municipio Antonio José de Sucre (bar-3)
-  { id: 'bar-3-1', nombre: 'Socopó', municipioId: 'bar-3' },
-  { id: 'bar-3-2', nombre: 'Elías Sánchez Rubio', municipioId: 'bar-3' },
-  { id: 'bar-3-3', nombre: 'Rosa de Jesús', municipioId: 'bar-3' },
-  
-  // Barinas - Municipio Arismendi (bar-4)
-  { id: 'bar-4-1', nombre: 'Arismendi', municipioId: 'bar-4' },
-  { id: 'bar-4-2', nombre: 'Guadarrama', municipioId: 'bar-4' },
-  { id: 'bar-4-3', nombre: 'La Unión', municipioId: 'bar-4' },
-  { id: 'bar-4-4', nombre: 'San Antonio', municipioId: 'bar-4' },
-  
-  // Barinas - Municipio Barinas (bar-5)
-  { id: 'bar-5-1', nombre: 'Barinas', municipioId: 'bar-5' },
-  { id: 'bar-5-2', nombre: 'Alberto Arvelo Larriva', municipioId: 'bar-5' },
-  { id: 'bar-5-3', nombre: 'San Silvestre', municipioId: 'bar-5' },
-  { id: 'bar-5-4', nombre: 'Santa Inés', municipioId: 'bar-5' },
-  { id: 'bar-5-5', nombre: 'Santa Lucía', municipioId: 'bar-5' },
-  { id: 'bar-5-6', nombre: 'Torunos', municipioId: 'bar-5' },
-  { id: 'bar-5-7', nombre: 'El Carmen', municipioId: 'bar-5' },
-  { id: 'bar-5-8', nombre: 'Rómulo Betancourt', municipioId: 'bar-5' },
-  { id: 'bar-5-9', nombre: 'Corazón de Jesús', municipioId: 'bar-5' },
-  { id: 'bar-5-10', nombre: 'Ramón Ignacio Méndez', municipioId: 'bar-5' },
-  { id: 'bar-5-11', nombre: 'Alto Barinas', municipioId: 'bar-5' },
-  { id: 'bar-5-12', nombre: 'Manuel Palacio Fajardo', municipioId: 'bar-5' },
-  { id: 'bar-5-13', nombre: 'Juan Antonio Rodríguez Domínguez', municipioId: 'bar-5' },
-  { id: 'bar-5-14', nombre: 'Dominga Ortiz de Páez', municipioId: 'bar-5' },
-  
-  // Barinas - Municipio Bolívar (bar-6)
-  { id: 'bar-6-1', nombre: 'Barinitas', municipioId: 'bar-6' },
-  { id: 'bar-6-2', nombre: 'Altamira de Cáceres', municipioId: 'bar-6' },
-  { id: 'bar-6-3', nombre: 'Calderas', municipioId: 'bar-6' },
-  
-  // Barinas - Municipio Cruz Paredes (bar-7)
-  { id: 'bar-7-1', nombre: 'Barrancas', municipioId: 'bar-7' },
-  { id: 'bar-7-2', nombre: 'El Socorro', municipioId: 'bar-7' },
-  { id: 'bar-7-3', nombre: 'Mazparrito', municipioId: 'bar-7' },
-  
-  // Barinas - Municipio Ezequiel Zamora (bar-8)
-  { id: 'bar-8-1', nombre: 'Santa Bárbara', municipioId: 'bar-8' },
-  { id: 'bar-8-2', nombre: 'Pedro Briceño Méndez', municipioId: 'bar-8' },
-  { id: 'bar-8-3', nombre: 'Ramón Ignacio Méndez', municipioId: 'bar-8' },
-  { id: 'bar-8-4', nombre: 'José Ignacio del Pumar', municipioId: 'bar-8' },
-  
-  // Barinas - Municipio Obispos (bar-9)
-  { id: 'bar-9-1', nombre: 'Obispos', municipioId: 'bar-9' },
-  { id: 'bar-9-2', nombre: 'El Real', municipioId: 'bar-9' },
-  { id: 'bar-9-3', nombre: 'La Luz', municipioId: 'bar-9' },
-  { id: 'bar-9-4', nombre: 'Los Guasimitos', municipioId: 'bar-9' },
-  
-  // Barinas - Municipio Pedraza (bar-10)
-  { id: 'bar-10-1', nombre: 'Ciudad Bolivia', municipioId: 'bar-10' },
-  { id: 'bar-10-2', nombre: 'Ignacio Briceño', municipioId: 'bar-10' },
-  { id: 'bar-10-3', nombre: 'José Félix Ribas', municipioId: 'bar-10' },
-  { id: 'bar-10-4', nombre: 'Páez', municipioId: 'bar-10' },
-  
-  // Barinas - Municipio Rojas (bar-11)
-  { id: 'bar-11-1', nombre: 'Libertad', municipioId: 'bar-11' },
-  { id: 'bar-11-2', nombre: 'Dolores', municipioId: 'bar-11' },
-  { id: 'bar-11-3', nombre: 'Palacio Fajardo', municipioId: 'bar-11' },
-  { id: 'bar-11-4', nombre: 'Santa Rosa', municipioId: 'bar-11' },
-  
-  // Barinas - Municipio Sosa (bar-12)
-  { id: 'bar-12-1', nombre: 'Ciudad de Nutrias', municipioId: 'bar-12' },
-  { id: 'bar-12-2', nombre: 'El Regalo', municipioId: 'bar-12' },
-  { id: 'bar-12-3', nombre: 'Puerto de Nutrias', municipioId: 'bar-12' },
-  { id: 'bar-12-4', nombre: 'Santa Catalina', municipioId: 'bar-12' },
-  
-  // Bolívar - Municipio Caroní (bol-1)
-  { id: 'bol-1-1', nombre: 'Ciudad Guayana', municipioId: 'bol-1' },
-  { id: 'bol-1-2', nombre: 'Cachamay', municipioId: 'bol-1' },
-  { id: 'bol-1-3', nombre: 'Chirica', municipioId: 'bol-1' },
-  { id: 'bol-1-4', nombre: 'Dalla Costa', municipioId: 'bol-1' },
-  { id: 'bol-1-5', nombre: 'Once de Abril', municipioId: 'bol-1' },
-  { id: 'bol-1-6', nombre: 'Simón Bolívar', municipioId: 'bol-1' },
-  { id: 'bol-1-7', nombre: 'Unare', municipioId: 'bol-1' },
-  { id: 'bol-1-8', nombre: 'Universidad', municipioId: 'bol-1' },
-  { id: 'bol-1-9', nombre: 'Vista al Sol', municipioId: 'bol-1' },
-  { id: 'bol-1-10', nombre: 'Pozo Verde', municipioId: 'bol-1' },
-  { id: 'bol-1-11', nombre: 'Yocoima', municipioId: 'bol-1' },
-  
-  // Bolívar - Municipio Cedeño (bol-2)
-  { id: 'bol-2-1', nombre: 'Caicara del Orinoco', municipioId: 'bol-2' },
-  { id: 'bol-2-2', nombre: 'Ascensión Farreras', municipioId: 'bol-2' },
-  { id: 'bol-2-3', nombre: 'Guaniamo', municipioId: 'bol-2' },
-  { id: 'bol-2-4', nombre: 'La Urbana', municipioId: 'bol-2' },
-  { id: 'bol-2-5', nombre: 'Pijiguaos', municipioId: 'bol-2' },
-  
-  // Bolívar - Municipio El Callao (bol-3)
-  { id: 'bol-3-1', nombre: 'El Callao', municipioId: 'bol-3' },
-  
-  // Bolívar - Municipio Gran Sabana (bol-4)
-  { id: 'bol-4-1', nombre: 'Santa Elena de Uairén', municipioId: 'bol-4' },
-  { id: 'bol-4-2', nombre: 'Ikabarú', municipioId: 'bol-4' },
-  
-  // Bolívar - Municipio Heres (bol-5)
-  { id: 'bol-5-1', nombre: 'Ciudad Bolívar', municipioId: 'bol-5' },
-  { id: 'bol-5-2', nombre: 'José Antonio Páez', municipioId: 'bol-5' },
-  { id: 'bol-5-3', nombre: 'Orinoco', municipioId: 'bol-5' },
-  { id: 'bol-5-4', nombre: 'Panapana', municipioId: 'bol-5' },
-  { id: 'bol-5-5', nombre: 'Vista Hermosa', municipioId: 'bol-5' },
-  { id: 'bol-5-6', nombre: 'Zea', municipioId: 'bol-5' },
-  
-  // Bolívar - Municipio Piar (bol-6)
-  { id: 'bol-6-1', nombre: 'Upata', municipioId: 'bol-6' },
-  { id: 'bol-6-2', nombre: 'Andrés Eloy Blanco', municipioId: 'bol-6' },
-  { id: 'bol-6-3', nombre: 'Pedro Cova', municipioId: 'bol-6' },
-  
-  // Bolívar - Municipio Raúl Leoni (bol-7)
-  { id: 'bol-7-1', nombre: 'Ciudad Piar', municipioId: 'bol-7' },
-  { id: 'bol-7-2', nombre: 'Dalla Costa', municipioId: 'bol-7' },
-  { id: 'bol-7-3', nombre: 'San Francisco', municipioId: 'bol-7' },
-  
-  // Bolívar - Municipio Roscio (bol-8)
-  { id: 'bol-8-1', nombre: 'Guasipati', municipioId: 'bol-8' },
-  { id: 'bol-8-2', nombre: 'El Callao', municipioId: 'bol-8' },
-  { id: 'bol-8-3', nombre: 'El Miamo', municipioId: 'bol-8' },
-  { id: 'bol-8-4', nombre: 'El Dorado', municipioId: 'bol-8' },
-  
-  // Bolívar - Municipio Sifontes (bol-9)
-  { id: 'bol-9-1', nombre: 'Tumeremo', municipioId: 'bol-9' },
-  { id: 'bol-9-2', nombre: 'Aripao', municipioId: 'bol-9' },
-  { id: 'bol-9-3', nombre: 'El Palmar', municipioId: 'bol-9' },
-  { id: 'bol-9-4', nombre: 'El Pao', municipioId: 'bol-9' },
-  { id: 'bol-9-5', nombre: 'Las Majadas', municipioId: 'bol-9' },
-  
-  // Bolívar - Municipio Sucre (bol-10)
-  { id: 'bol-10-1', nombre: 'Maripa', municipioId: 'bol-10' },
-  { id: 'bol-10-2', nombre: 'Aripao', municipioId: 'bol-10' },
-  { id: 'bol-10-3', nombre: 'Las Majadas', municipioId: 'bol-10' },
-  { id: 'bol-10-4', nombre: 'Moitaco', municipioId: 'bol-10' },
-  
-  // Bolívar - Municipio Padre Pedro Chien (bol-11)
-  { id: 'bol-11-1', nombre: 'El Palmar', municipioId: 'bol-11' },
-  { id: 'bol-11-2', nombre: 'Bejuma', municipioId: 'bol-11' },
-  { id: 'bol-11-3', nombre: 'La Paragua', municipioId: 'bol-11' },
-  
-  // Carabobo - Municipio Bejuma (car-1)
-  { id: 'car-1-1', nombre: 'Bejuma', municipioId: 'car-1' },
-  { id: 'car-1-2', nombre: 'Canoabo', municipioId: 'car-1' },
-  { id: 'car-1-3', nombre: 'Simón Bolívar', municipioId: 'car-1' },
-  
-  // Carabobo - Municipio Carlos Arvelo (car-2)
-  { id: 'car-2-1', nombre: 'Güigüe', municipioId: 'car-2' },
-  { id: 'car-2-2', nombre: 'Belén', municipioId: 'car-2' },
-  { id: 'car-2-3', nombre: 'Tacarigua', municipioId: 'car-2' },
-  
-  // Carabobo - Municipio Diego Ibarra (car-3)
-  { id: 'car-3-1', nombre: 'Mariara', municipioId: 'car-3' },
-  { id: 'car-3-2', nombre: 'Aguas Calientes', municipioId: 'car-3' },
-  
-  // Carabobo - Municipio Guacara (car-4)
-  { id: 'car-4-1', nombre: 'Guacara', municipioId: 'car-4' },
-  { id: 'car-4-2', nombre: 'Ciudad Alianza', municipioId: 'car-4' },
-  { id: 'car-4-3', nombre: 'Yagua', municipioId: 'car-4' },
-  
-  // Carabobo - Municipio Juan José Mora (car-5)
-  { id: 'car-5-1', nombre: 'Morón', municipioId: 'car-5' },
-  { id: 'car-5-2', nombre: 'Urama', municipioId: 'car-5' },
-  
-  // Carabobo - Municipio Libertador (car-6)
-  { id: 'car-6-1', nombre: 'Tocuyito', municipioId: 'car-6' },
-  { id: 'car-6-2', nombre: 'Independencia', municipioId: 'car-6' },
-  
-  // Carabobo - Municipio Los Guayos (car-7)
-  { id: 'car-7-1', nombre: 'Los Guayos', municipioId: 'car-7' },
-  
-  // Carabobo - Municipio Miranda (car-8)
-  { id: 'car-8-1', nombre: 'Miranda', municipioId: 'car-8' },
-  
-  // Carabobo - Municipio Montalbán (car-9)
-  { id: 'car-9-1', nombre: 'Montalbán', municipioId: 'car-9' },
-  
-  // Carabobo - Municipio Naguanagua (car-10)
-  { id: 'car-10-1', nombre: 'Naguanagua', municipioId: 'car-10' },
-  
-  // Carabobo - Municipio Puerto Cabello (car-11)
-  { id: 'car-11-1', nombre: 'Borburata', municipioId: 'car-11' },
-  { id: 'car-11-2', nombre: 'Patanemo', municipioId: 'car-11' },
-  { id: 'car-11-3', nombre: 'Puerto Cabello', municipioId: 'car-11' },
-  
-  // Carabobo - Municipio San Diego (car-12)
-  { id: 'car-12-1', nombre: 'San Diego', municipioId: 'car-12' },
-  
-  // Carabobo - Municipio San Joaquín (car-13)
-  { id: 'car-13-1', nombre: 'San Joaquín', municipioId: 'car-13' },
-  
-  // Carabobo - Municipio Valencia (car-14)
-  { id: 'car-14-1', nombre: 'Candelaria', municipioId: 'car-14' },
-  { id: 'car-14-2', nombre: 'Catedral', municipioId: 'car-14' },
-  { id: 'car-14-3', nombre: 'El Socorro', municipioId: 'car-14' },
-  { id: 'car-14-4', nombre: 'Miguel Peña', municipioId: 'car-14' },
-  { id: 'car-14-5', nombre: 'Negro Primero', municipioId: 'car-14' },
-  { id: 'car-14-6', nombre: 'Rafael Urdaneta', municipioId: 'car-14' },
-  { id: 'car-14-7', nombre: 'San Blas', municipioId: 'car-14' },
-  { id: 'car-14-8', nombre: 'San José', municipioId: 'car-14' },
-  { id: 'car-14-9', nombre: 'Santa Rosa', municipioId: 'car-14' },
-  
-  // Cojedes - Municipio Anzoátegui (coj-1)
-  { id: 'coj-1-1', nombre: 'Cojedes', municipioId: 'coj-1' },
-  { id: 'coj-1-2', nombre: 'Juan de Mata Suárez', municipioId: 'coj-1' },
-  
-  // Cojedes - Municipio Falcón (coj-2)
-  { id: 'coj-2-1', nombre: 'El Baúl', municipioId: 'coj-2' },
-  { id: 'coj-2-2', nombre: 'Sucre', municipioId: 'coj-2' },
-  
-  // Cojedes - Municipio Girardot (coj-3)
-  { id: 'coj-3-1', nombre: 'El Amparo', municipioId: 'coj-3' },
-  { id: 'coj-3-2', nombre: 'La Unión', municipioId: 'coj-3' },
-  
-  // Cojedes - Municipio Lima Blanco (coj-4)
-  { id: 'coj-4-1', nombre: 'Macapo', municipioId: 'coj-4' },
-  { id: 'coj-4-2', nombre: 'La Aguadita', municipioId: 'coj-4' },
-  
-  // Cojedes - Municipio Pao de San Juan Bautista (coj-5)
-  { id: 'coj-5-1', nombre: 'El Pao', municipioId: 'coj-5' },
-  
-  // Cojedes - Municipio Ricaurte (coj-6)
-  { id: 'coj-6-1', nombre: 'Libertad de Cojedes', municipioId: 'coj-6' },
-  { id: 'coj-6-2', nombre: 'El Amparo', municipioId: 'coj-6' },
-  
-  // Cojedes - Municipio Rómulo Gallegos (coj-7)
-  { id: 'coj-7-1', nombre: 'Las Vegas', municipioId: 'coj-7' },
-  { id: 'coj-7-2', nombre: 'La Unión', municipioId: 'coj-7' },
-  
-  // Cojedes - Municipio San Carlos (coj-8)
-  { id: 'coj-8-1', nombre: 'San Carlos de Austria', municipioId: 'coj-8' },
-  { id: 'coj-8-2', nombre: 'Juan Ángel Bravo', municipioId: 'coj-8' },
-  { id: 'coj-8-3', nombre: 'Manuel Manrique', municipioId: 'coj-8' },
-  
-  // Cojedes - Municipio Tinaco (coj-9)
-  { id: 'coj-9-1', nombre: 'Tinaco', municipioId: 'coj-9' },
-  { id: 'coj-9-2', nombre: 'General en Jefe José Laurencio Silva', municipioId: 'coj-9' },
-  
-  // Delta Amacuro - Municipio Antonio Díaz (dfa-1)
-  { id: 'dfa-1-1', nombre: 'Curiapo', municipioId: 'dfa-1' },
-  { id: 'dfa-1-2', nombre: 'Almirante Luis Brión', municipioId: 'dfa-1' },
-  { id: 'dfa-1-3', nombre: 'Francisco Aniceto Lugo', municipioId: 'dfa-1' },
-  { id: 'dfa-1-4', nombre: 'Manuel Renaud', municipioId: 'dfa-1' },
-  { id: 'dfa-1-5', nombre: 'Padre Barral', municipioId: 'dfa-1' },
-  { id: 'dfa-1-6', nombre: 'Santos de Abelgas', municipioId: 'dfa-1' },
-  
-  // Delta Amacuro - Municipio Casacoima (dfa-2)
-  { id: 'dfa-2-1', nombre: 'Sierra Imataca', municipioId: 'dfa-2' },
-  { id: 'dfa-2-2', nombre: 'Juan Bautista Arismendi', municipioId: 'dfa-2' },
-  { id: 'dfa-2-3', nombre: 'Manuel Piar', municipioId: 'dfa-2' },
-  { id: 'dfa-2-4', nombre: 'Rómulo Gallegos', municipioId: 'dfa-2' },
-  
-  // Delta Amacuro - Municipio Pedernales (dfa-3)
-  { id: 'dfa-3-1', nombre: 'Pedernales', municipioId: 'dfa-3' },
-  { id: 'dfa-3-2', nombre: 'Luis Beltrán Prieto Figueroa', municipioId: 'dfa-3' },
-  
-  // Delta Amacuro - Municipio Tucupita (dfa-4)
-  { id: 'dfa-4-1', nombre: 'San José', municipioId: 'dfa-4' },
-  { id: 'dfa-4-2', nombre: 'José Vidal Marcano', municipioId: 'dfa-4' },
-  { id: 'dfa-4-3', nombre: 'Juan Millán', municipioId: 'dfa-4' },
-  { id: 'dfa-4-4', nombre: 'Leonardo Ruíz Pineda', municipioId: 'dfa-4' },
-  { id: 'dfa-4-5', nombre: 'Mariscal Antonio José de Sucre', municipioId: 'dfa-4' },
-  { id: 'dfa-4-6', nombre: 'Monseñor Argimiro García', municipioId: 'dfa-4' },
-  { id: 'dfa-4-7', nombre: 'San Rafael', municipioId: 'dfa-4' },
-  { id: 'dfa-4-8', nombre: 'Virgen del Valle', municipioId: 'dfa-4' },
-  
-  // Falcón - Municipio Acosta (fal-1)
-  { id: 'fal-1-1', nombre: 'Capadare', municipioId: 'fal-1' },
-  { id: 'fal-1-2', nombre: 'La Pastora', municipioId: 'fal-1' },
-  { id: 'fal-1-3', nombre: 'Libertador', municipioId: 'fal-1' },
-  { id: 'fal-1-4', nombre: 'San Juan de los Cayos', municipioId: 'fal-1' },
-  
-  // Falcón - Municipio Bolívar (fal-2)
-  { id: 'fal-2-1', nombre: 'Aracua', municipioId: 'fal-2' },
-  { id: 'fal-2-2', nombre: 'La Peña', municipioId: 'fal-2' },
-  { id: 'fal-2-3', nombre: 'San Luis', municipioId: 'fal-2' },
-  
-  // Falcón - Municipio Buchivacoa (fal-3)
-  { id: 'fal-3-1', nombre: 'Bariro', municipioId: 'fal-3' },
-  { id: 'fal-3-2', nombre: 'Borojó', municipioId: 'fal-3' },
-  { id: 'fal-3-3', nombre: 'Capatárida', municipioId: 'fal-3' },
-  { id: 'fal-3-4', nombre: 'Guajiro', municipioId: 'fal-3' },
-  { id: 'fal-3-5', nombre: 'Seque', municipioId: 'fal-3' },
-  { id: 'fal-3-6', nombre: 'Valle de Eroa', municipioId: 'fal-3' },
-  { id: 'fal-3-7', nombre: 'Zazárida', municipioId: 'fal-3' },
-  
-  // Falcón - Municipio Cacique Manaure (fal-4)
-  { id: 'fal-4-1', nombre: 'Cacique Manaure (Yaracal)', municipioId: 'fal-4' },
-  
-  // Falcón - Municipio Carirubana (fal-5)
-  { id: 'fal-5-1', nombre: 'Norte', municipioId: 'fal-5' },
-  { id: 'fal-5-2', nombre: 'Carirubana', municipioId: 'fal-5' },
-  { id: 'fal-5-3', nombre: 'Santa Ana', municipioId: 'fal-5' },
-  { id: 'fal-5-4', nombre: 'Urbana Punta Cardón', municipioId: 'fal-5' },
-  
-  // Falcón - Municipio Colina (fal-6)
-  { id: 'fal-6-1', nombre: 'La Vela de Coro', municipioId: 'fal-6' },
-  { id: 'fal-6-2', nombre: 'Acurigua', municipioId: 'fal-6' },
-  { id: 'fal-6-3', nombre: 'Guaibacoa', municipioId: 'fal-6' },
-  { id: 'fal-6-4', nombre: 'Las Calderas', municipioId: 'fal-6' },
-  { id: 'fal-6-5', nombre: 'Mataruca', municipioId: 'fal-6' },
-  
-  // Falcón - Municipio Dabajuro (fal-7)
-  { id: 'fal-7-1', nombre: 'Dabajuro', municipioId: 'fal-7' },
-  
-  // Falcón - Municipio Democracia (fal-8)
-  { id: 'fal-8-1', nombre: 'Agua Clara', municipioId: 'fal-8' },
-  { id: 'fal-8-2', nombre: 'Avaria', municipioId: 'fal-8' },
-  { id: 'fal-8-3', nombre: 'Pedregal', municipioId: 'fal-8' },
-  { id: 'fal-8-4', nombre: 'Piedra Grande', municipioId: 'fal-8' },
-  { id: 'fal-8-5', nombre: 'Purureche', municipioId: 'fal-8' },
-  
-  // Falcón - Municipio Falcón (fal-9)
-  { id: 'fal-9-1', nombre: 'Adaure', municipioId: 'fal-9' },
-  { id: 'fal-9-2', nombre: 'Adícora', municipioId: 'fal-9' },
-  { id: 'fal-9-3', nombre: 'Baraived', municipioId: 'fal-9' },
-  { id: 'fal-9-4', nombre: 'Buena Vista', municipioId: 'fal-9' },
-  { id: 'fal-9-5', nombre: 'Jadacaquiva', municipioId: 'fal-9' },
-  { id: 'fal-9-6', nombre: 'El Vínculo', municipioId: 'fal-9' },
-  { id: 'fal-9-7', nombre: 'El Hato', municipioId: 'fal-9' },
-  { id: 'fal-9-8', nombre: 'Moruy', municipioId: 'fal-9' },
-  { id: 'fal-9-9', nombre: 'Pueblo Nuevo', municipioId: 'fal-9' },
-  
-  // Falcón - Municipio Federación (fal-10)
-  { id: 'fal-10-1', nombre: 'Agua Larga', municipioId: 'fal-10' },
-  { id: 'fal-10-2', nombre: 'Churuguara', municipioId: 'fal-10' },
-  { id: 'fal-10-3', nombre: 'El Paují', municipioId: 'fal-10' },
-  { id: 'fal-10-4', nombre: 'Independencia', municipioId: 'fal-10' },
-  { id: 'fal-10-5', nombre: 'Mapararí', municipioId: 'fal-10' },
-  
-  // Falcón - Municipio Jacura (fal-11)
-  { id: 'fal-11-1', nombre: 'Agua Linda', municipioId: 'fal-11' },
-  { id: 'fal-11-2', nombre: 'Araurima', municipioId: 'fal-11' },
-  { id: 'fal-11-3', nombre: 'Jacura', municipioId: 'fal-11' },
-  
-  // Falcón - Municipio Los Taques (fal-12)
-  { id: 'fal-12-1', nombre: 'Santa Cruz de Los Taques', municipioId: 'fal-12' },
-  { id: 'fal-12-2', nombre: 'El Rincón', municipioId: 'fal-12' },
-  
-  // Falcón - Municipio Mauroa (fal-13)
-  { id: 'fal-13-1', nombre: 'Mene de Mauroa', municipioId: 'fal-13' },
-  { id: 'fal-13-2', nombre: 'San Félix', municipioId: 'fal-13' },
-  
-  // Falcón - Municipio Miranda (fal-14)
-  { id: 'fal-14-1', nombre: 'Guzmán Guillermo', municipioId: 'fal-14' },
-  { id: 'fal-14-2', nombre: 'Mitare', municipioId: 'fal-14' },
-  { id: 'fal-14-3', nombre: 'Río Seco', municipioId: 'fal-14' },
-  { id: 'fal-14-4', nombre: 'Sabaneta', municipioId: 'fal-14' },
-  { id: 'fal-14-5', nombre: 'San Antonio', municipioId: 'fal-14' },
-  { id: 'fal-14-6', nombre: 'San Gabriel', municipioId: 'fal-14' },
-  { id: 'fal-14-7', nombre: 'Santa Ana', municipioId: 'fal-14' },
-  
-  // Falcón - Municipio Monseñor Iturriza (fal-15)
-  { id: 'fal-15-1', nombre: 'Boca del Tocuyo', municipioId: 'fal-15' },
-  { id: 'fal-15-2', nombre: 'Chichiriviche', municipioId: 'fal-15' },
-  { id: 'fal-15-3', nombre: 'Tocuyo de la Costa', municipioId: 'fal-15' },
-  
-  // Falcón - Municipio Palmasola (fal-16)
-  { id: 'fal-16-1', nombre: 'Palmasola', municipioId: 'fal-16' },
-  
-  // Falcón - Municipio Petit (fal-17)
-  { id: 'fal-17-1', nombre: 'Cabure', municipioId: 'fal-17' },
-  { id: 'fal-17-2', nombre: 'Colina', municipioId: 'fal-17' },
-  { id: 'fal-17-3', nombre: 'Curimagua', municipioId: 'fal-17' }, 
-  
-  // Falcón - Municipio Píritu (fal-18)
-  { id: 'fal-18-1', nombre: 'Píritu', municipioId: 'fal-18' },
-  { id: 'fal-18-2', nombre: 'San José de la Costa', municipioId: 'fal-18' },
-  
-  // Falcón - Municipio San Francisco (fal-19)
-  { id: 'fal-19-1', nombre: 'Capital San Francisco Mirimire', municipioId: 'fal-19' },
-  
-  // Falcón - Municipio Silva (fal-20)
-  { id: 'fal-20-1', nombre: 'Tucacas', municipioId: 'fal-20' },
-  { id: 'fal-20-2', nombre: 'Boca de Aroa', municipioId: 'fal-20' },
-  
-  // Falcón - Municipio Sucre (fal-21)
-  { id: 'fal-21-1', nombre: 'Sucre', municipioId: 'fal-21' },
-  { id: 'fal-21-2', nombre: 'Pecaya', municipioId: 'fal-21' },
-  
-  // Falcón - Municipio Tocópero (fal-22)
-  { id: 'fal-22-1', nombre: 'Tocópero', municipioId: 'fal-22' },
-  
-  // Falcón - Municipio Unión (fal-23)
-  { id: 'fal-23-1', nombre: 'El Charal', municipioId: 'fal-23' },
-  { id: 'fal-23-2', nombre: 'Las Vegas del Tuy', municipioId: 'fal-23' },
-  { id: 'fal-23-3', nombre: 'Santa Cruz de Bucaral', municipioId: 'fal-23' },
-  
-  // Falcón - Municipio Urumaco (fal-24)
-  { id: 'fal-24-1', nombre: 'Bruzual', municipioId: 'fal-24' },
-  { id: 'fal-24-2', nombre: 'Urumaco', municipioId: 'fal-24' },
-  
-  // Falcón - Municipio Zamora (fal-25)
-  { id: 'fal-25-1', nombre: 'Puerto Cumarebo', municipioId: 'fal-25' },
-  { id: 'fal-25-2', nombre: 'La Ciénaga', municipioId: 'fal-25' },
-  { id: 'fal-25-3', nombre: 'La Soledad', municipioId: 'fal-25' },
-  { id: 'fal-25-4', nombre: 'Pueblo Cumarebo', municipioId: 'fal-25' },
-  { id: 'fal-25-5', nombre: 'Zazárida', municipioId: 'fal-25' },
-  
-  // Guárico - Municipio Camaguán (gua-1)
-  { id: 'gua-1-1', nombre: 'Camaguán', municipioId: 'gua-1' },
-  { id: 'gua-1-2', nombre: 'Puerto Miranda', municipioId: 'gua-1' },
-  { id: 'gua-1-3', nombre: 'Uverito', municipioId: 'gua-1' },
-  
-  // Guárico - Municipio Chaguaramas (gua-2)
-  { id: 'gua-2-1', nombre: 'Chaguaramas', municipioId: 'gua-2' },
-  
-  // Guárico - Municipio El Socorro (gua-3)
-  { id: 'gua-3-1', nombre: 'El Socorro', municipioId: 'gua-3' },
-  
-  // Guárico - Municipio Francisco de Miranda (gua-4)
-  { id: 'gua-4-1', nombre: 'Calabozo', municipioId: 'gua-4' },
-  { id: 'gua-4-2', nombre: 'El Calvario', municipioId: 'gua-4' },
-  { id: 'gua-4-3', nombre: 'El Rastro', municipioId: 'gua-4' },
-  { id: 'gua-4-4', nombre: 'Guardatinajas', municipioId: 'gua-4' },
-  
-  // Guárico - Municipio José Félix Ribas (gua-5)
-  { id: 'gua-5-1', nombre: 'Tucupido', municipioId: 'gua-5' },
-  { id: 'gua-5-2', nombre: 'San Rafael de Laya', municipioId: 'gua-5' },
-  
-  // Guárico - Municipio José Tadeo Monagas (gua-6)
-  { id: 'gua-6-1', nombre: 'Altagracia de Orituco', municipioId: 'gua-6' },
-  { id: 'gua-6-2', nombre: 'Lezama', municipioId: 'gua-6' },
-  { id: 'gua-6-3', nombre: 'Libertad de Orituco', municipioId: 'gua-6' },
-  { id: 'gua-6-4', nombre: 'Paso Real de Macaira', municipioId: 'gua-6' },
-  { id: 'gua-6-5', nombre: 'San Francisco de Macaira', municipioId: 'gua-6' },
-  { id: 'gua-6-6', nombre: 'San Rafael de Orituco', municipioId: 'gua-6' },
-  
-  // Guárico - Municipio Juan Germán Roscio (gua-7)
-  { id: 'gua-7-1', nombre: 'San Juan de los Morros', municipioId: 'gua-7' },
-  { id: 'gua-7-2', nombre: 'Cantagallo', municipioId: 'gua-7' },
-  { id: 'gua-7-3', nombre: 'Parapara', municipioId: 'gua-7' },
-  
-  // Guárico - Municipio Julián Mellado (gua-8)
-  { id: 'gua-8-1', nombre: 'El Sombrero', municipioId: 'gua-8' },
-  { id: 'gua-8-2', nombre: 'Sosa', municipioId: 'gua-8' },
-  
-  // Guárico - Municipio Las Mercedes (gua-9)
-  { id: 'gua-9-1', nombre: 'Las Mercedes', municipioId: 'gua-9' },
-  { id: 'gua-9-2', nombre: 'Cabruta', municipioId: 'gua-9' },
-  { id: 'gua-9-3', nombre: 'Santa Rita de Manapire', municipioId: 'gua-9' },
-  
-  // Guárico - Municipio Leonardo Infante (gua-10)
-  { id: 'gua-10-1', nombre: 'Valle de la Pascua', municipioId: 'gua-10' },
-  { id: 'gua-10-2', nombre: 'Espino', municipioId: 'gua-10' },
-  
-  // Guárico - Municipio Ortiz (gua-11)
-  { id: 'gua-11-1', nombre: 'San José de Unare', municipioId: 'gua-11' },
-  { id: 'gua-11-2', nombre: 'Zaraza', municipioId: 'gua-11' },
-  
-  // Guárico - Municipio Pedro Zaraza (gua-12)
-  { id: 'gua-12-1', nombre: 'San José de Guaribe', municipioId: 'gua-12' },
-  { id: 'gua-12-2', nombre: 'Uveral', municipioId: 'gua-12' },
-  
-  // Guárico - Municipio San Gerónimo de Guayabal (gua-13)
-  { id: 'gua-13-1', nombre: 'Guayabal', municipioId: 'gua-13' },
-  { id: 'gua-13-2', nombre: 'Cazorla', municipioId: 'gua-13' },
-  
-  // Guárico - Municipio San José de Guaribe (gua-14)
-  { id: 'gua-14-1', nombre: 'San José de Guaribe', municipioId: 'gua-14' },
-  
-  // Guárico - Municipio Santa María de Ipire (gua-15)
-  { id: 'gua-15-1', nombre: 'Santa María de Ipire', municipioId: 'gua-15' },
-  { id: 'gua-15-2', nombre: 'El Rincón', municipioId: 'gua-15' },
-  
-  // Lara - Municipio Andrés Eloy Blanco (lar-1)
-  { id: 'lar-1-1', nombre: 'Sanare', municipioId: 'lar-1' },
-  { id: 'lar-1-2', nombre: 'Aguada Grande', municipioId: 'lar-1' },
-  { id: 'lar-1-3', nombre: 'Atarigua', municipioId: 'lar-1' },
-  { id: 'lar-1-4', nombre: 'Pío Tamayo', municipioId: 'lar-1' },
-  { id: 'lar-1-5', nombre: 'Yacambú', municipioId: 'lar-1' },
-  
-  // Lara - Municipio Crespo (lar-2)
-  { id: 'lar-2-1', nombre: 'Duaca', municipioId: 'lar-2' },
-  { id: 'lar-2-2', nombre: 'Juan Bautista Rodríguez', municipioId: 'lar-2' },
-  
-  // Lara - Municipio Iribarren (lar-3)
-  { id: 'lar-3-1', nombre: 'Concepción', municipioId: 'lar-3' },
-  { id: 'lar-3-2', nombre: 'El Cují', municipioId: 'lar-3' },
-  { id: 'lar-3-3', nombre: 'Juan de Villegas', municipioId: 'lar-3' },
-  { id: 'lar-3-4', nombre: 'Santa Rosa', municipioId: 'lar-3' },
-  { id: 'lar-3-5', nombre: 'Tamaca', municipioId: 'lar-3' },
-  { id: 'lar-3-6', nombre: 'Unión', municipioId: 'lar-3' },
-  { id: 'lar-3-7', nombre: 'Aguedo Felipe Alvarado', municipioId: 'lar-3' },
-  { id: 'lar-3-8', nombre: 'Buena Vista', municipioId: 'lar-3' },
-  { id: 'lar-3-9', nombre: 'Juárez', municipioId: 'lar-3' },
-  
-  // Lara - Municipio Jiménez (lar-4)
-  { id: 'lar-4-1', nombre: 'Quíbor', municipioId: 'lar-4' },
-  { id: 'lar-4-2', nombre: 'Juan Bautista Rodríguez', municipioId: 'lar-4' },
-  { id: 'lar-4-3', nombre: 'Blanca Pacheco', municipioId: 'lar-4' },
-  
-  // Lara - Municipio Morán (lar-5)
-  { id: 'lar-5-1', nombre: 'El Tocuyo', municipioId: 'lar-5' },
-  { id: 'lar-5-2', nombre: 'José María Blanco', municipioId: 'lar-5' },
-  { id: 'lar-5-3', nombre: 'Anzoátegui', municipioId: 'lar-5' },
-  
-  // Lara - Municipio Palavecino (lar-6)
-  { id: 'lar-6-1', nombre: 'Cabudare', municipioId: 'lar-6' },
-  { id: 'lar-6-2', nombre: 'Agua Viva', municipioId: 'lar-6' },
-  { id: 'lar-6-3', nombre: 'José Gregorio Bastidas', municipioId: 'lar-6' },
-  
-  // Lara - Municipio Simón Planas (lar-7)
-  { id: 'lar-7-1', nombre: 'Buría', municipioId: 'lar-7' },
-  { id: 'lar-7-2', nombre: 'Gustavo Vega', municipioId: 'lar-7' },
-  
-  // Lara - Municipio Torres (lar-8)
-  { id: 'lar-8-1', nombre: 'Carora', municipioId: 'lar-8' },
-  { id: 'lar-8-2', nombre: 'Antonio Díaz', municipioId: 'lar-8' },
-  { id: 'lar-8-3', nombre: 'Bolívar', municipioId: 'lar-8' },
-  { id: 'lar-8-4', nombre: 'Cecilio Zubillaga', municipioId: 'lar-8' },
-  { id: 'lar-8-5', nombre: 'Chiquinquirá', municipioId: 'lar-8' },
-  { id: 'lar-8-6', nombre: 'El Blanco', municipioId: 'lar-8' },
-  { id: 'lar-8-7', nombre: 'Espinoza de los Monteros', municipioId: 'lar-8' },
-  { id: 'lar-8-8', nombre: 'Heriberto Arrollo', municipioId: 'lar-8' },
-  { id: 'lar-8-9', nombre: 'Lara', municipioId: 'lar-8' },
-  { id: 'lar-8-10', nombre: 'Las Mercedes', municipioId: 'lar-8' },
-  { id: 'lar-8-11', nombre: 'Manuel Morillo', municipioId: 'lar-8' },
-  
-  // Lara - Municipio Urdaneta (lar-9)
-  { id: 'lar-9-1', nombre: 'Siquisique', municipioId: 'lar-9' },
-  { id: 'lar-9-2', nombre: 'San Miguel', municipioId: 'lar-9' },
-  { id: 'lar-9-3', nombre: 'Moroturo', municipioId: 'lar-9' },
-  { id: 'lar-9-4', nombre: 'Xaguas', municipioId: 'lar-9' },
-  
-  // Mérida - Municipio Alberto Adriani (mer-1)
-  { id: 'mer-1-1', nombre: 'El Vigía', municipioId: 'mer-1' },
-  { id: 'mer-1-2', nombre: 'La Azulita', municipioId: 'mer-1' },
-  { id: 'mer-1-3', nombre: 'Santa Cruz de Mora', municipioId: 'mer-1' },
-  
-  // Mérida - Municipio Andrés Bello (mer-2)
-  { id: 'mer-2-1', nombre: 'La Mesa de Bolívar', municipioId: 'mer-2' },
-  { id: 'mer-2-2', nombre: 'Acequias', municipioId: 'mer-2' },
-  { id: 'mer-2-3', nombre: 'Jají', municipioId: 'mer-2' },
-  
-  // Mérida - Municipio Antonio Pinto Salinas (mer-3)
-  { id: 'mer-3-1', nombre: 'Santa María de Caparo', municipioId: 'mer-3' },
-  { id: 'mer-3-2', nombre: 'Pueblo Llano', municipioId: 'mer-3' },
-  
-  // Mérida - Municipio Aricagua (mer-4)
-  { id: 'mer-4-1', nombre: 'Aricagua', municipioId: 'mer-4' },
-  { id: 'mer-4-2', nombre: 'San Antonio', municipioId: 'mer-4' },
-  
-  // Mérida - Municipio Arzobispo Chacón (mer-5)
-  { id: 'mer-5-1', nombre: 'Canagua', municipioId: 'mer-5' },
-  { id: 'mer-5-2', nombre: 'Capurí', municipioId: 'mer-5' },
-  { id: 'mer-5-3', nombre: 'Chacantá', municipioId: 'mer-5' },
-  { id: 'mer-5-4', nombre: 'El Molino', municipioId: 'mer-5' },
-  { id: 'mer-5-5', nombre: 'Guaimaral', municipioId: 'mer-5' },
-  { id: 'mer-5-6', nombre: 'Mucutuy', municipioId: 'mer-5' },
-  { id: 'mer-5-7', nombre: 'Mucuchachí', municipioId: 'mer-5' },
-  
-  // Mérida - Municipio Campo Elías (mer-6)
-  { id: 'mer-6-1', nombre: 'Ejido', municipioId: 'mer-6' },
-  { id: 'mer-6-2', nombre: 'La Punta', municipioId: 'mer-6' },
-  { id: 'mer-6-3', nombre: 'La Azulita', municipioId: 'mer-6' },
-  
-  // Mérida - Municipio Caracciolo Parra Olmedo (mer-7)
-  { id: 'mer-7-1', nombre: 'Tucaní', municipioId: 'mer-7' },
-  { id: 'mer-7-2', nombre: 'Florencio Ramírez', municipioId: 'mer-7' },
-  
-  // Mérida - Municipio Cardenal Quintero (mer-8)
-  { id: 'mer-8-1', nombre: 'Santo Domingo', municipioId: 'mer-8' },
-  { id: 'mer-8-2', nombre: 'Las Piedras', municipioId: 'mer-8' },
-  
-  // Mérida - Municipio Guaraque (mer-9)
-  { id: 'mer-9-1', nombre: 'Guaraque', municipioId: 'mer-9' },
-  { id: 'mer-9-2', nombre: 'Mesa de Quintero', municipioId: 'mer-9' },
-  { id: 'mer-9-3', nombre: 'Río Negro', municipioId: 'mer-9' },
-  
-  // Mérida - Municipio Julio César Salas (mer-10)
-  { id: 'mer-10-1', nombre: 'Arapuey', municipioId: 'mer-10' },
-  { id: 'mer-10-2', nombre: 'Palmira', municipioId: 'mer-10' },
-  
-  // Mérida - Municipio Justo Briceño (mer-11)
-  { id: 'mer-11-1', nombre: 'Torondoy', municipioId: 'mer-11' },
-  { id: 'mer-11-2', nombre: 'Antonio Spinetti Dini', municipioId: 'mer-11' },
-  { id: 'mer-11-3', nombre: 'Arias', municipioId: 'mer-11' },
-  
-  // Mérida - Municipio Libertador (mer-12)
-  { id: 'mer-12-1', nombre: 'Mérida', municipioId: 'mer-12' },
-  { id: 'mer-12-2', nombre: 'El Llano', municipioId: 'mer-12' },
-  { id: 'mer-12-3', nombre: 'Tabay', municipioId: 'mer-12' },
-  { id: 'mer-12-4', nombre: 'Chiguará', municipioId: 'mer-12' },
-  { id: 'mer-12-5', nombre: 'Juan Rodríguez Suárez', municipioId: 'mer-12' },
-  { id: 'mer-12-6', nombre: 'Jacinto Plaza', municipioId: 'mer-12' },
-  { id: 'mer-12-7', nombre: 'Los Nevados', municipioId: 'mer-12' },
-  
-  // Mérida - Municipio Miranda (mer-13)
-  { id: 'mer-13-1', nombre: 'Timotes', municipioId: 'mer-13' },
-  { id: 'mer-13-2', nombre: 'La Venta', municipioId: 'mer-13' },
-  
-  // Mérida - Municipio Obispo Ramos de Lora (mer-14)
-  { id: 'mer-14-1', nombre: 'Santa Elena de Arenales', municipioId: 'mer-14' },
-  { id: 'mer-14-2', nombre: 'Eloy Paredes', municipioId: 'mer-14' },
-  { id: 'mer-14-3', nombre: 'San Rafael de Alcázar', municipioId: 'mer-14' },
-  
-  // Mérida - Municipio Padre Noguera (mer-15)
-  { id: 'mer-15-1', nombre: 'Santa María de Caparo', municipioId: 'mer-15' },
-  
-  // Mérida - Municipio Pueblo Llano (mer-16)
-  { id: 'mer-16-1', nombre: 'Pueblo Llano', municipioId: 'mer-16' },
-  
-  // Mérida - Municipio Rangel (mer-17)
-  { id: 'mer-17-1', nombre: 'Mucuchíes', municipioId: 'mer-17' },
-  { id: 'mer-17-2', nombre: 'Cacute', municipioId: 'mer-17' },
-  { id: 'mer-17-3', nombre: 'La Toma', municipioId: 'mer-17' },
-  { id: 'mer-17-4', nombre: 'Mucurubá', municipioId: 'mer-17' },
-  { id: 'mer-17-5', nombre: 'San Rafael', municipioId: 'mer-17' },
-  
-  // Mérida - Municipio Rivas Dávila (mer-18)
-  { id: 'mer-18-1', nombre: 'Bailadores', municipioId: 'mer-18' },
-  { id: 'mer-18-2', nombre: 'Estánquez', municipioId: 'mer-18' },
-  { id: 'mer-18-3', nombre: 'Pueblo Nuevo del Sur', municipioId: 'mer-18' },
-  { id: 'mer-18-4', nombre: 'San José del Sur', municipioId: 'mer-18' },
-  
-  // Mérida - Municipio Santos Marquina (mer-19)
-  { id: 'mer-19-1', nombre: 'Tabay', municipioId: 'mer-19' },
-  
-  // Mérida - Municipio Sucre (mer-20)
-  { id: 'mer-20-1', nombre: 'Lagunillas', municipioId: 'mer-20' },
-  { id: 'mer-20-2', nombre: 'Chiguará', municipioId: 'mer-20' },
-  { id: 'mer-20-3', nombre: 'Estibadores', municipioId: 'mer-20' },
-  { id: 'mer-20-4', nombre: 'La Trampa', municipioId: 'mer-20' },
-  
-  // Mérida - Municipio Tovar (mer-21)
-  { id: 'mer-21-1', nombre: 'Tovar', municipioId: 'mer-21' },
-  { id: 'mer-21-2', nombre: 'El Amparo', municipioId: 'mer-21' },
-  { id: 'mer-21-3', nombre: 'San Francisco', municipioId: 'mer-21' },
-  
-  // Mérida - Municipio Tulio Febres Cordero (mer-22)
-  { id: 'mer-22-1', nombre: 'Independencia', municipioId: 'mer-22' },
-  { id: 'mer-22-2', nombre: 'María de la Concepción Palacios', municipioId: 'mer-22' },
-  { id: 'mer-22-3', nombre: 'Nueva Bolivia', municipioId: 'mer-22' },
-  { id: 'mer-22-4', nombre: 'Santa Apolonia', municipioId: 'mer-22' },
-  
-  // Mérida - Municipio Zea (mer-23)
-  { id: 'mer-23-1', nombre: 'Zea', municipioId: 'mer-23' },
-  { id: 'mer-23-2', nombre: 'Caño El Tigre', municipioId: 'mer-23' },
-  
-  // Miranda - Municipio Acevedo (mir-1)
-  { id: 'mir-1-1', nombre: 'Caucagua', municipioId: 'mir-1' },
-  { id: 'mir-1-2', nombre: 'Aragüita', municipioId: 'mir-1' },
-  { id: 'mir-1-3', nombre: 'Arévalo González', municipioId: 'mir-1' },
-  { id: 'mir-1-4', nombre: 'Capaya', municipioId: 'mir-1' },
-  { id: 'mir-1-5', nombre: 'El Café', municipioId: 'mir-1' },
-  { id: 'mir-1-6', nombre: 'Marizapa', municipioId: 'mir-1' },
-  { id: 'mir-1-7', nombre: 'Panaquire', municipioId: 'mir-1' },
-  { id: 'mir-1-8', nombre: 'Ribas', municipioId: 'mir-1' },
-  
-  // Miranda - Municipio Andrés Bello (mir-2)
-  { id: 'mir-2-1', nombre: 'San José de Barlovento', municipioId: 'mir-2' },
-  { id: 'mir-2-2', nombre: 'Cumbo', municipioId: 'mir-2' },
-  
-  // Miranda - Municipio Baruta (mir-3)
-  { id: 'mir-3-1', nombre: 'Baruta', municipioId: 'mir-3' },
-  { id: 'mir-3-2', nombre: 'El Cafetal', municipioId: 'mir-3' },
-  { id: 'mir-3-3', nombre: 'Las Minas de Baruta', municipioId: 'mir-3' },
-  
-  // Miranda - Municipio Buroz (mir-4)
-  { id: 'mir-4-1', nombre: 'Mamporal', municipioId: 'mir-4' },
-  
-  // Miranda - Municipio Carrizal (mir-5)
-  { id: 'mir-5-1', nombre: 'Carrizal', municipioId: 'mir-5' },
-  
-  // Miranda - Municipio Chacao (mir-6)
-  { id: 'mir-6-1', nombre: 'Chacao', municipioId: 'mir-6' },
-  
-  // Miranda - Municipio Cristóbal Rojas (mir-7)
-  { id: 'mir-7-1', nombre: 'Charallave', municipioId: 'mir-7' },
-  { id: 'mir-7-2', nombre: 'Las Brisas', municipioId: 'mir-7' },
-  
-  // Miranda - Municipio El Hatillo (mir-8)
-  { id: 'mir-8-1', nombre: 'El Hatillo', municipioId: 'mir-8' },
-  
-  // Miranda - Municipio Guaicaipuro (mir-9)
-  { id: 'mir-9-1', nombre: 'Los Teques', municipioId: 'mir-9' },
-  { id: 'mir-9-2', nombre: 'Altagracia de la Montaña', municipioId: 'mir-9' },
-  { id: 'mir-9-3', nombre: 'Cecilio Acosta', municipioId: 'mir-9' },
-  { id: 'mir-9-4', nombre: 'El Jarillo', municipioId: 'mir-9' },
-  { id: 'mir-9-5', nombre: 'Paracotos', municipioId: 'mir-9' },
-  { id: 'mir-9-6', nombre: 'San Pedro', municipioId: 'mir-9' },
-  { id: 'mir-9-7', nombre: 'Tácata', municipioId: 'mir-9' },
-  
-  // Miranda - Municipio Independencia (mir-10)
-  { id: 'mir-10-1', nombre: 'Santa Teresa del Tuy', municipioId: 'mir-10' },
-  { id: 'mir-10-2', nombre: 'El Cartanal', municipioId: 'mir-10' },
-  
-  // Miranda - Municipio Lander (mir-11)
-  { id: 'mir-11-1', nombre: 'Ocumare del Tuy', municipioId: 'mir-11' },
-  { id: 'mir-11-2', nombre: 'La Democracia', municipioId: 'mir-11' },
-  
-  // Miranda - Municipio Los Salias (mir-12)
-  { id: 'mir-12-1', nombre: 'San Antonio de los Altos', municipioId: 'mir-12' },
-  
-  // Miranda - Municipio Páez (mir-13)
-  { id: 'mir-13-1', nombre: 'Río Chico', municipioId: 'mir-13' },
-  { id: 'mir-13-2', nombre: 'El Guapo', municipioId: 'mir-13' },
-  { id: 'mir-13-3', nombre: 'San Fernando del Guapo', municipioId: 'mir-13' },
-  { id: 'mir-13-4', nombre: 'Tacarigua de la Laguna', municipioId: 'mir-13' },
-  
-  // Miranda - Municipio Paz Castillo (mir-14)
-  { id: 'mir-14-1', nombre: 'Santa Lucía', municipioId: 'mir-14' },
-  
-  // Miranda - Municipio Pedro Gual (mir-15)
-  { id: 'mir-15-1', nombre: 'Cúpira', municipioId: 'mir-15' },
-  { id: 'mir-15-2', nombre: 'Machurucuto', municipioId: 'mir-15' },
-  
-  // Miranda - Municipio Plaza (mir-16)
-  { id: 'mir-16-1', nombre: 'Guarenas', municipioId: 'mir-16' },
-  
-  // Miranda - Municipio Simón Bolívar (mir-17)
-  { id: 'mir-17-1', nombre: 'San Francisco de Yare', municipioId: 'mir-17' },
-  { id: 'mir-17-2', nombre: 'San Antonio de Yare', municipioId: 'mir-17' },
-  
-  // Miranda - Municipio Sucre (mir-18)
-  { id: 'mir-18-1', nombre: 'Petare', municipioId: 'mir-18' },
-  { id: 'mir-18-2', nombre: 'Caucagüita', municipioId: 'mir-18' },
-  { id: 'mir-18-3', nombre: 'Fila de Mariche', municipioId: 'mir-18' },
-  { id: 'mir-18-4', nombre: 'La Dolorita', municipioId: 'mir-18' },
-  { id: 'mir-18-5', nombre: 'Leoncio Martínez', municipioId: 'mir-18' },
-  
-  // Miranda - Municipio Urdaneta (mir-19)
-  { id: 'mir-19-1', nombre: 'Cúa', municipioId: 'mir-19' },
-  { id: 'mir-19-2', nombre: 'Nueva Cúa', municipioId: 'mir-19' },
-  
-  // Miranda - Municipio Zamora (mir-20)
-  { id: 'mir-20-1', nombre: 'Guatire', municipioId: 'mir-20' },
-  { id: 'mir-20-2', nombre: 'Bolívar', municipioId: 'mir-20' },
-  
-  // Monagas - Municipio Acosta (mon-1)
-  { id: 'mon-1-1', nombre: 'San Antonio de Capayacuar', municipioId: 'mon-1' },
-  { id: 'mon-1-2', nombre: 'El Furrial', municipioId: 'mon-1' },
-  { id: 'mon-1-3', nombre: 'Jusepín', municipioId: 'mon-1' },
-  { id: 'mon-1-4', nombre: 'La Pica', municipioId: 'mon-1' },
-  
-  // Monagas - Municipio Aguasay (mon-2)
-  { id: 'mon-2-1', nombre: 'Aguasay', municipioId: 'mon-2' },
-  
-  // Monagas - Municipio Bolívar (mon-3)
-  { id: 'mon-3-1', nombre: 'Caripito', municipioId: 'mon-3' },
-  
-  // Monagas - Municipio Caripe (mon-4)
-  { id: 'mon-4-1', nombre: 'El Tejero', municipioId: 'mon-4' },
-  { id: 'mon-4-2', nombre: 'Teresén', municipioId: 'mon-4' },
-  
-  // Monagas - Municipio Cedeño (mon-5)
-  { id: 'mon-5-1', nombre: 'Caicara de Maturín', municipioId: 'mon-5' },
-  { id: 'mon-5-2', nombre: 'Areo', municipioId: 'mon-5' },
-  { id: 'mon-5-3', nombre: 'San Félix de Cantalicio', municipioId: 'mon-5' },
-  { id: 'mon-5-4', nombre: 'Viento Fresco', municipioId: 'mon-5' },
-  
-  // Monagas - Municipio Ezequiel Zamora (mon-6)
-  { id: 'mon-6-1', nombre: 'El Tejero', municipioId: 'mon-6' },
-  
-  // Monagas - Municipio Libertador (mon-7)
-  { id: 'mon-7-1', nombre: 'Temblador', municipioId: 'mon-7' },
-  { id: 'mon-7-2', nombre: 'Tabasca', municipioId: 'mon-7' },
-  { id: 'mon-7-3', nombre: 'Las Alhuacas', municipioId: 'mon-7' },
-  { id: 'mon-7-4', nombre: 'Chaguaramas', municipioId: 'mon-7' },
-  
-  // Monagas - Municipio Maturín (mon-8)
-  { id: 'mon-8-1', nombre: 'Alto de los Godos', municipioId: 'mon-8' },
-  { id: 'mon-8-2', nombre: 'Boquerón', municipioId: 'mon-8' },
-  { id: 'mon-8-3', nombre: 'Las Cocuizas', municipioId: 'mon-8' },
-  { id: 'mon-8-4', nombre: 'San Simón', municipioId: 'mon-8' },
-  { id: 'mon-8-5', nombre: 'El Corozo', municipioId: 'mon-8' },
-  { id: 'mon-8-6', nombre: 'El Furrial', municipioId: 'mon-8' },
-  { id: 'mon-8-7', nombre: 'Jusepín', municipioId: 'mon-8' },
-  { id: 'mon-8-8', nombre: 'La Pica', municipioId: 'mon-8' },
-  { id: 'mon-8-9', nombre: 'San Vicente', municipioId: 'mon-8' },
-  
-  // Monagas - Municipio Piar (mon-9)
-  { id: 'mon-9-1', nombre: 'Aparicio', municipioId: 'mon-9' },
-  { id: 'mon-9-2', nombre: 'Chaguaramal', municipioId: 'mon-9' },
-  { id: 'mon-9-3', nombre: 'El Pinto', municipioId: 'mon-9' },
-  { id: 'mon-9-4', nombre: 'Guanaguana', municipioId: 'mon-9' },
-  { id: 'mon-9-5', nombre: 'La Toscana', municipioId: 'mon-9' },
-  { id: 'mon-9-6', nombre: 'Taguaya', municipioId: 'mon-9' },
-  
-  // Monagas - Municipio Punceres (mon-10)
-  { id: 'mon-10-1', nombre: 'Cachipo', municipioId: 'mon-10' },
-  { id: 'mon-10-2', nombre: 'Quiriquire', municipioId: 'mon-10' },
-  
-  // Monagas - Municipio Santa Bárbara (mon-11)
-  { id: 'mon-11-1', nombre: 'Santa Bárbara', municipioId: 'mon-11' },
-  
-  // Monagas - Municipio Sotillo (mon-12)
-  { id: 'mon-12-1', nombre: 'Barrancas', municipioId: 'mon-12' },
-  { id: 'mon-12-2', nombre: 'Los Barrancos de Fajardo', municipioId: 'mon-12' },
-  
-  // Monagas - Municipio Uracoa (mon-13)
-  { id: 'mon-13-1', nombre: 'Uracoa', municipioId: 'mon-13' },
-  
-  // Nueva Esparta - Municipio Antolín del Campo (nes-1)
-  { id: 'nes-1-1', nombre: 'La Plaza de Paraguachí', municipioId: 'nes-1' },
-  
-  // Nueva Esparta - Municipio Arismendi (nes-2)
-  { id: 'nes-2-1', nombre: 'San Juan Bautista', municipioId: 'nes-2' },
-  { id: 'nes-2-2', nombre: 'Zabala', municipioId: 'nes-2' },
-  
-  // Nueva Esparta - Municipio Díaz (nes-3)
-  { id: 'nes-3-1', nombre: 'San Juan Bautista', municipioId: 'nes-3' },
-  { id: 'nes-3-2', nombre: 'Zabala', municipioId: 'nes-3' },
-  
-  // Nueva Esparta - Municipio García (nes-4)
-  { id: 'nes-4-1', nombre: 'Valle del Espíritu Santo', municipioId: 'nes-4' },
-  { id: 'nes-4-2', nombre: 'San Francisco de Macanao', municipioId: 'nes-4' },
-  { id: 'nes-4-3', nombre: 'Boca de Río', municipioId: 'nes-4' },
-  
-  // Nueva Esparta - Municipio Gómez (nes-5)
-  { id: 'nes-5-1', nombre: 'Santa Ana', municipioId: 'nes-5' },
-  { id: 'nes-5-2', nombre: 'Guevara', municipioId: 'nes-5' },
-  { id: 'nes-5-3', nombre: 'Matasiete', municipioId: 'nes-5' },
-  { id: 'nes-5-4', nombre: 'Bolívar', municipioId: 'nes-5' },
-  
-  // Nueva Esparta - Municipio Maneiro (nes-6)
-  { id: 'nes-6-1', nombre: 'El Valle del Espíritu Santo', municipioId: 'nes-6' },
-  
-  // Nueva Esparta - Municipio Marcano (nes-7)
-  { id: 'nes-7-1', nombre: 'Juan Griego', municipioId: 'nes-7' },
-  { id: 'nes-7-2', nombre: 'Adrián', municipioId: 'nes-7' },
-  
-  // Nueva Esparta - Municipio Mariño (nes-8)
-  { id: 'nes-8-1', nombre: 'Porlamar', municipioId: 'nes-8' },
-  
-  // Nueva Esparta - Municipio Península de Macanao (nes-9)
-  { id: 'nes-9-1', nombre: 'San Francisco de Macanao', municipioId: 'nes-9' },
-  { id: 'nes-9-2', nombre: 'Boca de Río', municipioId: 'nes-9' },
-  
-  // Nueva Esparta - Municipio Tubores (nes-10)
-  { id: 'nes-10-1', nombre: 'Punta de Piedras', municipioId: 'nes-10' },
-  { id: 'nes-10-2', nombre: 'Los Barales', municipioId: 'nes-10' },
-  
-  // Nueva Esparta - Municipio Villalba (nes-11)
-  { id: 'nes-11-1', nombre: 'San Pedro de Coche', municipioId: 'nes-11' },
-  { id: 'nes-11-2', nombre: 'Vicente Fuentes', municipioId: 'nes-11' },
-  
-  // Portuguesa - Municipio Agua Blanca (por-1)
-  { id: 'por-1-1', nombre: 'Agua Blanca', municipioId: 'por-1' },
-  
-  // Portuguesa - Municipio Araure (por-2)
-  { id: 'por-2-1', nombre: 'Araure', municipioId: 'por-2' },
-  { id: 'por-2-2', nombre: 'Río Acarigua', municipioId: 'por-2' },
-  
-  // Portuguesa - Municipio Esteller (por-3)
-  { id: 'por-3-1', nombre: 'Píritu', municipioId: 'por-3' },
-  { id: 'por-3-2', nombre: 'Uveral', municipioId: 'por-3' },
-  
-  // Portuguesa - Municipio Guanare (por-4)
-  { id: 'por-4-1', nombre: 'Guanare', municipioId: 'por-4' },
-  { id: 'por-4-2', nombre: 'Córdoba', municipioId: 'por-4' },
-  { id: 'por-4-3', nombre: 'San Juan de Guanaguanare', municipioId: 'por-4' },
-  { id: 'por-4-4', nombre: 'Virgen de la Coromoto', municipioId: 'por-4' },
-  { id: 'por-4-5', nombre: 'San José de la Montaña', municipioId: 'por-4' },
-  
-  // Portuguesa - Municipio Guanarito (por-5)
-  { id: 'por-5-1', nombre: 'Guanarito', municipioId: 'por-5' },
-  { id: 'por-5-2', nombre: 'Trinidad de la Capilla', municipioId: 'por-5' },
-  { id: 'por-5-3', nombre: 'Divina Pastora', municipioId: 'por-5' },
-  
-  // Portuguesa - Municipio Monseñor José Vicente de Unda (por-6)
-  { id: 'por-6-1', nombre: 'Peña Blanca', municipioId: 'por-6' },
-  
-  // Portuguesa - Municipio Ospino (por-7)
-  { id: 'por-7-1', nombre: 'Ospino', municipioId: 'por-7' },
-  { id: 'por-7-2', nombre: 'La Estación', municipioId: 'por-7' },
-  { id: 'por-7-3', nombre: 'Páez', municipioId: 'por-7' },
-  
-  // Portuguesa - Municipio Páez (por-8)
-  { id: 'por-8-1', nombre: 'Acarigua', municipioId: 'por-8' },
-  { id: 'por-8-2', nombre: 'Payara', municipioId: 'por-8' },
-  { id: 'por-8-3', nombre: 'Pimpinela', municipioId: 'por-8' },
-  { id: 'por-8-4', nombre: 'Ramón Peraza', municipioId: 'por-8' },
-  
-  // Portuguesa - Municipio Papelón (por-9)
-  { id: 'por-9-1', nombre: 'Papelón', municipioId: 'por-9' },
-  { id: 'por-9-2', nombre: 'Caño Delgadito', municipioId: 'por-9' },
-  
-  // Portuguesa - Municipio San Genaro de Boconoíto (por-10)
-  { id: 'por-10-1', nombre: 'San Genaro de Boconoíto', municipioId: 'por-10' },
-  { id: 'por-10-2', nombre: 'Antolín Tovar', municipioId: 'por-10' },
-  
-  // Portuguesa - Municipio San Rafael de Onoto (por-11)
-  { id: 'por-11-1', nombre: 'San Rafael de Onoto', municipioId: 'por-11' },
-  { id: 'por-11-2', nombre: 'Santa Fe', municipioId: 'por-11' },
-  
-  // Portuguesa - Municipio Santa Rosalía (por-12)
-  { id: 'por-12-1', nombre: 'El Playón', municipioId: 'por-12' },
-  { id: 'por-12-2', nombre: 'Florida', municipioId: 'por-12' },
-  
-  // Portuguesa - Municipio Sucre (por-13)
-  { id: 'por-13-1', nombre: 'Biscucuy', municipioId: 'por-13' },
-  { id: 'por-13-2', nombre: 'Concepción', municipioId: 'por-13' },
-  { id: 'por-13-3', nombre: 'San José de Saguaz', municipioId: 'por-13' },
-  { id: 'por-13-4', nombre: 'San Rafael de Palo Alzado', municipioId: 'por-13' },
-  
-  // Portuguesa - Municipio Turén (por-14)
-  { id: 'por-14-1', nombre: 'Villa Bruzual', municipioId: 'por-14' },
-  { id: 'por-14-2', nombre: 'Canelones', municipioId: 'por-14' },
-  { id: 'por-14-3', nombre: 'Santa Cruz', municipioId: 'por-14' },
-  { id: 'por-14-4', nombre: 'San Isidro Labrador', municipioId: 'por-14' },
-  
-  // Sucre - Municipio Andrés Eloy Blanco (suc-1)
-  { id: 'suc-1-1', nombre: 'Cariaco', municipioId: 'suc-1' },
-  { id: 'suc-1-2', nombre: 'Santa María', municipioId: 'suc-1' },
-  { id: 'suc-1-3', nombre: 'Santa Fe', municipioId: 'suc-1' },
-  
-  // Sucre - Municipio Andrés Mata (suc-2)
-  { id: 'suc-2-1', nombre: 'San José de Aerocuar', municipioId: 'suc-2' },
-  { id: 'suc-2-2', nombre: 'Tavera Acosta', municipioId: 'suc-2' },
-  
-  // Sucre - Municipio Arismendi (suc-3)
-  { id: 'suc-3-1', nombre: 'Río Caribe', municipioId: 'suc-3' },
-  { id: 'suc-3-2', nombre: 'Antonio José de Sucre', municipioId: 'suc-3' },
-  { id: 'suc-3-3', nombre: 'El Morro de Puerto Santo', municipioId: 'suc-3' },
-  { id: 'suc-3-4', nombre: 'Puerto Santo', municipioId: 'suc-3' },
-  { id: 'suc-3-5', nombre: 'San Juan de las Galdonas', municipioId: 'suc-3' },
-  
-  // Sucre - Municipio Benítez (suc-4)
-  { id: 'suc-4-1', nombre: 'El Rincón', municipioId: 'suc-4' },
-  { id: 'suc-4-2', nombre: 'General Francisco Antonio Vásquez', municipioId: 'suc-4' },
-  { id: 'suc-4-3', nombre: 'Guaraúnos', municipioId: 'suc-4' },
-  { id: 'suc-4-4', nombre: 'Tunapuicito', municipioId: 'suc-4' },
-  { id: 'suc-4-5', nombre: 'Unión', municipioId: 'suc-4' },
-  
-  // Sucre - Municipio Bermúdez (suc-5)
-  { id: 'suc-5-1', nombre: 'Santa Catalina', municipioId: 'suc-5' },
-  { id: 'suc-5-2', nombre: 'Santa Rosa', municipioId: 'suc-5' },
-  { id: 'suc-5-3', nombre: 'Santa Teresa', municipioId: 'suc-5' },
-  
-  // Sucre - Municipio Bolívar (suc-6)
-  { id: 'suc-6-1', nombre: 'Marigüitar', municipioId: 'suc-6' },
-  
-  // Sucre - Municipio Cajigal (suc-7)
-  { id: 'suc-7-1', nombre: 'Araya', municipioId: 'suc-7' },
-  { id: 'suc-7-2', nombre: 'Chacopata', municipioId: 'suc-7' },
-  { id: 'suc-7-3', nombre: 'Manicuare', municipioId: 'suc-7' },
-  
-  // Sucre - Municipio Cruz Salmerón Acosta (suc-8)
-  { id: 'suc-8-1', nombre: 'Tunapuy', municipioId: 'suc-8' },
-  { id: 'suc-8-2', nombre: 'Campo Elías', municipioId: 'suc-8' },
-  
-  // Sucre - Municipio Libertador (suc-9)
-  { id: 'suc-9-1', nombre: 'Irapa', municipioId: 'suc-9' },
-  { id: 'suc-9-2', nombre: 'Campo Claro', municipioId: 'suc-9' },
-  { id: 'suc-9-3', nombre: 'Maraval', municipioId: 'suc-9' },
-  { id: 'suc-9-4', nombre: 'San Antonio de Irapa', municipioId: 'suc-9' },
-  { id: 'suc-9-5', nombre: 'Soro', municipioId: 'suc-9' },
-  
-  // Sucre - Municipio Mariño (suc-10)
-  { id: 'suc-10-1', nombre: 'San Antonio del Golfo', municipioId: 'suc-10' },
-  
-  // Sucre - Municipio Mejía (suc-11)
-  { id: 'suc-11-1', nombre: 'San Antonio del Golfo', municipioId: 'suc-11' },
-  
-  // Sucre - Municipio Montaña (suc-12)
-  { id: 'suc-12-1', nombre: 'Cumanacoa', municipioId: 'suc-12' },
-  { id: 'suc-12-2', nombre: 'Arenas', municipioId: 'suc-12' },
-  { id: 'suc-12-3', nombre: 'Aricagua', municipioId: 'suc-12' },
-  { id: 'suc-12-4', nombre: 'Cocollar', municipioId: 'suc-12' },
-  { id: 'suc-12-5', nombre: 'San Fernando', municipioId: 'suc-12' },
-  { id: 'suc-12-6', nombre: 'San Lorenzo', municipioId: 'suc-12' },
-  
-  // Sucre - Municipio Ribero (suc-13)
-  { id: 'suc-13-1', nombre: 'Cariaco', municipioId: 'suc-13' },
-  { id: 'suc-13-2', nombre: 'Catuaro', municipioId: 'suc-13' },
-  { id: 'suc-13-3', nombre: 'Rendón', municipioId: 'suc-13' },
-  { id: 'suc-13-4', nombre: 'Santa Cruz', municipioId: 'suc-13' },
-  { id: 'suc-13-5', nombre: 'Santa María', municipioId: 'suc-13' },
-  
-  // Sucre - Municipio Sucre (suc-14)
-  { id: 'suc-14-1', nombre: 'Cumaná', municipioId: 'suc-14' },
-  { id: 'suc-14-2', nombre: 'Altagracia', municipioId: 'suc-14' },
-  { id: 'suc-14-3', nombre: 'Santa Inés', municipioId: 'suc-14' },
-  { id: 'suc-14-4', nombre: 'Valentín Valiente', municipioId: 'suc-14' },
-  { id: 'suc-14-5', nombre: 'Ayacucho', municipioId: 'suc-14' },
-  { id: 'suc-14-6', nombre: 'San Juan', municipioId: 'suc-14' },
-  { id: 'suc-14-7', nombre: 'Raúl Leoni', municipioId: 'suc-14' },
-  { id: 'suc-14-8', nombre: 'Gran Mariscal', municipioId: 'suc-14' },
-  
-  // Sucre - Municipio Valdéz (suc-15)
-  { id: 'suc-15-1', nombre: 'Güiria', municipioId: 'suc-15' },
-  { id: 'suc-15-2', nombre: 'Bideau', municipioId: 'suc-15' },
-  { id: 'suc-15-3', nombre: 'Cristóbal Colón', municipioId: 'suc-15' },
-  { id: 'suc-15-4', nombre: 'Punta de Piedras', municipioId: 'suc-15' },
-  
-  // Táchira - Municipio Andrés Bello (tac-1)
-  { id: 'tac-1-1', nombre: 'Cordero', municipioId: 'tac-1' },
-  
-  // Táchira - Municipio Antonio Rómulo Costa (tac-2)
-  { id: 'tac-2-1', nombre: 'Las Mesas', municipioId: 'tac-2' },
-  
-  // Táchira - Municipio Ayacucho (tac-3)
-  { id: 'tac-3-1', nombre: 'San Juan de Colón', municipioId: 'tac-3' },
-  { id: 'tac-3-2', nombre: 'San Pedro del Río', municipioId: 'tac-3' },
-  
-  // Táchira - Municipio Bolívar (tac-4)
-  { id: 'tac-4-1', nombre: 'San Antonio del Táchira', municipioId: 'tac-4' },
-  { id: 'tac-4-2', nombre: 'Palotal', municipioId: 'tac-4' },
-  
-  // Táchira - Municipio Cárdenas (tac-5)
-  { id: 'tac-5-1', nombre: 'Táriba', municipioId: 'tac-5' },
-  { id: 'tac-5-2', nombre: 'La Florida', municipioId: 'tac-5' },
-  
-  // Táchira - Municipio Córdoba (tac-6)
-  { id: 'tac-6-1', nombre: 'Santa Ana del Táchira', municipioId: 'tac-6' },
-  
-  // Táchira - Municipio Fernández Feo (tac-7)
-  { id: 'tac-7-1', nombre: 'San Rafael del Piñal', municipioId: 'tac-7' },
-  { id: 'tac-7-2', nombre: 'Santo Domingo', municipioId: 'tac-7' },
-  
-  // Táchira - Municipio Francisco de Miranda (tac-8)
-  { id: 'tac-8-1', nombre: 'San José de Bolívar', municipioId: 'tac-8' },
-  
-  // Táchira - Municipio García de Hevia (tac-9)
-  { id: 'tac-9-1', nombre: 'La Fría', municipioId: 'tac-9' },
-  { id: 'tac-9-2', nombre: 'Boca de Grita', municipioId: 'tac-9' },
-  { id: 'tac-9-3', nombre: 'José Antonio Páez', municipioId: 'tac-9' },
-  
-  // Táchira - Municipio Guásimos (tac-10)
-  { id: 'tac-10-1', nombre: 'Palmira', municipioId: 'tac-10' },
-  
-  // Táchira - Municipio Independencia (tac-11)
-  { id: 'tac-11-1', nombre: 'Capacho Nuevo', municipioId: 'tac-11' },
-  { id: 'tac-11-2', nombre: 'Juan Germán Roscio', municipioId: 'tac-11' },
-  
-  // Táchira - Municipio Jáuregui (tac-12)
-  { id: 'tac-12-1', nombre: 'La Grita', municipioId: 'tac-12' },
-  { id: 'tac-12-2', nombre: 'Emilio Constantino Guerrero', municipioId: 'tac-12' },
-  { id: 'tac-12-3', nombre: 'Monseñor Miguel Antonio Salas', municipioId: 'tac-12' },
-  
-  // Táchira - Municipio José María Vargas (tac-13)
-  { id: 'tac-13-1', nombre: 'El Cobre', municipioId: 'tac-13' },
-  
-  // Táchira - Municipio Junín (tac-14)
-  { id: 'tac-14-1', nombre: 'Rubio', municipioId: 'tac-14' },
-  { id: 'tac-14-2', nombre: 'Bramón', municipioId: 'tac-14' },
-  { id: 'tac-14-3', nombre: 'La Petrólea', municipioId: 'tac-14' },
-  { id: 'tac-14-4', nombre: 'Quinimarí', municipioId: 'tac-14' },
-  
-  // Táchira - Municipio Libertad (tac-15)
-  { id: 'tac-15-1', nombre: 'Capacho Viejo', municipioId: 'tac-15' },
-  { id: 'tac-15-2', nombre: 'Cipriano Castro', municipioId: 'tac-15' },
-  { id: 'tac-15-3', nombre: 'Potosí', municipioId: 'tac-15' },
-  
-  // Táchira - Municipio Libertador (tac-16)
-  { id: 'tac-16-1', nombre: 'Abejales', municipioId: 'tac-16' },
-  { id: 'tac-16-2', nombre: 'San Joaquín de Navay', municipioId: 'tac-16' },
-  { id: 'tac-16-3', nombre: 'Doradas', municipioId: 'tac-16' },
-  { id: 'tac-16-4', nombre: 'Emeterio Ochoa', municipioId: 'tac-16' },
-  
-  // Táchira - Municipio Lobatera (tac-17)
-  { id: 'tac-17-1', nombre: 'Lobatera', municipioId: 'tac-17' },
-  { id: 'tac-17-2', nombre: 'Constitución', municipioId: 'tac-17' },
-  
-  // Táchira - Municipio Michelena (tac-18)
-  { id: 'tac-18-1', nombre: 'Michelena', municipioId: 'tac-18' },
-  
-  // Táchira - Municipio Panamericano (tac-19)
-  { id: 'tac-19-1', nombre: 'Coloncito', municipioId: 'tac-19' },
-  { id: 'tac-19-2', nombre: 'La Palmita', municipioId: 'tac-19' },
-  
-  // Táchira - Municipio Pedro María Ureña (tac-20)
-  { id: 'tac-20-1', nombre: 'Ureña', municipioId: 'tac-20' },
-  { id: 'tac-20-2', nombre: 'Nueva Arcadia', municipioId: 'tac-20' },
-  
-  // Táchira - Municipio Rafael Urdaneta (tac-21)
-  { id: 'tac-21-1', nombre: 'Delicias', municipioId: 'tac-21' },
-  
-  // Táchira - Municipio Samuel Darío Maldonado (tac-22)
-  { id: 'tac-22-1', nombre: 'La Tendida', municipioId: 'tac-22' },
-  
-  // Táchira - Municipio San Cristóbal (tac-23)
-  { id: 'tac-23-1', nombre: 'San Cristóbal', municipioId: 'tac-23' },
-  { id: 'tac-23-2', nombre: 'Francisco Romero Lobo', municipioId: 'tac-23' },
-  { id: 'tac-23-3', nombre: 'La Concordia', municipioId: 'tac-23' },
-  { id: 'tac-23-4', nombre: 'Pedro María Morantes', municipioId: 'tac-23' },
-  { id: 'tac-23-5', nombre: 'Juan Vicente Gómez', municipioId: 'tac-23' },
-  { id: 'tac-23-6', nombre: 'Lobatera', municipioId: 'tac-23' },
-  { id: 'tac-23-7', nombre: 'Constitución', municipioId: 'tac-23' },
-  
-  // Táchira - Municipio San Judas Tadeo (tac-24)
-  { id: 'tac-24-1', nombre: 'Umuquena', municipioId: 'tac-24' },
-  
-  // Táchira - Municipio Seboruco (tac-25)
-  { id: 'tac-25-1', nombre: 'Seboruco', municipioId: 'tac-25' },
-  
-  // Táchira - Municipio Simón Rodríguez (tac-26)
-  { id: 'tac-26-1', nombre: 'San Simón', municipioId: 'tac-26' },
-  
-  // Táchira - Municipio Sucre (tac-27)
-  { id: 'tac-27-1', nombre: 'Queniquea', municipioId: 'tac-27' },
-  { id: 'tac-27-2', nombre: 'San Pedro del Río', municipioId: 'tac-27' },
-  
-  // Táchira - Municipio Torbes (tac-28)
-  { id: 'tac-28-1', nombre: 'San Josecito', municipioId: 'tac-28' },
-  
-  // Táchira - Municipio Uribante (tac-29)
-  { id: 'tac-29-1', nombre: 'Pregonero', municipioId: 'tac-29' },
-  { id: 'tac-29-2', nombre: 'Cárdenas', municipioId: 'tac-29' },
-  { id: 'tac-29-3', nombre: 'Potosí', municipioId: 'tac-29' },
-  { id: 'tac-29-4', nombre: 'Juan Pablo Peñalosa', municipioId: 'tac-29' },
-  
-  // Trujillo - Municipio Andrés Bello (tru-1)
-  { id: 'tru-1-1', nombre: 'Santa Isabel', municipioId: 'tru-1' },
-  { id: 'tru-1-2', nombre: 'Araguaney', municipioId: 'tru-1' },
-  
-  // Trujillo - Municipio Boconó (tru-2)
-  { id: 'tru-2-1', nombre: 'Boconó', municipioId: 'tru-2' },
-  { id: 'tru-2-2', nombre: 'El Carmen', municipioId: 'tru-2' },
-  { id: 'tru-2-3', nombre: 'Mosquey', municipioId: 'tru-2' },
-  { id: 'tru-2-4', nombre: 'Ayacucho', municipioId: 'tru-2' },
-  { id: 'tru-2-5', nombre: 'Burbusay', municipioId: 'tru-2' },
-  { id: 'tru-2-6', nombre: 'General Ribas', municipioId: 'tru-2' },
-  { id: 'tru-2-7', nombre: 'Guaramacal', municipioId: 'tru-2' },
-  { id: 'tru-2-8', nombre: 'Vega de Guaramacal', municipioId: 'tru-2' },
-  { id: 'tru-2-9', nombre: 'Mozo', municipioId: 'tru-2' },
-  
-  // Trujillo - Municipio Bolívar (tru-3)
-  { id: 'tru-3-1', nombre: 'Sabana Grande', municipioId: 'tru-3' },
-  { id: 'tru-3-2', nombre: 'Cheregüé', municipioId: 'tru-3' },
-  { id: 'tru-3-3', nombre: 'Granados', municipioId: 'tru-3' },
-  
-  // Trujillo - Municipio Candelaria (tru-4)
-  { id: 'tru-4-1', nombre: 'Chejendé', municipioId: 'tru-4' },
-  { id: 'tru-4-2', nombre: 'Arnoldo Gabaldón', municipioId: 'tru-4' },
-  { id: 'tru-4-3', nombre: 'Bolivia', municipioId: 'tru-4' },
-  { id: 'tru-4-4', nombre: 'Carrillo', municipioId: 'tru-4' },
-  { id: 'tru-4-5', nombre: 'Cegarra', municipioId: 'tru-4' },
-  
-  // Trujillo - Municipio Carache (tru-5)
-  { id: 'tru-5-1', nombre: 'Carache', municipioId: 'tru-5' },
-  { id: 'tru-5-2', nombre: 'La Concepción', municipioId: 'tru-5' },
-  { id: 'tru-5-3', nombre: 'Cuicas', municipioId: 'tru-5' },
-  { id: 'tru-5-4', nombre: 'Panamericana', municipioId: 'tru-5' },
-  { id: 'tru-5-5', nombre: 'Santa Cruz', municipioId: 'tru-5' },
-  
-  // Trujillo - Municipio Escuque (tru-6)
-  { id: 'tru-6-1', nombre: 'Escuque', municipioId: 'tru-6' },
-  { id: 'tru-6-2', nombre: 'La Unión', municipioId: 'tru-6' },
-  { id: 'tru-6-3', nombre: 'Santa Apolonia', municipioId: 'tru-6' },
-  { id: 'tru-6-4', nombre: 'El Progreso', municipioId: 'tru-6' },
-  
-  // Trujillo - Municipio José Felipe Márquez Cañizales (tru-7)
-  { id: 'tru-7-1', nombre: 'El Socorro', municipioId: 'tru-7' },
-  { id: 'tru-7-2', nombre: 'Los Caprichos', municipioId: 'tru-7' },
-  { id: 'tru-7-3', nombre: 'Antonio José de Sucre', municipioId: 'tru-7' },
-  
-  // Trujillo - Municipio Juan Vicente Campo Elías (tru-8)
-  { id: 'tru-8-1', nombre: 'Campo Elías', municipioId: 'tru-8' },
-  { id: 'tru-8-2', nombre: 'Arnoldo Gabaldón', municipioId: 'tru-8' },
-  
-  // Trujillo - Municipio La Ceiba (tru-9)
-  { id: 'tru-9-1', nombre: 'Santa Apolonia', municipioId: 'tru-9' },
-  
-  // Trujillo - Municipio Miranda (tru-10)
-  { id: 'tru-10-1', nombre: 'El Dividive', municipioId: 'tru-10' },
-  { id: 'tru-10-2', nombre: 'Agua Santa', municipioId: 'tru-10' },
-  { id: 'tru-10-3', nombre: 'Agua Caliente', municipioId: 'tru-10' },
-  { id: 'tru-10-4', nombre: 'El Cenizo', municipioId: 'tru-10' },
-  { id: 'tru-10-5', nombre: 'Valerita', municipioId: 'tru-10' },
-  
-  // Trujillo - Municipio Monte Carmelo (tru-11)
-  { id: 'tru-11-1', nombre: 'Monte Carmelo', municipioId: 'tru-11' },
-  { id: 'tru-11-2', nombre: 'Buena Vista', municipioId: 'tru-11' },
-  
-  // Trujillo - Municipio Motatán (tru-12)
-  { id: 'tru-12-1', nombre: 'Motatán', municipioId: 'tru-12' },
-  { id: 'tru-12-2', nombre: 'El Baño', municipioId: 'tru-12' },
-  { id: 'tru-12-3', nombre: 'Jalisco', municipioId: 'tru-12' },
-  
-  // Trujillo - Municipio Pampán (tru-13)
-  { id: 'tru-13-1', nombre: 'Pampán', municipioId: 'tru-13' },
-  { id: 'tru-13-2', nombre: 'Flor de Patria', municipioId: 'tru-13' },
-  { id: 'tru-13-3', nombre: 'La Paz', municipioId: 'tru-13' },
-  { id: 'tru-13-4', nombre: 'Santa Ana', municipioId: 'tru-13' },
-  
-  // Trujillo - Municipio Pampanito (tru-14)
-  { id: 'tru-14-1', nombre: 'Pampanito', municipioId: 'tru-14' },
-  { id: 'tru-14-2', nombre: 'La Concepción', municipioId: 'tru-14' },
-  { id: 'tru-14-3', nombre: 'Pampanito II', municipioId: 'tru-14' },
-  
-  // Trujillo - Municipio Rafael Rangel (tru-15)
-  { id: 'tru-15-1', nombre: 'Betijoque', municipioId: 'tru-15' },
-  { id: 'tru-15-2', nombre: 'José Gregorio Hernández', municipioId: 'tru-15' },
-  { id: 'tru-15-3', nombre: 'La Pueblita', municipioId: 'tru-15' },
-  { id: 'tru-15-4', nombre: 'Los Cedros', municipioId: 'tru-15' },
-  
-  // Trujillo - Municipio San Rafael de Carvajal (tru-16)
-  { id: 'tru-16-1', nombre: 'Carvajal', municipioId: 'tru-16' },
-  { id: 'tru-16-2', nombre: 'Campo Alegre', municipioId: 'tru-16' },
-  { id: 'tru-16-3', nombre: 'Antonio Nicolás Briceño', municipioId: 'tru-16' },
-  { id: 'tru-16-4', nombre: 'José Leonardo Suárez', municipioId: 'tru-16' },
-  
-  // Trujillo - Municipio Sucre (tru-17)
-  { id: 'tru-17-1', nombre: 'Sabana de Mendoza', municipioId: 'tru-17' },
-  { id: 'tru-17-2', nombre: 'Junín', municipioId: 'tru-17' },
-  { id: 'tru-17-3', nombre: 'Valmore Rodríguez', municipioId: 'tru-17' },
-  { id: 'tru-17-4', nombre: 'El Paraíso', municipioId: 'tru-17' },
-  
-  // Trujillo - Municipio Trujillo (tru-18)
-  { id: 'tru-18-1', nombre: 'Trujillo', municipioId: 'tru-18' },
-  { id: 'tru-18-2', nombre: 'La Quebrada', municipioId: 'tru-18' },
-  { id: 'tru-18-3', nombre: 'Jajó', municipioId: 'tru-18' },
-  { id: 'tru-18-4', nombre: 'La Mesa de Esnujaque', municipioId: 'tru-18' },
-  { id: 'tru-18-5', nombre: 'Santiago', municipioId: 'tru-18' },
-  { id: 'tru-18-6', nombre: 'Tuñame', municipioId: 'tru-18' },
-  
-  // Trujillo - Municipio Urdaneta (tru-19)
-  { id: 'tru-19-1', nombre: 'La Beatriz', municipioId: 'tru-19' },
-  { id: 'tru-19-2', nombre: 'La Puerta', municipioId: 'tru-19' },
-  { id: 'tru-19-3', nombre: 'Mendoza Fría', municipioId: 'tru-19' },
-  
-  // Trujillo - Municipio Valera (tru-20)
-  { id: 'tru-20-1', nombre: 'Valera', municipioId: 'tru-20' },
-  { id: 'tru-20-2', nombre: 'Juan Ignacio Montilla', municipioId: 'tru-20' },
-  { id: 'tru-20-3', nombre: 'La Beatriz', municipioId: 'tru-20' },
-  { id: 'tru-20-4', nombre: 'La Puerta', municipioId: 'tru-20' },
-  { id: 'tru-20-5', nombre: 'Mendoza del Valle de Momboy', municipioId: 'tru-20' },
-  { id: 'tru-20-6', nombre: 'Mercedes Díaz', municipioId: 'tru-20' },
-  { id: 'tru-20-7', nombre: 'San Luis', municipioId: 'tru-20' },
-  
-  // Vargas - Municipio Vargas (var-1)
-  { id: 'var-1-1', nombre: 'Caraballeda', municipioId: 'var-1' },
-  { id: 'var-1-2', nombre: 'Carayaca', municipioId: 'var-1' },
-  { id: 'var-1-3', nombre: 'Carlos Soublette', municipioId: 'var-1' },
-  { id: 'var-1-4', nombre: 'Caruao', municipioId: 'var-1' },
-  { id: 'var-1-5', nombre: 'Catia La Mar', municipioId: 'var-1' },
-  { id: 'var-1-6', nombre: 'El Junko', municipioId: 'var-1' },
-  { id: 'var-1-7', nombre: 'La Guaira', municipioId: 'var-1' },
-  { id: 'var-1-8', nombre: 'Macuto', municipioId: 'var-1' },
-  { id: 'var-1-9', nombre: 'Maiquetía', municipioId: 'var-1' },
-  { id: 'var-1-10', nombre: 'Naiguatá', municipioId: 'var-1' },
-  { id: 'var-1-11', nombre: 'Urimare', municipioId: 'var-1' },
-  
-  // Yaracuy - Municipio Arístides Bastidas (yar-1)
-  { id: 'yar-1-1', nombre: 'San Pablo', municipioId: 'yar-1' },
-  
-  // Yaracuy - Municipio Bolívar (yar-2)
-  { id: 'yar-2-1', nombre: 'Aroa', municipioId: 'yar-2' },
-  
-  // Yaracuy - Municipio Bruzual (yar-3)
-  { id: 'yar-3-1', nombre: 'Chivacoa', municipioId: 'yar-3' },
-  { id: 'yar-3-2', nombre: 'Campo Elías', municipioId: 'yar-3' },
-  
-  // Yaracuy - Municipio Cocorote (yar-4)
-  { id: 'yar-4-1', nombre: 'Cocorote', municipioId: 'yar-4' },
-  
-  // Yaracuy - Municipio Independencia (yar-5)
-  { id: 'yar-5-1', nombre: 'Independencia', municipioId: 'yar-5' },
-  
-  // Yaracuy - Municipio José Antonio Páez (yar-6)
-  { id: 'yar-6-1', nombre: 'Sabana de Parra', municipioId: 'yar-6' },
-  
-  // Yaracuy - Municipio La Trinidad (yar-7)
-  { id: 'yar-7-1', nombre: 'Boraure', municipioId: 'yar-7' },
-  
-  // Yaracuy - Municipio Manuel Monge (yar-8)
-  { id: 'yar-8-1', nombre: 'Yumare', municipioId: 'yar-8' },
-  
-  // Yaracuy - Municipio Nirgua (yar-9)
-  { id: 'yar-9-1', nombre: 'Nirgua', municipioId: 'yar-9' },
-  { id: 'yar-9-2', nombre: 'Salom', municipioId: 'yar-9' },
-  { id: 'yar-9-3', nombre: 'Temerla', municipioId: 'yar-9' },
-  
-  // Yaracuy - Municipio Peña (yar-10)
-  { id: 'yar-10-1', nombre: 'San Andrés', municipioId: 'yar-10' },
-  
-  // Yaracuy - Municipio San Felipe (yar-11)
-  { id: 'yar-11-1', nombre: 'San Felipe', municipioId: 'yar-11' },
-  { id: 'yar-11-2', nombre: 'Albarico', municipioId: 'yar-11' },
-  { id: 'yar-11-3', nombre: 'San Javier', municipioId: 'yar-11' },
-  
-  // Yaracuy - Municipio Sucre (yar-12)
-  { id: 'yar-12-1', nombre: 'Guama', municipioId: 'yar-12' },
-  
-  // Yaracuy - Municipio Urachiche (yar-13)
-  { id: 'yar-13-1', nombre: 'Urachiche', municipioId: 'yar-13' },
-  
-  // Yaracuy - Municipio Veroes (yar-14)
-  { id: 'yar-14-1', nombre: 'Farriar', municipioId: 'yar-14' },
-  { id: 'yar-14-2', nombre: 'El Guayabo', municipioId: 'yar-14' },
-  
-  // Zulia - Municipio Almirante Padilla (zul-1)
-  { id: 'zul-1-1', nombre: 'El Toro', municipioId: 'zul-1' },
-  { id: 'zul-1-2', nombre: 'San Carlos', municipioId: 'zul-1' },
-  
-  // Zulia - Municipio Baralt (zul-2)
-  { id: 'zul-2-1', nombre: 'San Timoteo', municipioId: 'zul-2' },
-  { id: 'zul-2-2', nombre: 'Mene Grande', municipioId: 'zul-2' },
-  { id: 'zul-2-3', nombre: 'Bartolomé de las Casas', municipioId: 'zul-2' },
-  
-  // Zulia - Municipio Cabimas (zul-3)
-  { id: 'zul-3-1', nombre: 'Cabimas', municipioId: 'zul-3' },
-  { id: 'zul-3-2', nombre: 'Ambrosio', municipioId: 'zul-3' },
-  { id: 'zul-3-3', nombre: 'Carmen Herrera', municipioId: 'zul-3' },
-  { id: 'zul-3-4', nombre: 'La Rosa', municipioId: 'zul-3' },
-  { id: 'zul-3-5', nombre: 'Germán Ríos Linares', municipioId: 'zul-3' },
-  { id: 'zul-3-6', nombre: 'San Benito', municipioId: 'zul-3' },
-  { id: 'zul-3-7', nombre: 'Rómulo Betancourt', municipioId: 'zul-3' },
-  
-  // Zulia - Municipio Catatumbo (zul-4)
-  { id: 'zul-4-1', nombre: 'Encontrados', municipioId: 'zul-4' },
-  { id: 'zul-4-2', nombre: 'Urribarrí', municipioId: 'zul-4' },
-  
-  // Zulia - Municipio Colón (zul-5)
-  { id: 'zul-5-1', nombre: 'San Carlos del Zulia', municipioId: 'zul-5' },
-  { id: 'zul-5-2', nombre: 'Moralito', municipioId: 'zul-5' },
-  { id: 'zul-5-3', nombre: 'Santa Bárbara', municipioId: 'zul-5' },
-  { id: 'zul-5-4', nombre: 'Santa Cruz del Zulia', municipioId: 'zul-5' },
-  { id: 'zul-5-5', nombre: 'Urribarrí', municipioId: 'zul-5' },
-  
-  // Zulia - Municipio Francisco Javier Pulgar (zul-6)
-  { id: 'zul-6-1', nombre: 'El Batey', municipioId: 'zul-6' },
-  
-  // Zulia - Municipio Jesús Enrique Lossada (zul-7)
-  { id: 'zul-7-1', nombre: 'La Concepción', municipioId: 'zul-7' },
-  { id: 'zul-7-2', nombre: 'San José', municipioId: 'zul-7' },
-  { id: 'zul-7-3', nombre: 'Mariano Parra León', municipioId: 'zul-7' },
-  { id: 'zul-7-4', nombre: 'José Ramón Yépez', municipioId: 'zul-7' },
-  
-  // Zulia - Municipio Jesús María Semprún (zul-8)
-  { id: 'zul-8-1', nombre: 'El Carmelo', municipioId: 'zul-8' },
-  { id: 'zul-8-2', nombre: 'Marcelino Briceño', municipioId: 'zul-8' },
-  { id: 'zul-8-3', nombre: 'Potosí', municipioId: 'zul-8' },
-  
-  // Zulia - Municipio La Cañada de Urdaneta (zul-9)
-  { id: 'zul-9-1', nombre: 'La Concepción', municipioId: 'zul-9' },
-  { id: 'zul-9-2', nombre: 'José Cenobio Urribarrí', municipioId: 'zul-9' },
-  
-  // Zulia - Municipio Lagunillas (zul-10)
-  { id: 'zul-10-1', nombre: 'Ciudad Ojeda', municipioId: 'zul-10' },
-  { id: 'zul-10-2', nombre: 'Olegario Villalobos', municipioId: 'zul-10' },
-  { id: 'zul-10-3', nombre: 'San Miguel', municipioId: 'zul-10' },
-  { id: 'zul-10-4', nombre: 'Venezuela', municipioId: 'zul-10' },
-  
-  // Zulia - Municipio Machiques de Perijá (zul-11)
-  { id: 'zul-11-1', nombre: 'Machiques', municipioId: 'zul-11' },
-  { id: 'zul-11-2', nombre: 'Libertad', municipioId: 'zul-11' },
-  { id: 'zul-11-3', nombre: 'Río Negro', municipioId: 'zul-11' },
-  { id: 'zul-11-4', nombre: 'San José de Perijá', municipioId: 'zul-11' },
-  
-  // Zulia - Municipio Mara (zul-12)
-  { id: 'zul-12-1', nombre: 'San Rafael del Moján', municipioId: 'zul-12' },
-  { id: 'zul-12-2', nombre: 'La Sierrita', municipioId: 'zul-12' },
-  { id: 'zul-12-3', nombre: 'Las Parcelas', municipioId: 'zul-12' },
-  { id: 'zul-12-4', nombre: 'Luis de Vicente', municipioId: 'zul-12' },
-  { id: 'zul-12-5', nombre: 'Monseñor Arturo Álvarez', municipioId: 'zul-12' },
-  
-  // Zulia - Municipio Maracaibo (zul-13)
-  { id: 'zul-13-1', nombre: 'Maracaibo', municipioId: 'zul-13' },
-  { id: 'zul-13-2', nombre: 'Antonio Borjas Romero', municipioId: 'zul-13' },
-  { id: 'zul-13-3', nombre: 'Bolívar', municipioId: 'zul-13' },
-  { id: 'zul-13-4', nombre: 'Cacique Mara', municipioId: 'zul-13' },
-  { id: 'zul-13-5', nombre: 'Caracciolo Parra Pérez', municipioId: 'zul-13' },
-  { id: 'zul-13-6', nombre: 'Cecilio Acosta', municipioId: 'zul-13' },
-  { id: 'zul-13-7', nombre: 'Chiquinquirá', municipioId: 'zul-13' },
-  { id: 'zul-13-8', nombre: 'Coquivacoa', municipioId: 'zul-13' },
-  { id: 'zul-13-9', nombre: 'Cristo de Aranza', municipioId: 'zul-13' },
-  { id: 'zul-13-10', nombre: 'Idelfonzo Vásquez', municipioId: 'zul-13' },
-  { id: 'zul-13-11', nombre: 'Juana de Ávila', municipioId: 'zul-13' },
-  { id: 'zul-13-12', nombre: 'Luis Hurtado Higuera', municipioId: 'zul-13' },
-  { id: 'zul-13-13', nombre: 'Manuel Dagnino', municipioId: 'zul-13' },
-  { id: 'zul-13-14', nombre: 'Olegario Villalobos', municipioId: 'zul-13' },
-  { id: 'zul-13-15', nombre: 'Raúl Leoni', municipioId: 'zul-13' },
-  { id: 'zul-13-16', nombre: 'Santa Lucía', municipioId: 'zul-13' },
-  { id: 'zul-13-17', nombre: 'Venancio Pulgar', municipioId: 'zul-13' },
-  { id: 'zul-13-18', nombre: 'San Isidro', municipioId: 'zul-13' },
-  
-  // Zulia - Municipio Miranda (zul-14)
-  { id: 'zul-14-1', nombre: 'Los Puertos de Altagracia', municipioId: 'zul-14' },
-  { id: 'zul-14-2', nombre: 'José Ramón Yépez', municipioId: 'zul-14' },
-  
-  // Zulia - Municipio Páez (zul-15)
-  { id: 'zul-15-1', nombre: 'Sinamaica', municipioId: 'zul-15' },
-  { id: 'zul-15-2', nombre: 'Alta Guajira', municipioId: 'zul-15' },
-  { id: 'zul-15-3', nombre: 'Elías Sánchez Rubio', municipioId: 'zul-15' },
-  { id: 'zul-15-4', nombre: 'Guajira', municipioId: 'zul-15' },
-  
-  // Zulia - Municipio Rosario de Perijá (zul-16)
-  { id: 'zul-16-1', nombre: 'San Fernando', municipioId: 'zul-16' },
-  { id: 'zul-16-2', nombre: 'El Real', municipioId: 'zul-16' },
-  
-  // Zulia - Municipio San Francisco (zul-17)
-  { id: 'zul-17-1', nombre: 'San Francisco', municipioId: 'zul-17' },
-  { id: 'zul-17-2', nombre: 'El Bajo', municipioId: 'zul-17' },
-  { id: 'zul-17-3', nombre: 'Domitila Flores', municipioId: 'zul-17' },
-  { id: 'zul-17-4', nombre: 'Francisco Ochoa', municipioId: 'zul-17' },
-  { id: 'zul-17-5', nombre: 'Los Cortijos', municipioId: 'zul-17' },
-  { id: 'zul-17-6', nombre: 'Mariano Parra León', municipioId: 'zul-17' },
-  
-  // Zulia - Municipio Santa Rita (zul-18)
-  { id: 'zul-18-1', nombre: 'Santa Rita', municipioId: 'zul-18' },
-  { id: 'zul-18-2', nombre: 'El Mene', municipioId: 'zul-18' },
-  { id: 'zul-18-3', nombre: 'José Cenobio Urribarrí', municipioId: 'zul-18' },
-  { id: 'zul-18-4', nombre: 'Pedro Lucas Urribarrí', municipioId: 'zul-18' },
-  
-  // Zulia - Municipio Simón Bolívar (zul-19)
-  { id: 'zul-19-1', nombre: 'Tía Juana', municipioId: 'zul-19' },
-  { id: 'zul-19-2', nombre: 'José Gregorio Hernández', municipioId: 'zul-19' },
-  { id: 'zul-19-3', nombre: 'La Paz', municipioId: 'zul-19' },
-  
-  // Zulia - Municipio Sucre (zul-20)
-  { id: 'zul-20-1', nombre: 'Bobures', municipioId: 'zul-20' },
-  { id: 'zul-20-2', nombre: 'El Batey', municipioId: 'zul-20' },
-  { id: 'zul-20-3', nombre: 'Guzmán Guillermo', municipioId: 'zul-20' },
-  { id: 'zul-20-4', nombre: 'Ricaurte', municipioId: 'zul-20' },
-  
-  // Zulia - Municipio Valmore Rodríguez (zul-21)
-  { id: 'zul-21-1', nombre: 'Bachaquero', municipioId: 'zul-21' },
-  { id: 'zul-21-2', nombre: 'Mene Grande', municipioId: 'zul-21' },
-  { id: 'zul-21-3', nombre: 'Libertad', municipioId: 'zul-21' },
-  
-  // Dependencias Federales - Municipio Dependencias Federales (dep-1)
-  { id: 'dep-1-1', nombre: 'Archipiélago Los Monjes', municipioId: 'dep-1' },
-  { id: 'dep-1-2', nombre: 'Isla La Tortuga', municipioId: 'dep-1' },
-  { id: 'dep-1-3', nombre: 'Isla La Sola', municipioId: 'dep-1' },
-  { id: 'dep-1-4', nombre: 'Islas Los Testigos', municipioId: 'dep-1' },
-  { id: 'dep-1-5', nombre: 'Isla de Patos', municipioId: 'dep-1' },
-  { id: 'dep-1-6', nombre: 'Isla de Aves', municipioId: 'dep-1' },
-  { id: 'dep-1-7', nombre: 'Archipiélago Los Roques', municipioId: 'dep-1' },
-  { id: 'dep-1-8', nombre: 'Isla La Blanquilla', municipioId: 'dep-1' },
-  { id: 'dep-1-9', nombre: 'Isla de Margarita', municipioId: 'dep-1' },
-  { id: 'dep-1-10', nombre: 'Isla de Coche', municipioId: 'dep-1' },
-  { id: 'dep-1-11', nombre: 'Isla de Cubagua', municipioId: 'dep-1' },
-  
-  // Guayana Esequiba - Municipio Guayana Esequiba (guy-1)
-  { id: 'guy-1-1', nombre: 'Alto Esequibo', municipioId: 'guy-1' },
-  { id: 'guy-1-2', nombre: 'Bajo Esequibo', municipioId: 'guy-1' },
-  { id: 'guy-1-3', nombre: 'Cuyuní-Mazaruni', municipioId: 'guy-1' },
-  { id: 'guy-1-4', nombre: 'Islas Esequibo-Demerara Occidental', municipioId: 'guy-1' },
-  { id: 'guy-1-5', nombre: 'Pomeroon-Supenaam', municipioId: 'guy-1' },
-  { id: 'guy-1-6', nombre: 'Potaro-Siparuni', municipioId: 'guy-1' },
-  { id: 'guy-1-7', nombre: 'Takutu-Alto Esequibo', municipioId: 'guy-1' }
+  // Libertador
+  { id: '23 de enero', nombre: '23 de Enero', municipioId: 'libertador' },
+  { id: 'altagracia', nombre: 'Altagracia', municipioId: 'libertador' },
+  { id: 'antimano', nombre: 'Antímano', municipioId: 'libertador' },
+  { id: 'caricuao', nombre: 'Caricuao', municipioId: 'libertador' },
+  { id: 'catedral', nombre: 'Catedral', municipioId: 'libertador' },
+  { id: 'coche', nombre: 'Coche', municipioId: 'libertador' },
+  { id: 'el junquito', nombre: 'El Junquito', municipioId: 'libertador' },
+  { id: 'el paraiso', nombre: 'El Paraíso', municipioId: 'libertador' },
+  { id: 'el recreo', nombre: 'El Recreo', municipioId: 'libertador' },
+  { id: 'el valle', nombre: 'El Valle', municipioId: 'libertador' },
+  { id: 'candelaria', nombre: 'Candelaria', municipioId: 'libertador' },
+  { id: 'la pastora', nombre: 'La Pastora', municipioId: 'libertador' },
+  { id: 'la vega', nombre: 'La Vega', municipioId: 'libertador' },
+  { id: 'macarao', nombre: 'Macarao', municipioId: 'libertador' },
+  { id: 'san agustin', nombre: 'San Agustín', municipioId: 'libertador' },
+  { id: 'san bernardino', nombre: 'San Bernardino', municipioId: 'libertador' },
+  { id: 'san jose', nombre: 'San José', municipioId: 'libertador' },
+  { id: 'san juan', nombre: 'San Juan', municipioId: 'libertador' },
+  { id: 'san pedro', nombre: 'San Pedro', municipioId: 'libertador' },
+  { id: 'santa rosalia', nombre: 'Santa Rosalía', municipioId: 'libertador' },
+  { id: 'santa teresa', nombre: 'Santa Teresa', municipioId: 'libertador' },
+  { id: 'sucre', nombre: 'Sucre', municipioId: 'libertador' },
+  { id: 'el recreo libertador', nombre: 'El Recreo', municipioId: 'libertador' },
+  { id: 'la florida', nombre: 'La Florida', municipioId: 'libertador' },
+  { id: 'la granja', nombre: 'La Granja', municipioId: 'libertador' },
+  { id: 'la yaguara', nombre: 'La Yaguara', municipioId: 'libertador' },
+
+  // Alto Orinoco
+  { id: 'la esmeralda', nombre: 'La Esmeralda', municipioId: 'alto orinoco' },
+  { id: 'huachamacare', nombre: 'Huachamacare', municipioId: 'alto orinoco' },
+  { id: 'marawaka', nombre: 'Marawaka', municipioId: 'alto orinoco' },
+  { id: 'mavaka', nombre: 'Mavaka', municipioId: 'alto orinoco' },
+  { id: 'sierra parima', nombre: 'Sierra Parima', municipioId: 'alto orinoco' },
+
+  // Atabapo
+  { id: 'atabapo', nombre: 'Atabapo', municipioId: 'atabapo' },
+  { id: 'ucata', nombre: 'Ucata', municipioId: 'atabapo' },
+  { id: 'yapacana', nombre: 'Yapacana', municipioId: 'atabapo' },
+  { id: 'caname', nombre: 'Caname', municipioId: 'atabapo' },
+
+  // Atures
+  { id: 'fernando giron tovar', nombre: 'Fernando Girón Tovar', municipioId: 'atures' },
+  { id: 'luis alberto gomez', nombre: 'Luis Alberto Gómez', municipioId: 'atures' },
+  { id: 'pahuena', nombre: 'Pahueña', municipioId: 'atures' },
+  { id: 'platanillal', nombre: 'Platanillal', municipioId: 'atures' },
+
+  // Autana
+  { id: 'samariapo', nombre: 'Samariapo', municipioId: 'autana' },
+  { id: 'sipapo', nombre: 'Sipapo', municipioId: 'autana' },
+  { id: 'munduapo', nombre: 'Munduapo', municipioId: 'autana' },
+  { id: 'guayapo', nombre: 'Guayapo', municipioId: 'autana' },
+  { id: 'isla raton', nombre: 'Isla Ratón', municipioId: 'autana' },
+
+  // Manapiare
+  { id: 'alto ventuari', nombre: 'Alto Ventuari', municipioId: 'manapiare' },
+  { id: 'medio ventuari', nombre: 'Medio Ventuari', municipioId: 'manapiare' },
+  { id: 'bajo ventuari', nombre: 'Bajo Ventuari', municipioId: 'manapiare' },
+  { id: 'manapiare', nombre: 'Manapiare', municipioId: 'manapiare' },
+
+  // Maroa
+  { id: 'maroa', nombre: 'Maroa', municipioId: 'maroa' },
+  { id: 'victorino', nombre: 'Victorino', municipioId: 'maroa' },
+  { id: 'comunidad', nombre: 'Comunidad', municipioId: 'maroa' },
+
+  // Río Negro
+  { id: 'casiquiare', nombre: 'Casiquiare', municipioId: 'rio negro' },
+  { id: 'cocuy', nombre: 'Cocuy', municipioId: 'rio negro' },
+  { id: 'san carlos de rio negro', nombre: 'San Carlos de Río Negro', municipioId: 'rio negro' },
+  { id: 'solano', nombre: 'Solano', municipioId: 'rio negro' },
+
+  // Anaco
+  { id: 'anaco', nombre: 'Anaco', municipioId: 'anaco' },
+  { id: 'san joaquin', nombre: 'San Joaquín', municipioId: 'anaco' },
+  { id: 'buena vista', nombre: 'Buena Vista', municipioId: 'anaco' },
+
+  // Aragua
+  { id: 'aragua de barcelona', nombre: 'Aragua de Barcelona', municipioId: 'aragua' },
+  { id: 'cachipo', nombre: 'Cachipo', municipioId: 'aragua' },
+  { id: 'el chaparro', nombre: 'El Chaparro', municipioId: 'aragua' },
+
+  // Bolívar
+  { id: 'el carmen', nombre: 'El Carmen', municipioId: 'bolivar' },
+  { id: 'san cristobal', nombre: 'San Cristóbal', municipioId: 'bolivar' },
+  { id: 'bergantin', nombre: 'Bergantín', municipioId: 'bolivar' },
+  { id: 'caigua', nombre: 'Caigua', municipioId: 'bolivar' },
+  { id: 'el pilar', nombre: 'El Pilar', municipioId: 'bolivar' },
+  { id: 'naricual', nombre: 'Naricual', municipioId: 'bolivar' },
+
+  // Bruzual
+  { id: 'clarines', nombre: 'Clarines', municipioId: 'bruzual' },
+  { id: 'guanape', nombre: 'Guanape', municipioId: 'bruzual' },
+  { id: 'sabana de uchire', nombre: 'Sabana de Uchire', municipioId: 'bruzual' },
+  { id: 'san mateo', nombre: 'San Mateo', municipioId: 'bruzual' },
+
+  // Carvajal
+  { id: 'valle de guanape', nombre: 'Valle de Guanape', municipioId: 'carvajal' },
+  { id: 'santa barbara', nombre: 'Santa Bárbara', municipioId: 'carvajal' },
+  { id: 'el carito', nombre: 'El Carito', municipioId: 'carvajal' },
+
+  // Cajigal
+  { id: 'onoto', nombre: 'Onoto', municipioId: 'cajigal' },
+  { id: 'san pablo', nombre: 'San Pablo', municipioId: 'cajigal' },
+
+  // Freites
+  { id: 'cantaura', nombre: 'Cantaura', municipioId: 'freites' },
+  { id: 'libertador', nombre: 'Libertador', municipioId: 'freites' },
+  { id: 'santa rosa', nombre: 'Santa Rosa', municipioId: 'freites' },
+  { id: 'urica', nombre: 'Urica', municipioId: 'freites' },
+  { id: 'mundo nuevo', nombre: 'Mundo Nuevo', municipioId: 'freites' },
+
+  // Guanipa
+  { id: 'guanipa', nombre: 'Guanipa', municipioId: 'guanipa' },
+
+  // Guanta
+  { id: 'guanta', nombre: 'Guanta', municipioId: 'guanta' },
+  { id: 'chorreron', nombre: 'Chorrerón', municipioId: 'guanta' },
+  { id: 'pertigalete', nombre: 'Pertigalete', municipioId: 'guanta' },
+
+  // Independencia
+  { id: 'soledad', nombre: 'Soledad', municipioId: 'independencia' },
+  { id: 'mamo', nombre: 'Mamo', municipioId: 'independencia' },
+  { id: 'carapa', nombre: 'Carapa', municipioId: 'independencia' },
+
+  // Libertad
+  { id: 'san mateo libertad', nombre: 'San Mateo', municipioId: 'libertad' },
+  { id: 'santa ines', nombre: 'Santa Inés', municipioId: 'libertad' },
+
+  // McGregor
+  { id: 'el chaparro mcgregor', nombre: 'El Chaparro', municipioId: 'mcgregor' },
+  { id: 'tomas alfaro calatrava', nombre: 'Tomás Alfaro Calatrava', municipioId: 'mcgregor' },
+
+  // Miranda
+  { id: 'pariaguan', nombre: 'Pariaguán', municipioId: 'miranda' },
+  { id: 'atapirire', nombre: 'Atapirire', municipioId: 'miranda' },
+  { id: 'el pao', nombre: 'El Pao', municipioId: 'miranda' },
+  { id: 'mucura', nombre: 'Múcura', municipioId: 'miranda' },
+  { id: 'boca del pao', nombre: 'Boca del Pao', municipioId: 'miranda' },
+
+  // Monagas
+  { id: 'mapire', nombre: 'Mapire', municipioId: 'monagas' },
+  { id: 'piar', nombre: 'Piar', municipioId: 'monagas' },
+  { id: 'santa clara', nombre: 'Santa Clara', municipioId: 'monagas' },
+  { id: 'san diego de cabrutica', nombre: 'San Diego de Cabrutica', municipioId: 'monagas' },
+  { id: 'uverito', nombre: 'Uverito', municipioId: 'monagas' },
+  { id: 'zuata', nombre: 'Zuata', municipioId: 'monagas' },
+
+  // Peñalver
+  { id: 'puerto piritu', nombre: 'Puerto Píritu', municipioId: 'penalver' },
+  { id: 'san miguel', nombre: 'San Miguel', municipioId: 'penalver' },
+  { id: 'sucre penalver', nombre: 'Sucre', municipioId: 'penalver' },
+
+  // Píritu
+  { id: 'piritu', nombre: 'Píritu', municipioId: 'piritu' },
+  { id: 'san francisco', nombre: 'San Francisco', municipioId: 'piritu' },
+  { id: 'san jose piritu', nombre: 'San José', municipioId: 'piritu' },
+
+  // San Juan de Capistrano
+  { id: 'boca de uchire', nombre: 'Boca de Uchire', municipioId: 'san juan de capistrano' },
+  { id: 'boca de chavez', nombre: 'Boca de Chávez', municipioId: 'san juan de capistrano' },
+
+  // Santa Ana
+  { id: 'santa ana', nombre: 'Santa Ana', municipioId: 'santa ana' },
+  { id: 'pueblo nuevo', nombre: 'Pueblo Nuevo', municipioId: 'santa ana' },
+
+  // Simón Rodríguez
+  { id: 'el pilar simon rodriguez', nombre: 'El Pilar', municipioId: 'simon rodriguez' },
+
+  // Sotillo
+  { id: 'puerto la cruz', nombre: 'Puerto La Cruz', municipioId: 'sotillo' },
+  { id: 'pozuelos', nombre: 'Pozuelos', municipioId: 'sotillo' },
+  { id: 'guanta sotillo', nombre: 'Guanta', municipioId: 'sotillo' },
+
+  // Zaraza
+  { id: 'lecherias', nombre: 'Lecherías', municipioId: 'zaraza' },
+  { id: 'el morro', nombre: 'El Morro', municipioId: 'zaraza' },
+
+  // Achaguas
+  { id: 'achaguas', nombre: 'Achaguas', municipioId: 'achaguas' },
+  { id: 'apurito', nombre: 'Apurito', municipioId: 'achaguas' },
+  { id: 'el yagual', nombre: 'El Yagual', municipioId: 'achaguas' },
+  { id: 'guachara', nombre: 'Guachara', municipioId: 'achaguas' },
+  { id: 'mucuritas', nombre: 'Mucuritas', municipioId: 'achaguas' },
+  { id: 'queseras del medio', nombre: 'Queseras del Medio', municipioId: 'achaguas' },
+
+  // Biruaca
+  { id: 'biruaca', nombre: 'Biruaca', municipioId: 'biruaca' },
+
+  // Muñoz
+  { id: 'mantecal', nombre: 'Mantecal', municipioId: 'munoz' },
+  { id: 'bruzual', nombre: 'Bruzual', municipioId: 'munoz' },
+  { id: 'quintero', nombre: 'Quintero', municipioId: 'munoz' },
+  { id: 'rincon hondo', nombre: 'Rincón Hondo', municipioId: 'munoz' },
+  { id: 'san vicente', nombre: 'San Vicente', municipioId: 'munoz' },
+
+  // Páez
+  { id: 'guasdualito', nombre: 'Guasdualito', municipioId: 'paez' },
+  { id: 'aramendi', nombre: 'Aramendi', municipioId: 'paez' },
+  { id: 'el amparo', nombre: 'El Amparo', municipioId: 'paez' },
+  { id: 'san camilo', nombre: 'San Camilo', municipioId: 'paez' },
+  { id: 'urdaneta', nombre: 'Urdaneta', municipioId: 'paez' },
+  { id: 'el nula', nombre: 'El Nula', municipioId: 'paez' },
+  { id: 'palmarito', nombre: 'Palmarito', municipioId: 'paez' },
+
+  // Pedro Camejo
+  { id: 'san juan de payara', nombre: 'San Juan de Payara', municipioId: 'pedro camejo' },
+  { id: 'codazzi', nombre: 'Codazzi', municipioId: 'pedro camejo' },
+  { id: 'cunaviche', nombre: 'Cunaviche', municipioId: 'pedro camejo' },
+  { id: 'puerto paez', nombre: 'Puerto Páez', municipioId: 'pedro camejo' },
+
+  // Rómulo Gallegos
+  { id: 'elorza', nombre: 'Elorza', municipioId: 'romulo gallegos' },
+  { id: 'la trinidad', nombre: 'La Trinidad', municipioId: 'romulo gallegos' },
+  { id: 'la trinidad de orichuna', nombre: 'La Trinidad de Orichuna', municipioId: 'romulo gallegos' },
+
+  // San Fernando
+  { id: 'san fernando', nombre: 'San Fernando', municipioId: 'san fernando' },
+  { id: 'el recreo san fernando', nombre: 'El Recreo', municipioId: 'san fernando' },
+  { id: 'penalver', nombre: 'Peñalver', municipioId: 'san fernando' },
+  { id: 'san rafael de atamaica', nombre: 'San Rafael de Atamaica', municipioId: 'san fernando' },
+  { id: 'arichuna', nombre: 'Arichuna', municipioId: 'san fernando' },
+
+  // Bolívar
+  { id: 'san mateo bolivar aragua', nombre: 'San Mateo', municipioId: 'bolivar aragua' },
+  { id: 'camatagua', nombre: 'Camatagua', municipioId: 'bolivar aragua' },
+  { id: 'carmen de cura', nombre: 'Carmen de Cura', municipioId: 'bolivar aragua' },
+
+  // Camatagua
+  { id: 'camatagua camatagua', nombre: 'Camatagua', municipioId: 'camatagua' },
+  { id: 'carmen de cura camatagua', nombre: 'Carmen de Cura', municipioId: 'camatagua' },
+
+  // Francisco Linares Alcántara
+  { id: 'francisco linares alcantara', nombre: 'Francisco Linares Alcántara', municipioId: 'francisco linares alcantara' },
+  { id: 'francisco de miranda', nombre: 'Francisco de Miranda', municipioId: 'francisco linares alcantara' },
+  { id: 'monsenor feliciano gonzalez', nombre: 'Monseñor Feliciano González', municipioId: 'francisco linares alcantara' },
+  { id: 'parapal', nombre: 'Parapal', municipioId: 'francisco linares alcantara' },
+
+  // Girardot
+  { id: 'los tacariguas', nombre: 'Los Tacariguas', municipioId: 'girardot' },
+  { id: 'jose casanova godoy', nombre: 'José Casanova Godoy', municipioId: 'girardot' },
+  { id: 'pedro jose ovalles', nombre: 'Pedro José Ovalles', municipioId: 'girardot' },
+  { id: 'madre maria de san jose', nombre: 'Madre María de San José', municipioId: 'girardot' },
+  { id: 'las delicias', nombre: 'Las Delicias', municipioId: 'girardot' },
+  { id: 'andres eloy blanco', nombre: 'Andrés Eloy Blanco', municipioId: 'girardot' },
+  { id: 'joaquin crespo', nombre: 'Joaquín Crespo', municipioId: 'girardot' },
+  { id: 'choroni', nombre: 'Choroní', municipioId: 'girardot' },
+  { id: 'maracay', nombre: 'Maracay', municipioId: 'girardot' },
+
+  // José Ángel Lamas
+  { id: 'santa cruz', nombre: 'Santa Cruz', municipioId: 'jose angel lamas' },
+
+  // José Félix Ribas
+  { id: 'juan vicente bolivar', nombre: 'Juan Vicente Bolívar', municipioId: 'jose felix ribas' },
+  { id: 'castor nieves rios', nombre: 'Castor Nieves Ríos', municipioId: 'jose felix ribas' },
+  { id: 'zuata jose felix ribas', nombre: 'Zuata', municipioId: 'jose felix ribas' },
+  { id: 'las guacamayas', nombre: 'Las Guacamayas', municipioId: 'jose felix ribas' },
+  { id: 'pao de zarate', nombre: 'Pao de Zárate', municipioId: 'jose felix ribas' },
+
+  // José Rafael Revenga
+  { id: 'el consejo', nombre: 'El Consejo', municipioId: 'jose rafael revenga' },
+
+  // Libertador
+  { id: 'san martin de porres', nombre: 'San Martín de Porres', municipioId: 'libertador aragua' },
+  { id: 'palo negro', nombre: 'Palo Negro', municipioId: 'libertador aragua' },
+
+  // Mario Briceño Iragorry
+  { id: 'cana de azucar', nombre: 'Caña de Azúcar', municipioId: 'mario briceno iragorry' },
+  { id: 'el limon', nombre: 'El Limón', municipioId: 'mario briceno iragorry' },
+
+  // Ocumare de la Costa de Oro
+  { id: 'ocumare de la costa', nombre: 'Ocumare de la Costa', municipioId: 'ocumare de la costa de oro' },
+
+  // San Casimiro
+  { id: 'san casimiro', nombre: 'San Casimiro', municipioId: 'san casimiro' },
+  { id: 'guiripa', nombre: 'Güiripa', municipioId: 'san casimiro' },
+  { id: 'ollas de caramacate', nombre: 'Ollas de Caramacate', municipioId: 'san casimiro' },
+  { id: 'valle morin', nombre: 'Valle Morín', municipioId: 'san casimiro' },
+
+  // San Sebastián
+  { id: 'san sebastian de los reyes', nombre: 'San Sebastián de los Reyes', municipioId: 'san sebastian' },
+
+  // Santiago Mariño
+  { id: 'saman de guere', nombre: 'Samán de Güere', municipioId: 'santiago marino' },
+  { id: 'turmero', nombre: 'Turmero', municipioId: 'santiago marino' },
+  { id: 'arevalo aponte', nombre: 'Arévalo Aponte', municipioId: 'santiago marino' },
+  { id: 'alfredo pacheco miranda', nombre: 'Alfredo Pacheco Miranda', municipioId: 'santiago marino' },
+  { id: 'chuao', nombre: 'Chuao', municipioId: 'santiago marino' },
+
+  // Santos Michelena
+  { id: 'las tejerias', nombre: 'Las Tejerías', municipioId: 'santos michelena' },
+  { id: 'tiara', nombre: 'Tiara', municipioId: 'santos michelena' },
+
+  // Sucre
+  { id: 'cagua', nombre: 'Cagua', municipioId: 'sucre' },
+  { id: 'bella vista', nombre: 'Bella Vista', municipioId: 'sucre' },
+
+  // Tovar
+  { id: 'colonia tovar', nombre: 'Colonia Tovar', municipioId: 'tovar' },
+
+  // Urdaneta
+  { id: 'barbacoas', nombre: 'Barbacoas', municipioId: 'urdaneta' },
+  { id: 'las penitas', nombre: 'Las Peñitas', municipioId: 'urdaneta' },
+  { id: 'san francisco de cara', nombre: 'San Francisco de Cara', municipioId: 'urdaneta' },
+  { id: 'taguay', nombre: 'Taguay', municipioId: 'urdaneta' },
+
+  // Zamora
+  { id: 'villa de cura', nombre: 'Villa de Cura', municipioId: 'zamora' },
+  { id: 'magdaleno', nombre: 'Magdaleno', municipioId: 'zamora' },
+  { id: 'san francisco de asis', nombre: 'San Francisco de Asís', municipioId: 'zamora' },
+  { id: 'valles de tucutunemo', nombre: 'Valles de Tucutunemo', municipioId: 'zamora' },
+  { id: 'augusto mijares', nombre: 'Augusto Mijares', municipioId: 'zamora' },
+  { id: 'tocoron', nombre: 'Tocorón', municipioId: 'zamora' },
+
+  // Alberto Arvelo Torrealba
+  { id: 'sabaneta', nombre: 'Sabaneta', municipioId: 'alberto arvelo torrealba' },
+  { id: 'juan antonio rodriguez dominguez', nombre: 'Juan Antonio Rodríguez Domínguez', municipioId: 'alberto arvelo torrealba' },
+
+  // Andrés Eloy Blanco
+  { id: 'el canton', nombre: 'El Cantón', municipioId: 'andres eloy blanco' },
+  { id: 'santa cruz de guacas', nombre: 'Santa Cruz de Guacas', municipioId: 'andres eloy blanco' },
+  { id: 'puerto vivas', nombre: 'Puerto Vivas', municipioId: 'andres eloy blanco' },
+
+  // Antonio José de Sucre
+  { id: 'socopo', nombre: 'Socopó', municipioId: 'antonio jose de sucre' },
+  { id: 'elias sanchez rubio', nombre: 'Elías Sánchez Rubio', municipioId: 'antonio jose de sucre' },
+  { id: 'rosa de jesus', nombre: 'Rosa de Jesús', municipioId: 'antonio jose de sucre' },
+
+  // Arismendi
+  { id: 'arismendi', nombre: 'Arismendi', municipioId: 'arismendi' },
+  { id: 'guadarrama', nombre: 'Guadarrama', municipioId: 'arismendi' },
+  { id: 'la union', nombre: 'La Unión', municipioId: 'arismendi' },
+  { id: 'san antonio', nombre: 'San Antonio', municipioId: 'arismendi' },
+
+  // Barinas
+  { id: 'barinas', nombre: 'Barinas', municipioId: 'barinas' },
+  { id: 'alberto arvelo larriva', nombre: 'Alberto Arvelo Larriva', municipioId: 'barinas' },
+  { id: 'san silvestre', nombre: 'San Silvestre', municipioId: 'barinas' },
+  { id: 'santa ines barinas', nombre: 'Santa Inés', municipioId: 'barinas' },
+  { id: 'santa lucia', nombre: 'Santa Lucía', municipioId: 'barinas' },
+  { id: 'torunos', nombre: 'Torunos', municipioId: 'barinas' },
+  { id: 'el carmen barinas', nombre: 'El Carmen', municipioId: 'barinas' },
+  { id: 'romulo betancourt', nombre: 'Rómulo Betancourt', municipioId: 'barinas' },
+  { id: 'corazon de jesus', nombre: 'Corazón de Jesús', municipioId: 'barinas' },
+  { id: 'ramon ignacio mendez', nombre: 'Ramón Ignacio Méndez', municipioId: 'barinas' },
+  { id: 'alto barinas', nombre: 'Alto Barinas', municipioId: 'barinas' },
+  { id: 'manuel palacio fajardo', nombre: 'Manuel Palacio Fajardo', municipioId: 'barinas' },
+  { id: 'juan antonio rodriguez dominguez barinas', nombre: 'Juan Antonio Rodríguez Domínguez', municipioId: 'barinas' },
+  { id: 'dominga ortiz de paez', nombre: 'Dominga Ortiz de Páez', municipioId: 'barinas' },
+
+  // Bolívar
+  { id: 'barinitas', nombre: 'Barinitas', municipioId: 'bolivar barinas' },
+  { id: 'altamira de caceres', nombre: 'Altamira de Cáceres', municipioId: 'bolivar barinas' },
+  { id: 'calderas', nombre: 'Calderas', municipioId: 'bolivar barinas' },
+
+  // Cruz Paredes
+  { id: 'barrancas', nombre: 'Barrancas', municipioId: 'cruz paredes' },
+  { id: 'el socorro', nombre: 'El Socorro', municipioId: 'cruz paredes' },
+  { id: 'mazparrito', nombre: 'Mazparrito', municipioId: 'cruz paredes' },
+
+  // Ezequiel Zamora
+  { id: 'santa barbara ezequiel zamora', nombre: 'Santa Bárbara', municipioId: 'ezequiel zamora' },
+  { id: 'pedro briceno mendez', nombre: 'Pedro Briceño Méndez', municipioId: 'ezequiel zamora' },
+  { id: 'ramon ignacio mendez ezequiel zamora', nombre: 'Ramón Ignacio Méndez', municipioId: 'ezequiel zamora' },
+  { id: 'jose ignacio del pumar', nombre: 'José Ignacio del Pumar', municipioId: 'ezequiel zamora' },
+
+  // Obispos
+  { id: 'obispos', nombre: 'Obispos', municipioId: 'obispos' },
+  { id: 'el real', nombre: 'El Real', municipioId: 'obispos' },
+  { id: 'la luz', nombre: 'La Luz', municipioId: 'obispos' },
+  { id: 'los guasimitos', nombre: 'Los Guasimitos', municipioId: 'obispos' },
+
+  // Pedraza
+  { id: 'ciudad bolivia', nombre: 'Ciudad Bolivia', municipioId: 'pedraza' },
+  { id: 'ignacio briceno', nombre: 'Ignacio Briceño', municipioId: 'pedraza' },
+  { id: 'jose felix ribas', nombre: 'José Félix Ribas', municipioId: 'pedraza' },
+  { id: 'paez', nombre: 'Páez', municipioId: 'pedraza' },
+
+  // Rojas
+  { id: 'libertad', nombre: 'Libertad', municipioId: 'rojas' },
+  { id: 'dolores', nombre: 'Dolores', municipioId: 'rojas' },
+  { id: 'palacio fajardo', nombre: 'Palacio Fajardo', municipioId: 'rojas' },
+  { id: 'santa rosa rojas', nombre: 'Santa Rosa', municipioId: 'rojas' },
+
+  // Sosa
+  { id: 'ciudad de nutrias', nombre: 'Ciudad de Nutrias', municipioId: 'sosa' },
+  { id: 'el regalo', nombre: 'El Regalo', municipioId: 'sosa' },
+  { id: 'puerto de nutrias', nombre: 'Puerto de Nutrias', municipioId: 'sosa' },
+  { id: 'santa catalina', nombre: 'Santa Catalina', municipioId: 'sosa' },
+
+  // Caroní
+  { id: 'ciudad guayana', nombre: 'Ciudad Guayana', municipioId: 'caroni' },
+  { id: 'cachamay', nombre: 'Cachamay', municipioId: 'caroni' },
+  { id: 'chirica', nombre: 'Chirica', municipioId: 'caroni' },
+  { id: 'dalla costa', nombre: 'Dalla Costa', municipioId: 'caroni' },
+  { id: 'once de abril', nombre: 'Once de Abril', municipioId: 'caroni' },
+  { id: 'simon bolivar', nombre: 'Simón Bolívar', municipioId: 'caroni' },
+  { id: 'unare', nombre: 'Unare', municipioId: 'caroni' },
+  { id: 'universidad', nombre: 'Universidad', municipioId: 'caroni' },
+  { id: 'vista al sol', nombre: 'Vista al Sol', municipioId: 'caroni' },
+  { id: 'pozo verde', nombre: 'Pozo Verde', municipioId: 'caroni' },
+  { id: 'yocoima', nombre: 'Yocoima', municipioId: 'caroni' },
+
+  // Cedeño
+  { id: 'caicara del orinoco', nombre: 'Caicara del Orinoco', municipioId: 'cedeno' },
+  { id: 'ascension farreras', nombre: 'Ascensión Farreras', municipioId: 'cedeno' },
+  { id: 'guaniamo', nombre: 'Guaniamo', municipioId: 'cedeno' },
+  { id: 'la urbana', nombre: 'La Urbana', municipioId: 'cedeno' },
+  { id: 'pijiguaos', nombre: 'Pijiguaos', municipioId: 'cedeno' },
+
+  // El Callao
+  { id: 'el callao', nombre: 'El Callao', municipioId: 'el callao' },
+
+  // Gran Sabana
+  { id: 'santa elena de uairen', nombre: 'Santa Elena de Uairén', municipioId: 'gran sabana' },
+  { id: 'ikabaru', nombre: 'Ikabarú', municipioId: 'gran sabana' },
+
+  // Heres
+  { id: 'ciudad bolivar', nombre: 'Ciudad Bolívar', municipioId: 'heres' },
+  { id: 'jose antonio paez', nombre: 'José Antonio Páez', municipioId: 'heres' },
+  { id: 'orinoco', nombre: 'Orinoco', municipioId: 'heres' },
+  { id: 'panapana', nombre: 'Panapana', municipioId: 'heres' },
+  { id: 'vista hermosa', nombre: 'Vista Hermosa', municipioId: 'heres' },
+  { id: 'zea', nombre: 'Zea', municipioId: 'heres' },
+
+  // Piar
+  { id: 'upata', nombre: 'Upata', municipioId: 'piar' },
+  { id: 'andres eloy blanco piar', nombre: 'Andrés Eloy Blanco', municipioId: 'piar' },
+  { id: 'pedro cova', nombre: 'Pedro Cova', municipioId: 'piar' },
+
+  // Raúl Leoni
+  { id: 'ciudad piar', nombre: 'Ciudad Piar', municipioId: 'raul leoni' },
+  { id: 'dalla costa raul leoni', nombre: 'Dalla Costa', municipioId: 'raul leoni' },
+  { id: 'san francisco raul leoni', nombre: 'San Francisco', municipioId: 'raul leoni' },
+
+  // Roscio
+  { id: 'guasipati', nombre: 'Guasipati', municipioId: 'roscio' },
+  { id: 'el callao roscio', nombre: 'El Callao', municipioId: 'roscio' },
+  { id: 'el miamo', nombre: 'El Miamo', municipioId: 'roscio' },
+  { id: 'el dorado', nombre: 'El Dorado', municipioId: 'roscio' },
+
+  // Sifontes
+  { id: 'tumeremo', nombre: 'Tumeremo', municipioId: 'sifontes' },
+  { id: 'aripao', nombre: 'Aripao', municipioId: 'sifontes' },
+  { id: 'el palmar', nombre: 'El Palmar', municipioId: 'sifontes' },
+  { id: 'el pao sifontes', nombre: 'El Pao', municipioId: 'sifontes' },
+  { id: 'las majadas', nombre: 'Las Majadas', municipioId: 'sifontes' },
+
+  // Sucre
+  { id: 'maripa', nombre: 'Maripa', municipioId: 'sucre bolivar' },
+  { id: 'aripao sucre bolivar', nombre: 'Aripao', municipioId: 'sucre bolivar' },
+  { id: 'las majadas sucre bolivar', nombre: 'Las Majadas', municipioId: 'sucre bolivar' },
+  { id: 'moitaco', nombre: 'Moitaco', municipioId: 'sucre bolivar' },
+
+  // Padre Pedro Chien
+  { id: 'el palmar padre pedro chien', nombre: 'El Palmar', municipioId: 'padre pedro chien' },
+  { id: 'bejuma', nombre: 'Bejuma', municipioId: 'padre pedro chien' },
+  { id: 'la paragua', nombre: 'La Paragua', municipioId: 'padre pedro chien' },
+
+  // Bejuma
+  { id: 'bejuma bejuma', nombre: 'Bejuma', municipioId: 'bejuma' },
+  { id: 'canoabo', nombre: 'Canoabo', municipioId: 'bejuma' },
+  { id: 'simon bolivar bejuma', nombre: 'Simón Bolívar', municipioId: 'bejuma' },
+
+  // Carlos Arvelo
+  { id: 'guigue', nombre: 'Güigüe', municipioId: 'carlos arvelo' },
+  { id: 'belen', nombre: 'Belén', municipioId: 'carlos arvelo' },
+  { id: 'tacarigua', nombre: 'Tacarigua', municipioId: 'carlos arvelo' },
+
+  // Diego Ibarra
+  { id: 'mariara', nombre: 'Mariara', municipioId: 'diego ibarra' },
+  { id: 'aguas calientes', nombre: 'Aguas Calientes', municipioId: 'diego ibarra' },
+
+  // Guacara
+  { id: 'guacara', nombre: 'Guacara', municipioId: 'guacara' },
+  { id: 'ciudad alianza', nombre: 'Ciudad Alianza', municipioId: 'guacara' },
+  { id: 'yagua', nombre: 'Yagua', municipioId: 'guacara' },
+
+  // Juan José Mora
+  { id: 'moron', nombre: 'Morón', municipioId: 'juan jose mora' },
+  { id: 'urama', nombre: 'Urama', municipioId: 'juan jose mora' },
+
+  // Libertador
+  { id: 'tocuyito', nombre: 'Tocuyito', municipioId: 'libertador carabobo' },
+  { id: 'independencia', nombre: 'Independencia', municipioId: 'libertador carabobo' },
+
+  // Los Guayos
+  { id: 'los guayos', nombre: 'Los Guayos', municipioId: 'los guayos' },
+
+  // Miranda
+  { id: 'miranda', nombre: 'Miranda', municipioId: 'miranda carabobo' },
+
+  // Montalbán
+  { id: 'montalban', nombre: 'Montalbán', municipioId: 'montalban' },
+
+  // Naguanagua
+  { id: 'naguanagua', nombre: 'Naguanagua', municipioId: 'naguanagua' },
+
+  // Puerto Cabello
+  { id: 'borburata', nombre: 'Borburata', municipioId: 'puerto cabello' },
+  { id: 'patanemo', nombre: 'Patanemo', municipioId: 'puerto cabello' },
+  { id: 'puerto cabello', nombre: 'Puerto Cabello', municipioId: 'puerto cabello' },
+
+  // San Diego
+  { id: 'san diego', nombre: 'San Diego', municipioId: 'san diego' },
+
+  // San Joaquín
+  { id: 'san joaquin san joaquin', nombre: 'San Joaquín', municipioId: 'san joaquin' },
+
+  // Valencia
+  { id: 'candelaria valencia', nombre: 'Candelaria', municipioId: 'valencia' },
+  { id: 'catedral valencia', nombre: 'Catedral', municipioId: 'valencia' },
+  { id: 'el socorro valencia', nombre: 'El Socorro', municipioId: 'valencia' },
+  { id: 'miguel pena', nombre: 'Miguel Peña', municipioId: 'valencia' },
+  { id: 'negro primero', nombre: 'Negro Primero', municipioId: 'valencia' },
+  { id: 'rafael urdaneta', nombre: 'Rafael Urdaneta', municipioId: 'valencia' },
+  { id: 'san blas', nombre: 'San Blas', municipioId: 'valencia' },
+  { id: 'san jose valencia', nombre: 'San José', municipioId: 'valencia' },
+  { id: 'santa rosa valencia', nombre: 'Santa Rosa', municipioId: 'valencia' },
+
+  // Anzoátegui
+  { id: 'cojedes', nombre: 'Cojedes', municipioId: 'anzoategui' },
+  { id: 'juan de mata suarez', nombre: 'Juan de Mata Suárez', municipioId: 'anzoategui' },
+
+  // Pao de San Juan Bautista
+  { id: 'el baul', nombre: 'El Baúl', municipioId: 'pao de san juan bautista' },
+  { id: 'sucre pao de san juan bautista', nombre: 'Sucre', municipioId: 'pao de san juan bautista' },
+
+  // Tinaquillo
+  { id: 'el amparo tinaquillo', nombre: 'El Amparo', municipioId: 'tinaquillo' },
+  { id: 'la union tinaquillo', nombre: 'La Unión', municipioId: 'tinaquillo' },
+
+  // Girardot
+  { id: 'macapo', nombre: 'Macapo', municipioId: 'girardot cojedes' },
+  { id: 'la aguadita', nombre: 'La Aguadita', municipioId: 'girardot cojedes' },
+
+  // Lima Blanco
+  { id: 'el pao lima blanco', nombre: 'El Pao', municipioId: 'lima blanco' },
+
+  // Pérez de Freites
+  { id: 'libertad de cojedes', nombre: 'Libertad de Cojedes', municipioId: 'perez de freites' },
+  { id: 'el amparo perez de freites', nombre: 'El Amparo', municipioId: 'perez de freites' },
+
+  // Ricaurte
+  { id: 'las vegas', nombre: 'Las Vegas', municipioId: 'ricaurte' },
+  { id: 'la union ricaurte', nombre: 'La Unión', municipioId: 'ricaurte' },
+
+  // Rómulo Gallegos
+  { id: 'san carlos de austria', nombre: 'San Carlos de Austria', municipioId: 'romulo gallegos cojedes' },
+  { id: 'juan angel bravo', nombre: 'Juan Ángel Bravo', municipioId: 'romulo gallegos cojedes' },
+  { id: 'manuel manrique', nombre: 'Manuel Manrique', municipioId: 'romulo gallegos cojedes' },
+
+  // San Carlos
+  { id: 'tinaco', nombre: 'Tinaco', municipioId: 'san carlos' },
+  { id: 'general en jefe jose laurencio silva', nombre: 'General en Jefe José Laurencio Silva', municipioId: 'san carlos' },
+
+  // Antonio Díaz
+  { id: 'curiapo', nombre: 'Curiapo', municipioId: 'antonio diaz' },
+  { id: 'almirante luis brion', nombre: 'Almirante Luis Brión', municipioId: 'antonio diaz' },
+  { id: 'francisco aniceto lugo', nombre: 'Francisco Aniceto Lugo', municipioId: 'antonio diaz' },
+  { id: 'manuel renaud', nombre: 'Manuel Renaud', municipioId: 'antonio diaz' },
+  { id: 'padre barral', nombre: 'Padre Barral', municipioId: 'antonio diaz' },
+  { id: 'santos de abelgas', nombre: 'Santos de Abelgas', municipioId: 'antonio diaz' },
+
+  // Casacoima
+  { id: 'sierra imataca', nombre: 'Sierra Imataca', municipioId: 'casacoima' },
+  { id: 'juan bautista arismendi', nombre: 'Juan Bautista Arismendi', municipioId: 'casacoima' },
+  { id: 'manuel piar', nombre: 'Manuel Piar', municipioId: 'casacoima' },
+  { id: 'romulo gallegos', nombre: 'Rómulo Gallegos', municipioId: 'casacoima' },
+
+  // Pedernales
+  { id: 'pedernales', nombre: 'Pedernales', municipioId: 'pedernales' },
+  { id: 'luis beltran prieto figueroa', nombre: 'Luis Beltrán Prieto Figueroa', municipioId: 'pedernales' },
+
+  // Tucupita
+  { id: 'san jose tucupita', nombre: 'San José', municipioId: 'tucupita' },
+  { id: 'jose vidal marcano', nombre: 'José Vidal Marcano', municipioId: 'tucupita' },
+  { id: 'juan millan', nombre: 'Juan Millán', municipioId: 'tucupita' },
+  { id: 'leonardo ruiz pineda', nombre: 'Leonardo Ruíz Pineda', municipioId: 'tucupita' },
+  { id: 'mariscal antonio jose de sucre', nombre: 'Mariscal Antonio José de Sucre', municipioId: 'tucupita' },
+  { id: 'monsenor argimiro garcia', nombre: 'Monseñor Argimiro García', municipioId: 'tucupita' },
+  { id: 'san rafael', nombre: 'San Rafael', municipioId: 'tucupita' },
+  { id: 'virgen del valle', nombre: 'Virgen del Valle', municipioId: 'tucupita' },
+
+  // Acosta
+  { id: 'capadare', nombre: 'Capadare', municipioId: 'acosta' },
+  { id: 'la pastora acosta', nombre: 'La Pastora', municipioId: 'acosta' },
+  { id: 'libertador acosta', nombre: 'Libertador', municipioId: 'acosta' },
+  { id: 'san juan de los cayos', nombre: 'San Juan de los Cayos', municipioId: 'acosta' },
+
+  // Bolívar
+  { id: 'aracua', nombre: 'Aracua', municipioId: 'bolivar falcon' },
+  { id: 'la pena', nombre: 'La Peña', municipioId: 'bolivar falcon' },
+  { id: 'san luis', nombre: 'San Luis', municipioId: 'bolivar falcon' },
+
+  // Buchivacoa
+  { id: 'bariro', nombre: 'Bariro', municipioId: 'buchivacoa' },
+  { id: 'borojo', nombre: 'Borojó', municipioId: 'buchivacoa' },
+  { id: 'capatarida', nombre: 'Capatárida', municipioId: 'buchivacoa' },
+  { id: 'guajiro', nombre: 'Guajiro', municipioId: 'buchivacoa' },
+  { id: 'seque', nombre: 'Seque', municipioId: 'buchivacoa' },
+  { id: 'valle de eroa', nombre: 'Valle de Eroa', municipioId: 'buchivacoa' },
+  { id: 'zazarida', nombre: 'Zazárida', municipioId: 'buchivacoa' },
+
+  // Cacique Manaure
+  { id: 'cacique manaure yaracal', nombre: 'Cacique Manaure (Yaracal)', municipioId: 'cacique manaure' },
+
+  // Carirubana
+  { id: 'norte', nombre: 'Norte', municipioId: 'carirubana' },
+  { id: 'carirubana', nombre: 'Carirubana', municipioId: 'carirubana' },
+  { id: 'santa ana carirubana', nombre: 'Santa Ana', municipioId: 'carirubana' },
+  { id: 'urbana punta cardon', nombre: 'Urbana Punta Cardón', municipioId: 'carirubana' },
+
+  // Colina
+  { id: 'la vela de coro', nombre: 'La Vela de Coro', municipioId: 'colina' },
+  { id: 'acurigua', nombre: 'Acurigua', municipioId: 'colina' },
+  { id: 'guaibacoa', nombre: 'Guaibacoa', municipioId: 'colina' },
+  { id: 'las calderas', nombre: 'Las Calderas', municipioId: 'colina' },
+  { id: 'mataruca', nombre: 'Mataruca', municipioId: 'colina' },
+
+  // Dabajuro
+  { id: 'dabajuro', nombre: 'Dabajuro', municipioId: 'dabajuro' },
+
+  // Democracia
+  { id: 'agua clara', nombre: 'Agua Clara', municipioId: 'democracia' },
+  { id: 'avaria', nombre: 'Avaria', municipioId: 'democracia' },
+  { id: 'pedregal', nombre: 'Pedregal', municipioId: 'democracia' },
+  { id: 'piedra grande', nombre: 'Piedra Grande', municipioId: 'democracia' },
+  { id: 'purureche', nombre: 'Purureche', municipioId: 'democracia' },
+
+  // Falcón
+  { id: 'adaure', nombre: 'Adaure', municipioId: 'falcon' },
+  { id: 'adicora', nombre: 'Adícora', municipioId: 'falcon' },
+  { id: 'baraived', nombre: 'Baraived', municipioId: 'falcon' },
+  { id: 'buena vista falcon', nombre: 'Buena Vista', municipioId: 'falcon' },
+  { id: 'jadacaquiva', nombre: 'Jadacaquiva', municipioId: 'falcon' },
+  { id: 'el vinculo', nombre: 'El Vínculo', municipioId: 'falcon' },
+  { id: 'el hato', nombre: 'El Hato', municipioId: 'falcon' },
+  { id: 'moruy', nombre: 'Moruy', municipioId: 'falcon' },
+  { id: 'pueblo nuevo falcon', nombre: 'Pueblo Nuevo', municipioId: 'falcon' },
+
+  // Federación
+  { id: 'agua larga', nombre: 'Agua Larga', municipioId: 'federacion' },
+  { id: 'churuguara', nombre: 'Churuguara', municipioId: 'federacion' },
+  { id: 'el pauji', nombre: 'El Paují', municipioId: 'federacion' },
+  { id: 'independencia federacion', nombre: 'Independencia', municipioId: 'federacion' },
+  { id: 'maparari', nombre: 'Mapararí', municipioId: 'federacion' },
+
+  // Jacura
+  { id: 'agua linda', nombre: 'Agua Linda', municipioId: 'jacura' },
+  { id: 'araurima', nombre: 'Araurima', municipioId: 'jacura' },
+  { id: 'jacura', nombre: 'Jacura', municipioId: 'jacura' },
+
+  // Los Taques
+  { id: 'santa cruz de los taques', nombre: 'Santa Cruz de Los Taques', municipioId: 'los taques' },
+  { id: 'el rincon', nombre: 'El Rincón', municipioId: 'los taques' },
+
+  // Mauroa
+  { id: 'mene de mauroa', nombre: 'Mene de Mauroa', municipioId: 'mauroa' },
+  { id: 'san felix', nombre: 'San Félix', municipioId: 'mauroa' },
+
+  // Miranda
+  { id: 'guzman guillermo', nombre: 'Guzmán Guillermo', municipioId: 'miranda falcon' },
+  { id: 'mitare', nombre: 'Mitare', municipioId: 'miranda falcon' },
+  { id: 'rio seco', nombre: 'Río Seco', municipioId: 'miranda falcon' },
+  { id: 'sabaneta miranda falcon', nombre: 'Sabaneta', municipioId: 'miranda falcon' },
+  { id: 'san antonio miranda falcon', nombre: 'San Antonio', municipioId: 'miranda falcon' },
+  { id: 'san gabriel', nombre: 'San Gabriel', municipioId: 'miranda falcon' },
+  { id: 'santa ana miranda falcon', nombre: 'Santa Ana', municipioId: 'miranda falcon' },
+
+  // Monseñor Iturriza
+  { id: 'boca del tocuyo', nombre: 'Boca del Tocuyo', municipioId: 'monsenor iturriza' },
+  { id: 'chichiriviche', nombre: 'Chichiriviche', municipioId: 'monsenor iturriza' },
+  { id: 'tocuyo de la costa', nombre: 'Tocuyo de la Costa', municipioId: 'monsenor iturriza' },
+
+  // Palmasola
+  { id: 'palmasola', nombre: 'Palmasola', municipioId: 'palmasola' },
+
+  // Petit
+  { id: 'cabure', nombre: 'Cabure', municipioId: 'petit' },
+  { id: 'colina', nombre: 'Colina', municipioId: 'petit' },
+  { id: 'curimagua', nombre: 'Curimagua', municipioId: 'petit' },
+
+  // Píritu
+  { id: 'piritu piritu falcon', nombre: 'Píritu', municipioId: 'piritu falcon' },
+  { id: 'san jose de la costa', nombre: 'San José de la Costa', municipioId: 'piritu falcon' },
+
+  // San Francisco
+  { id: 'capital san francisco mirimire', nombre: 'Capital San Francisco Mirimire', municipioId: 'san francisco' },
+
+  // Silva
+  { id: 'tucacas', nombre: 'Tucacas', municipioId: 'silva' },
+  { id: 'boca de aroa', nombre: 'Boca de Aroa', municipioId: 'silva' },
+
+  // Sucre
+  { id: 'sucre sucre falcon', nombre: 'Sucre', municipioId: 'sucre falcon' },
+  { id: 'pecaya', nombre: 'Pecaya', municipioId: 'sucre falcon' },
+
+  // Tocópero
+  { id: 'tocopero', nombre: 'Tocópero', municipioId: 'tocopero' },
+
+  // Unión
+  { id: 'el charal', nombre: 'El Charal', municipioId: 'union' },
+  { id: 'las vegas del tuy', nombre: 'Las Vegas del Tuy', municipioId: 'union' },
+  { id: 'santa cruz de bucaral', nombre: 'Santa Cruz de Bucaral', municipioId: 'union' },
+
+  // Urumaco
+  { id: 'bruzual urumaco', nombre: 'Bruzual', municipioId: 'urumaco' },
+  { id: 'urumaco', nombre: 'Urumaco', municipioId: 'urumaco' },
+
+  // Zamora
+  { id: 'puerto cumarebo', nombre: 'Puerto Cumarebo', municipioId: 'zamora falcon' },
+  { id: 'la cienaga', nombre: 'La Ciénaga', municipioId: 'zamora falcon' },
+  { id: 'la soledad', nombre: 'La Soledad', municipioId: 'zamora falcon' },
+  { id: 'pueblo cumarebo', nombre: 'Pueblo Cumarebo', municipioId: 'zamora falcon' },
+  { id: 'zazarida zamora falcon', nombre: 'Zazárida', municipioId: 'zamora falcon' },
+
+  // Camaguán
+  { id: 'camaguan', nombre: 'Camaguán', municipioId: 'camaguan' },
+  { id: 'puerto miranda', nombre: 'Puerto Miranda', municipioId: 'camaguan' },
+  { id: 'uverito camaguan', nombre: 'Uverito', municipioId: 'camaguan' },
+
+  // Chaguaramas
+  { id: 'chaguaramas', nombre: 'Chaguaramas', municipioId: 'chaguaramas' },
+
+  // El Socorro
+  { id: 'el socorro el socorro', nombre: 'El Socorro', municipioId: 'el socorro' },
+
+  // Francisco de Miranda
+  { id: 'calabozo', nombre: 'Calabozo', municipioId: 'francisco de miranda' },
+  { id: 'el calvario', nombre: 'El Calvario', municipioId: 'francisco de miranda' },
+  { id: 'el rastro', nombre: 'El Rastro', municipioId: 'francisco de miranda' },
+  { id: 'guardatinajas', nombre: 'Guardatinajas', municipioId: 'francisco de miranda' },
+
+  // José Félix Ribas
+  { id: 'tucupido', nombre: 'Tucupido', municipioId: 'jose felix ribas guarico' },
+  { id: 'san rafael de laya', nombre: 'San Rafael de Laya', municipioId: 'jose felix ribas guarico' },
+
+  // José Tadeo Monagas
+  { id: 'altagracia de orituco', nombre: 'Altagracia de Orituco', municipioId: 'jose tadeo monagas' },
+  { id: 'lezama', nombre: 'Lezama', municipioId: 'jose tadeo monagas' },
+  { id: 'libertad de orituco', nombre: 'Libertad de Orituco', municipioId: 'jose tadeo monagas' },
+  { id: 'paso real de macaira', nombre: 'Paso Real de Macaira', municipioId: 'jose tadeo monagas' },
+  { id: 'san francisco de macaira', nombre: 'San Francisco de Macaira', municipioId: 'jose tadeo monagas' },
+  { id: 'san rafael de orituco', nombre: 'San Rafael de Orituco', municipioId: 'jose tadeo monagas' },
+
+  // Juan Germán Roscio
+  { id: 'san juan de los morros', nombre: 'San Juan de los Morros', municipioId: 'juan german roscio' },
+  { id: 'cantagallo', nombre: 'Cantagallo', municipioId: 'juan german roscio' },
+  { id: 'parapara', nombre: 'Parapara', municipioId: 'juan german roscio' },
+
+  // Julián Mellado
+  { id: 'el sombrero', nombre: 'El Sombrero', municipioId: 'julian mellado' },
+  { id: 'sosa', nombre: 'Sosa', municipioId: 'julian mellado' },
+
+  // Las Mercedes
+  { id: 'las mercedes', nombre: 'Las Mercedes', municipioId: 'las mercedes' },
+  { id: 'cabruta', nombre: 'Cabruta', municipioId: 'las mercedes' },
+  { id: 'santa rita de manapire', nombre: 'Santa Rita de Manapire', municipioId: 'las mercedes' },
+
+  // Leonardo Infante
+  { id: 'valle de la pascua', nombre: 'Valle de la Pascua', municipioId: 'leonardo infante' },
+  { id: 'espino', nombre: 'Espino', municipioId: 'leonardo infante' },
+
+  // Ortiz
+  { id: 'san jose de unare', nombre: 'San José de Unare', municipioId: 'ortiz' },
+  { id: 'zaraza', nombre: 'Zaraza', municipioId: 'ortiz' },
+
+  // Pedro Zaraza
+  { id: 'san jose de guaribe', nombre: 'San José de Guaribe', municipioId: 'pedro zaraza' },
+  { id: 'uveral', nombre: 'Uveral', municipioId: 'pedro zaraza' },
+
+  // San Gerónimo de Guayabal
+  { id: 'guayabal', nombre: 'Guayabal', municipioId: 'san geronimo de guayabal' },
+  { id: 'cazorla', nombre: 'Cazorla', municipioId: 'san geronimo de guayabal' },
+
+  // San José de Guaribe
+  { id: 'san jose de guaribe san jose de guaribe', nombre: 'San José de Guaribe', municipioId: 'san jose de guaribe' },
+
+  // Santa María de Ipire
+  { id: 'santa maria de ipire', nombre: 'Santa María de Ipire', municipioId: 'santa maria de ipire' },
+  { id: 'el rincon santa maria de ipire', nombre: 'El Rincón', municipioId: 'santa maria de ipire' },
+
+  // Andrés Eloy Blanco
+  { id: 'sanare', nombre: 'Sanare', municipioId: 'andres eloy blanco lara' },
+  { id: 'aguada grande', nombre: 'Aguada Grande', municipioId: 'andres eloy blanco lara' },
+  { id: 'atarigua', nombre: 'Atarigua', municipioId: 'andres eloy blanco lara' },
+  { id: 'pio tamayo', nombre: 'Pío Tamayo', municipioId: 'andres eloy blanco lara' },
+  { id: 'yacambu', nombre: 'Yacambú', municipioId: 'andres eloy blanco lara' },
+
+  // Crespo
+  { id: 'duaca', nombre: 'Duaca', municipioId: 'crespo' },
+  { id: 'juan bautista rodriguez', nombre: 'Juan Bautista Rodríguez', municipioId: 'crespo' },
+
+  // Iribarren
+  { id: 'concepcion', nombre: 'Concepción', municipioId: 'iribarren' },
+  { id: 'el cuji', nombre: 'El Cují', municipioId: 'iribarren' },
+  { id: 'juan de villegas', nombre: 'Juan de Villegas', municipioId: 'iribarren' },
+  { id: 'santa rosa iribarren', nombre: 'Santa Rosa', municipioId: 'iribarren' },
+  { id: 'tamaca', nombre: 'Tamaca', municipioId: 'iribarren' },
+  { id: 'union', nombre: 'Unión', municipioId: 'iribarren' },
+  { id: 'aguedo felipe alvarado', nombre: 'Aguedo Felipe Alvarado', municipioId: 'iribarren' },
+  { id: 'buena vista iribarren', nombre: 'Buena Vista', municipioId: 'iribarren' },
+  { id: 'juarez', nombre: 'Juárez', municipioId: 'iribarren' },
+
+  // Jiménez
+  { id: 'quibor', nombre: 'Quíbor', municipioId: 'jimenez' },
+  { id: 'juan bautista rodriguez jimenez', nombre: 'Juan Bautista Rodríguez', municipioId: 'jimenez' },
+  { id: 'blanca pacheco', nombre: 'Blanca Pacheco', municipioId: 'jimenez' },
+
+  // Morán
+  { id: 'el tocuyo', nombre: 'El Tocuyo', municipioId: 'moran' },
+  { id: 'jose maria blanco', nombre: 'José María Blanco', municipioId: 'moran' },
+  { id: 'anzoategui', nombre: 'Anzoátegui', municipioId: 'moran' },
+
+  // Palavecino
+  { id: 'cabudare', nombre: 'Cabudare', municipioId: 'palavecino' },
+  { id: 'agua viva', nombre: 'Agua Viva', municipioId: 'palavecino' },
+  { id: 'jose gregorio bastidas', nombre: 'José Gregorio Bastidas', municipioId: 'palavecino' },
+
+  // Simón Planas
+  { id: 'buria', nombre: 'Buría', municipioId: 'simon planas' },
+  { id: 'gustavo vega', nombre: 'Gustavo Vega', municipioId: 'simon planas' },
+
+  // Torres
+  { id: 'carora', nombre: 'Carora', municipioId: 'torres' },
+  { id: 'antonio diaz', nombre: 'Antonio Díaz', municipioId: 'torres' },
+  { id: 'bolivar', nombre: 'Bolívar', municipioId: 'torres' },
+  { id: 'cecilio zubillaga', nombre: 'Cecilio Zubillaga', municipioId: 'torres' },
+  { id: 'chiquinquira', nombre: 'Chiquinquirá', municipioId: 'torres' },
+  { id: 'el blanco', nombre: 'El Blanco', municipioId: 'torres' },
+  { id: 'espinoza de los monteros', nombre: 'Espinoza de los Monteros', municipioId: 'torres' },
+  { id: 'heriberto arrollo', nombre: 'Heriberto Arrollo', municipioId: 'torres' },
+  { id: 'lara', nombre: 'Lara', municipioId: 'torres' },
+  { id: 'las mercedes torres', nombre: 'Las Mercedes', municipioId: 'torres' },
+  { id: 'manuel morillo', nombre: 'Manuel Morillo', municipioId: 'torres' },
+
+  // Urdaneta
+  { id: 'siquisique', nombre: 'Siquisique', municipioId: 'urdaneta lara' },
+  { id: 'san miguel urdaneta lara', nombre: 'San Miguel', municipioId: 'urdaneta lara' },
+  { id: 'moroturo', nombre: 'Moroturo', municipioId: 'urdaneta lara' },
+  { id: 'xaguas', nombre: 'Xaguas', municipioId: 'urdaneta lara' },
+
+  // Alberto Adriani
+  { id: 'el vigia', nombre: 'El Vigía', municipioId: 'alberto adriani' },
+  { id: 'la azulita', nombre: 'La Azulita', municipioId: 'alberto adriani' },
+  { id: 'santa cruz de mora', nombre: 'Santa Cruz de Mora', municipioId: 'alberto adriani' },
+
+  // Andrés Bello
+  { id: 'la mesa de bolivar', nombre: 'La Mesa de Bolívar', municipioId: 'andres bello' },
+  { id: 'acequias', nombre: 'Acequias', municipioId: 'andres bello' },
+  { id: 'jaji', nombre: 'Jají', municipioId: 'andres bello' },
+
+  // Antonio Pinto Salinas
+  { id: 'santa maria de caparo', nombre: 'Santa María de Caparo', municipioId: 'antonio pinto salinas' },
+  { id: 'pueblo llano', nombre: 'Pueblo Llano', municipioId: 'antonio pinto salinas' },
+
+  // Aricagua
+  { id: 'aricagua', nombre: 'Aricagua', municipioId: 'aricagua' },
+  { id: 'san antonio aricagua', nombre: 'San Antonio', municipioId: 'aricagua' },
+
+  // Arzobispo Chacón
+  { id: 'canagua', nombre: 'Canagua', municipioId: 'arzobispo chacon' },
+  { id: 'capuri', nombre: 'Capurí', municipioId: 'arzobispo chacon' },
+  { id: 'chacanta', nombre: 'Chacantá', municipioId: 'arzobispo chacon' },
+  { id: 'el molino', nombre: 'El Molino', municipioId: 'arzobispo chacon' },
+  { id: 'guaimaral', nombre: 'Guaimaral', municipioId: 'arzobispo chacon' },
+  { id: 'mucutuy', nombre: 'Mucutuy', municipioId: 'arzobispo chacon' },
+  { id: 'mucuchachi', nombre: 'Mucuchachí', municipioId: 'arzobispo chacon' },
+
+  // Campo Elías
+  { id: 'ejido', nombre: 'Ejido', municipioId: 'campo elias' },
+  { id: 'la punta', nombre: 'La Punta', municipioId: 'campo elias' },
+  { id: 'la azulita campo elias', nombre: 'La Azulita', municipioId: 'campo elias' },
+
+  // Caracciolo Parra Olmedo
+  { id: 'tucani', nombre: 'Tucaní', municipioId: 'caracciolo parra olmedo' },
+  { id: 'florencio ramirez', nombre: 'Florencio Ramírez', municipioId: 'caracciolo parra olmedo' },
+
+  // Cardenal Quintero
+  { id: 'santo domingo', nombre: 'Santo Domingo', municipioId: 'cardenal quintero' },
+  { id: 'las piedras', nombre: 'Las Piedras', municipioId: 'cardenal quintero' },
+
+  // Guaraque
+  { id: 'guaraque', nombre: 'Guaraque', municipioId: 'guaraque' },
+  { id: 'mesa de quintero', nombre: 'Mesa de Quintero', municipioId: 'guaraque' },
+  { id: 'rio negro', nombre: 'Río Negro', municipioId: 'guaraque' },
+
+  // Julio César Salas
+  { id: 'arapuey', nombre: 'Arapuey', municipioId: 'julio cesar salas' },
+  { id: 'palmira', nombre: 'Palmira', municipioId: 'julio cesar salas' },
+
+  // Justo Briceño
+  { id: 'torondoy', nombre: 'Torondoy', municipioId: 'justo briceno' },
+  { id: 'antonio spinetti dini', nombre: 'Antonio Spinetti Dini', municipioId: 'justo briceno' },
+  { id: 'arias', nombre: 'Arias', municipioId: 'justo briceno' },
+
+  // Libertador
+  { id: 'merida', nombre: 'Mérida', municipioId: 'libertador merida' },
+  { id: 'el llano', nombre: 'El Llano', municipioId: 'libertador merida' },
+  { id: 'tabay', nombre: 'Tabay', municipioId: 'libertador merida' },
+  { id: 'chiguara', nombre: 'Chiguará', municipioId: 'libertador merida' },
+  { id: 'juan rodriguez suarez', nombre: 'Juan Rodríguez Suárez', municipioId: 'libertador merida' },
+  { id: 'jacinto plaza', nombre: 'Jacinto Plaza', municipioId: 'libertador merida' },
+  { id: 'los nevados', nombre: 'Los Nevados', municipioId: 'libertador merida' },
+
+  // Miranda
+  { id: 'timotes', nombre: 'Timotes', municipioId: 'miranda merida' },
+  { id: 'la venta', nombre: 'La Venta', municipioId: 'miranda merida' },
+
+  // Obispo Ramos de Lora
+  { id: 'santa elena de arenales', nombre: 'Santa Elena de Arenales', municipioId: 'obispo ramos de lora' },
+  { id: 'eloy paredes', nombre: 'Eloy Paredes', municipioId: 'obispo ramos de lora' },
+  { id: 'san rafael de alcazar', nombre: 'San Rafael de Alcázar', municipioId: 'obispo ramos de lora' },
+
+  // Padre Noguera
+  { id: 'santa maria de caparo padre noguera', nombre: 'Santa María de Caparo', municipioId: 'padre noguera' },
+
+  // Pueblo Llano
+  { id: 'pueblo llano pueblo llano', nombre: 'Pueblo Llano', municipioId: 'pueblo llano' },
+
+  // Rangel
+  { id: 'mucuchies', nombre: 'Mucuchíes', municipioId: 'rangel' },
+  { id: 'cacute', nombre: 'Cacute', municipioId: 'rangel' },
+  { id: 'la toma', nombre: 'La Toma', municipioId: 'rangel' },
+  { id: 'mucuruba', nombre: 'Mucurubá', municipioId: 'rangel' },
+  { id: 'san rafael rangel', nombre: 'San Rafael', municipioId: 'rangel' },
+
+  // Rivas Dávila
+  { id: 'bailadores', nombre: 'Bailadores', municipioId: 'rivas davila' },
+  { id: 'estanquez', nombre: 'Estánquez', municipioId: 'rivas davila' },
+  { id: 'pueblo nuevo del sur', nombre: 'Pueblo Nuevo del Sur', municipioId: 'rivas davila' },
+  { id: 'san jose del sur', nombre: 'San José del Sur', municipioId: 'rivas davila' },
+
+  // Santos Marquina
+  { id: 'tabay santos marquina', nombre: 'Tabay', municipioId: 'santos marquina' },
+
+  // Sucre
+  { id: 'lagunillas', nombre: 'Lagunillas', municipioId: 'sucre merida' },
+  { id: 'chiguara sucre merida', nombre: 'Chiguará', municipioId: 'sucre merida' },
+  { id: 'estibadores', nombre: 'Estibadores', municipioId: 'sucre merida' },
+  { id: 'la trampa', nombre: 'La Trampa', municipioId: 'sucre merida' },
+
+  // Tovar
+  { id: 'tovar', nombre: 'Tovar', municipioId: 'tovar merida' },
+  { id: 'el amparo tovar merida', nombre: 'El Amparo', municipioId: 'tovar merida' },
+  { id: 'san francisco tovar merida', nombre: 'San Francisco', municipioId: 'tovar merida' },
+
+  // Tulio Febres Cordero
+  { id: 'independencia tulio febres cordero', nombre: 'Independencia', municipioId: 'tulio febres cordero' },
+  { id: 'maria de la concepcion palacios', nombre: 'María de la Concepción Palacios', municipioId: 'tulio febres cordero' },
+  { id: 'nueva bolivia', nombre: 'Nueva Bolivia', municipioId: 'tulio febres cordero' },
+  { id: 'santa apolonia', nombre: 'Santa Apolonia', municipioId: 'tulio febres cordero' },
+
+  // Zea
+  { id: 'zea zea', nombre: 'Zea', municipioId: 'zea' },
+  { id: 'cano el tigre', nombre: 'Caño El Tigre', municipioId: 'zea' },
+
+  // Acevedo
+  { id: 'caucagua', nombre: 'Caucagua', municipioId: 'acevedo' },
+  { id: 'araguita', nombre: 'Aragüita', municipioId: 'acevedo' },
+  { id: 'arevalo gonzalez', nombre: 'Arévalo González', municipioId: 'acevedo' },
+  { id: 'capaya', nombre: 'Capaya', municipioId: 'acevedo' },
+  { id: 'el cafe', nombre: 'El Café', municipioId: 'acevedo' },
+  { id: 'marizapa', nombre: 'Marizapa', municipioId: 'acevedo' },
+  { id: 'panaquire', nombre: 'Panaquire', municipioId: 'acevedo' },
+  { id: 'ribas', nombre: 'Ribas', municipioId: 'acevedo' },
+
+  // Andrés Bello
+  { id: 'san jose de barlovento', nombre: 'San José de Barlovento', municipioId: 'andres bello miranda' },
+  { id: 'cumbo', nombre: 'Cumbo', municipioId: 'andres bello miranda' },
+
+  // Baruta
+  { id: 'baruta', nombre: 'Baruta', municipioId: 'baruta' },
+  { id: 'el cafetal', nombre: 'El Cafetal', municipioId: 'baruta' },
+  { id: 'las minas de baruta', nombre: 'Las Minas de Baruta', municipioId: 'baruta' },
+
+  // Buroz
+  { id: 'mamporal', nombre: 'Mamporal', municipioId: 'buroz' },
+
+  // Carrizal
+  { id: 'carrizal', nombre: 'Carrizal', municipioId: 'carrizal' },
+
+  // Chacao
+  { id: 'chacao', nombre: 'Chacao', municipioId: 'chacao' },
+
+  // Cristóbal Rojas
+  { id: 'charallave', nombre: 'Charallave', municipioId: 'cristobal rojas' },
+  { id: 'las brisas', nombre: 'Las Brisas', municipioId: 'cristobal rojas' },
+
+  // El Hatillo
+  { id: 'el hatillo', nombre: 'El Hatillo', municipioId: 'el hatillo' },
+
+  // Guaicaipuro
+  { id: 'los teques', nombre: 'Los Teques', municipioId: 'guaicaipuro' },
+  { id: 'altagracia de la montana', nombre: 'Altagracia de la Montaña', municipioId: 'guaicaipuro' },
+  { id: 'cecilio acosta', nombre: 'Cecilio Acosta', municipioId: 'guaicaipuro' },
+  { id: 'el jarillo', nombre: 'El Jarillo', municipioId: 'guaicaipuro' },
+  { id: 'paracotos', nombre: 'Paracotos', municipioId: 'guaicaipuro' },
+  { id: 'san pedro guaicaipuro', nombre: 'San Pedro', municipioId: 'guaicaipuro' },
+  { id: 'tacata', nombre: 'Tácata', municipioId: 'guaicaipuro' },
+
+  // Independencia
+  { id: 'santa teresa del tuy', nombre: 'Santa Teresa del Tuy', municipioId: 'independencia miranda' },
+  { id: 'el cartanal', nombre: 'El Cartanal', municipioId: 'independencia miranda' },
+
+  // Lander
+  { id: 'ocumare del tuy', nombre: 'Ocumare del Tuy', municipioId: 'lander' },
+  { id: 'la democracia', nombre: 'La Democracia', municipioId: 'lander' },
+
+  // Los Salias
+  { id: 'san antonio de los altos', nombre: 'San Antonio de los Altos', municipioId: 'los salias' },
+
+  // Páez
+  { id: 'rio chico', nombre: 'Río Chico', municipioId: 'paez miranda' },
+  { id: 'el guapo', nombre: 'El Guapo', municipioId: 'paez miranda' },
+  { id: 'san fernando del guapo', nombre: 'San Fernando del Guapo', municipioId: 'paez miranda' },
+  { id: 'tacarigua de la laguna', nombre: 'Tacarigua de la Laguna', municipioId: 'paez miranda' },
+
+  // Paz Castillo
+  { id: 'santa lucia paz castillo', nombre: 'Santa Lucía', municipioId: 'paz castillo' },
+
+  // Pedro Gual
+  { id: 'cupira', nombre: 'Cúpira', municipioId: 'pedro gual' },
+  { id: 'machurucuto', nombre: 'Machurucuto', municipioId: 'pedro gual' },
+
+  // Plaza
+  { id: 'guarenas', nombre: 'Guarenas', municipioId: 'plaza' },
+
+  // Simón Bolívar
+  { id: 'san francisco de yare', nombre: 'San Francisco de Yare', municipioId: 'simon bolivar' },
+  { id: 'san antonio de yare', nombre: 'San Antonio de Yare', municipioId: 'simon bolivar' },
+
+  // Sucre
+  { id: 'petare', nombre: 'Petare', municipioId: 'sucre miranda' },
+  { id: 'caucaguita', nombre: 'Caucagüita', municipioId: 'sucre miranda' },
+  { id: 'fila de mariche', nombre: 'Fila de Mariche', municipioId: 'sucre miranda' },
+  { id: 'la dolorita', nombre: 'La Dolorita', municipioId: 'sucre miranda' },
+  { id: 'leoncio martinez', nombre: 'Leoncio Martínez', municipioId: 'sucre miranda' },
+
+  // Urdaneta
+  { id: 'cua', nombre: 'Cúa', municipioId: 'urdaneta miranda' },
+  { id: 'nueva cua', nombre: 'Nueva Cúa', municipioId: 'urdaneta miranda' },
+
+  // Zamora
+  { id: 'guatire', nombre: 'Guatire', municipioId: 'zamora miranda' },
+  { id: 'bolivar zamora miranda', nombre: 'Bolívar', municipioId: 'zamora miranda' },
+
+  // Acosta
+  { id: 'san antonio de capayacuar', nombre: 'San Antonio de Capayacuar', municipioId: 'acosta monagas' },
+  { id: 'el furrial', nombre: 'El Furrial', municipioId: 'acosta monagas' },
+  { id: 'jusepin', nombre: 'Jusepín', municipioId: 'acosta monagas' },
+  { id: 'la pica', nombre: 'La Pica', municipioId: 'acosta monagas' },
+
+  // Aguasay
+  { id: 'aguasay', nombre: 'Aguasay', municipioId: 'aguasay' },
+
+  // Bolívar
+  { id: 'caripito', nombre: 'Caripito', municipioId: 'bolivar monagas' },
+
+  // Caripe
+  { id: 'el tejero', nombre: 'El Tejero', municipioId: 'caripe' },
+  { id: 'teresen', nombre: 'Teresén', municipioId: 'caripe' },
+
+  // Cedeño
+  { id: 'caicara de maturin', nombre: 'Caicara de Maturín', municipioId: 'cedeno monagas' },
+  { id: 'areo', nombre: 'Areo', municipioId: 'cedeno monagas' },
+  { id: 'san felix de cantalicio', nombre: 'San Félix de Cantalicio', municipioId: 'cedeno monagas' },
+  { id: 'viento fresco', nombre: 'Viento Fresco', municipioId: 'cedeno monagas' },
+
+  // Ezequiel Zamora
+  { id: 'el tejero ezequiel zamora monagas', nombre: 'El Tejero', municipioId: 'ezequiel zamora monagas' },
+
+  // Libertador
+  { id: 'temblador', nombre: 'Temblador', municipioId: 'libertador monagas' },
+  { id: 'tabasca', nombre: 'Tabasca', municipioId: 'libertador monagas' },
+  { id: 'las alhuacas', nombre: 'Las Alhuacas', municipioId: 'libertador monagas' },
+  { id: 'chaguaramas libertador monagas', nombre: 'Chaguaramas', municipioId: 'libertador monagas' },
+
+  // Maturín
+  { id: 'alto de los godos', nombre: 'Alto de los Godos', municipioId: 'maturin' },
+  { id: 'boqueron', nombre: 'Boquerón', municipioId: 'maturin' },
+  { id: 'las cocuizas', nombre: 'Las Cocuizas', municipioId: 'maturin' },
+  { id: 'san simon', nombre: 'San Simón', municipioId: 'maturin' },
+  { id: 'el corozo', nombre: 'El Corozo', municipioId: 'maturin' },
+  { id: 'el furrial maturin', nombre: 'El Furrial', municipioId: 'maturin' },
+  { id: 'jusepin maturin', nombre: 'Jusepín', municipioId: 'maturin' },
+  { id: 'la pica maturin', nombre: 'La Pica', municipioId: 'maturin' },
+  { id: 'san vicente maturin', nombre: 'San Vicente', municipioId: 'maturin' },
+
+  // Piar
+  { id: 'aparicio', nombre: 'Aparicio', municipioId: 'piar monagas' },
+  { id: 'chaguaramal', nombre: 'Chaguaramal', municipioId: 'piar monagas' },
+  { id: 'el pinto', nombre: 'El Pinto', municipioId: 'piar monagas' },
+  { id: 'guanaguana', nombre: 'Guanaguana', municipioId: 'piar monagas' },
+  { id: 'la toscana', nombre: 'La Toscana', municipioId: 'piar monagas' },
+  { id: 'taguaya', nombre: 'Taguaya', municipioId: 'piar monagas' },
+
+  // Punceres
+  { id: 'cachipo punceres', nombre: 'Cachipo', municipioId: 'punceres' },
+  { id: 'quiriquire', nombre: 'Quiriquire', municipioId: 'punceres' },
+
+  // Santa Bárbara
+  { id: 'santa barbara santa barbara', nombre: 'Santa Bárbara', municipioId: 'santa barbara' },
+
+  // Sotillo
+  { id: 'barrancas sotillo monagas', nombre: 'Barrancas', municipioId: 'sotillo monagas' },
+  { id: 'los barrancos de fajardo', nombre: 'Los Barrancos de Fajardo', municipioId: 'sotillo monagas' },
+
+  // Uracoa
+  { id: 'uracoa', nombre: 'Uracoa', municipioId: 'uracoa' },
+
+  // Antolín del Campo
+  { id: 'la plaza de paraguachi', nombre: 'La Plaza de Paraguachí', municipioId: 'antolin del campo' },
+
+  // Arismendi
+  { id: 'san juan bautista', nombre: 'San Juan Bautista', municipioId: 'arismendi nueva esparta' },
+  { id: 'zabala', nombre: 'Zabala', municipioId: 'arismendi nueva esparta' },
+
+  // Díaz
+  { id: 'san juan bautista diaz', nombre: 'San Juan Bautista', municipioId: 'diaz' },
+  { id: 'zabala diaz', nombre: 'Zabala', municipioId: 'diaz' },
+
+  // García
+  { id: 'valle del espiritu santo', nombre: 'Valle del Espíritu Santo', municipioId: 'garcia' },
+  { id: 'san francisco de macanao', nombre: 'San Francisco de Macanao', municipioId: 'garcia' },
+  { id: 'boca de rio', nombre: 'Boca de Río', municipioId: 'garcia' },
+
+  // Gómez
+  { id: 'santa ana gomez', nombre: 'Santa Ana', municipioId: 'gomez' },
+  { id: 'guevara', nombre: 'Guevara', municipioId: 'gomez' },
+  { id: 'matasiete', nombre: 'Matasiete', municipioId: 'gomez' },
+  { id: 'bolivar gomez', nombre: 'Bolívar', municipioId: 'gomez' },
+
+  // Maneiro
+  { id: 'el valle del espiritu santo', nombre: 'El Valle del Espíritu Santo', municipioId: 'maneiro' },
+
+  // Marcano
+  { id: 'juan griego', nombre: 'Juan Griego', municipioId: 'marcano' },
+  { id: 'adrian', nombre: 'Adrián', municipioId: 'marcano' },
+
+  // Mariño
+  { id: 'porlamar', nombre: 'Porlamar', municipioId: 'marino' },
+
+  // Península de Macanao
+  { id: 'san francisco de macanao peninsula de macanao', nombre: 'San Francisco de Macanao', municipioId: 'peninsula de macanao' },
+  { id: 'boca de rio peninsula de macanao', nombre: 'Boca de Río', municipioId: 'peninsula de macanao' },
+
+  // Tubores
+  { id: 'punta de piedras', nombre: 'Punta de Piedras', municipioId: 'tubores' },
+  { id: 'los barales', nombre: 'Los Barales', municipioId: 'tubores' },
+
+  // Villalba
+  { id: 'san pedro de coche', nombre: 'San Pedro de Coche', municipioId: 'villalba' },
+  { id: 'vicente fuentes', nombre: 'Vicente Fuentes', municipioId: 'villalba' },
+
+  // Agua Blanca
+  { id: 'agua blanca', nombre: 'Agua Blanca', municipioId: 'agua blanca' },
+
+  // Araure
+  { id: 'araure', nombre: 'Araure', municipioId: 'araure' },
+  { id: 'rio acarigua', nombre: 'Río Acarigua', municipioId: 'araure' },
+
+  // Esteller
+  { id: 'piritu esteller', nombre: 'Píritu', municipioId: 'esteller' },
+  { id: 'uveral esteller', nombre: 'Uveral', municipioId: 'esteller' },
+
+  // Guanare
+  { id: 'guanare', nombre: 'Guanare', municipioId: 'guanare' },
+  { id: 'cordoba', nombre: 'Córdoba', municipioId: 'guanare' },
+  { id: 'san juan de guanaguanare', nombre: 'San Juan de Guanaguanare', municipioId: 'guanare' },
+  { id: 'virgen de la coromoto', nombre: 'Virgen de la Coromoto', municipioId: 'guanare' },
+  { id: 'san jose de la montana', nombre: 'San José de la Montaña', municipioId: 'guanare' },
+
+  // Guanarito
+  { id: 'guanarito', nombre: 'Guanarito', municipioId: 'guanarito' },
+  { id: 'trinidad de la capilla', nombre: 'Trinidad de la Capilla', municipioId: 'guanarito' },
+  { id: 'divina pastora', nombre: 'Divina Pastora', municipioId: 'guanarito' },
+
+  // Monseñor José Vicente de Unda
+  { id: 'pena blanca', nombre: 'Peña Blanca', municipioId: 'monsenor jose vicente de unda' },
+
+  // Ospino
+  { id: 'ospino', nombre: 'Ospino', municipioId: 'ospino' },
+  { id: 'la estacion', nombre: 'La Estación', municipioId: 'ospino' },
+  { id: 'paez ospino', nombre: 'Páez', municipioId: 'ospino' },
+
+  // Páez
+  { id: 'acarigua', nombre: 'Acarigua', municipioId: 'paez portuguesa' },
+  { id: 'payara', nombre: 'Payara', municipioId: 'paez portuguesa' },
+  { id: 'pimpinela', nombre: 'Pimpinela', municipioId: 'paez portuguesa' },
+  { id: 'ramon peraza', nombre: 'Ramón Peraza', municipioId: 'paez portuguesa' },
+
+  // Papelón
+  { id: 'papelon', nombre: 'Papelón', municipioId: 'papelon' },
+  { id: 'cano delgadito', nombre: 'Caño Delgadito', municipioId: 'papelon' },
+
+  // San Genaro de Boconoíto
+  { id: 'san genaro de boconoito', nombre: 'San Genaro de Boconoíto', municipioId: 'san genaro de boconoito' },
+  { id: 'antolin tovar', nombre: 'Antolín Tovar', municipioId: 'san genaro de boconoito' },
+
+  // San Rafael de Onoto
+  { id: 'san rafael de onoto', nombre: 'San Rafael de Onoto', municipioId: 'san rafael de onoto' },
+  { id: 'santa fe', nombre: 'Santa Fe', municipioId: 'san rafael de onoto' },
+
+  // Santa Rosalía
+  { id: 'el playon', nombre: 'El Playón', municipioId: 'santa rosalia' },
+  { id: 'florida', nombre: 'Florida', municipioId: 'santa rosalia' },
+
+  // Sucre
+  { id: 'biscucuy', nombre: 'Biscucuy', municipioId: 'sucre portuguesa' },
+  { id: 'concepcion sucre portuguesa', nombre: 'Concepción', municipioId: 'sucre portuguesa' },
+  { id: 'san jose de saguaz', nombre: 'San José de Saguaz', municipioId: 'sucre portuguesa' },
+  { id: 'san rafael de palo alzado', nombre: 'San Rafael de Palo Alzado', municipioId: 'sucre portuguesa' },
+
+  // Turén
+  { id: 'villa bruzual', nombre: 'Villa Bruzual', municipioId: 'turen' },
+  { id: 'canelones', nombre: 'Canelones', municipioId: 'turen' },
+  { id: 'santa cruz turen', nombre: 'Santa Cruz', municipioId: 'turen' },
+  { id: 'san isidro labrador', nombre: 'San Isidro Labrador', municipioId: 'turen' },
+
+  // Andrés Eloy Blanco (Sucre)
+  { id: 'marino', nombre: 'Mariño', municipioId: 'andres eloy blanco sucre' },
+  { id: 'romulo gallegos sucre', nombre: 'Rómulo Gallegos', municipioId: 'andres eloy blanco sucre' },
+
+  // Andrés Mata
+  { id: 'san jose de areocuar', nombre: 'San José de Areocuar', municipioId: 'andres mata' },
+  { id: 'tavera acosta', nombre: 'Tavera Acosta', municipioId: 'andres mata' },
+
+  // Arismendi (Sucre)
+  { id: 'rio caribe', nombre: 'Río Caribe', municipioId: 'arismendi sucre' },
+  { id: 'antonio jose de sucre arismendi', nombre: 'Antonio José de Sucre', municipioId: 'arismendi sucre' },
+  { id: 'el morro de puerto santo', nombre: 'El Morro de Puerto Santo', municipioId: 'arismendi sucre' },
+  { id: 'puerto santo', nombre: 'Puerto Santo', municipioId: 'arismendi sucre' },
+  { id: 'san juan de las galdonas', nombre: 'San Juan de las Galdonas', municipioId: 'arismendi sucre' },
+
+  // Benítez
+  { id: 'el pilar', nombre: 'El Pilar', municipioId: 'benitez' },
+  { id: 'el rincon', nombre: 'El Rincón', municipioId: 'benitez' },
+  { id: 'general francisco antonio vazquez', nombre: 'General Francisco Antonio Vázquez', municipioId: 'benitez' },
+  { id: 'guaraunos', nombre: 'Guaraúnos', municipioId: 'benitez' },
+  { id: 'tunapuicito', nombre: 'Tunapuicito', municipioId: 'benitez' },
+  { id: 'union benitez', nombre: 'Unión', municipioId: 'benitez' },
+
+  // Bermúdez
+  { id: 'santa catalina', nombre: 'Santa Catalina', municipioId: 'bermudez' },
+  { id: 'santa rosa bermudez', nombre: 'Santa Rosa', municipioId: 'bermudez' },
+  { id: 'santa teresa bermudez', nombre: 'Santa Teresa', municipioId: 'bermudez' },
+  { id: 'bolivar bermudez', nombre: 'Bolívar', municipioId: 'bermudez' },
+  { id: 'maracapana', nombre: 'Maracapana', municipioId: 'bermudez' },
+
+  // Bolívar (Sucre)
+  { id: 'mariguitar', nombre: 'Marigüitar', municipioId: 'bolivar sucre' },
+
+  // Cajigal (Sucre)
+  { id: 'libertad cajigal', nombre: 'Libertad', municipioId: 'cajigal sucre' },
+  { id: 'el paujil', nombre: 'El Paujil', municipioId: 'cajigal sucre' },
+  { id: 'yaguaraparo', nombre: 'Yaguaraparo', municipioId: 'cajigal sucre' },
+
+  // Cruz Salmerón Acosta
+  { id: 'araya', nombre: 'Araya', municipioId: 'cruz salmeron acosta' },
+  { id: 'chacopata', nombre: 'Chacopata', municipioId: 'cruz salmeron acosta' },
+  { id: 'manicuare', nombre: 'Manicuare', municipioId: 'cruz salmeron acosta' },
+
+  // Libertador (Sucre)
+  { id: 'tunapuy', nombre: 'Tunapuy', municipioId: 'libertador sucre' },
+  { id: 'campo elias sucre', nombre: 'Campo Elías', municipioId: 'libertador sucre' },
+
+  // Mariño (Sucre)
+  { id: 'irapa', nombre: 'Irapa', municipioId: 'marino sucre' },
+  { id: 'campo claro', nombre: 'Campo Claro', municipioId: 'marino sucre' },
+  { id: 'marabal', nombre: 'Marabal', municipioId: 'marino sucre' },
+  { id: 'san antonio de irapa', nombre: 'San Antonio de Irapa', municipioId: 'marino sucre' },
+  { id: 'soro', nombre: 'Soro', municipioId: 'marino sucre' },
+
+  // Mejía
+  { id: 'san antonio del golfo', nombre: 'San Antonio del Golfo', municipioId: 'mejia' },
+
+  // Montes
+  { id: 'cumanacoa', nombre: 'Cumanacoa', municipioId: 'montes' },
+  { id: 'arenas', nombre: 'Arenas', municipioId: 'montes' },
+  { id: 'aricagua montes', nombre: 'Aricagua', municipioId: 'montes' },
+  { id: 'cocollar', nombre: 'Cocollar', municipioId: 'montes' },
+  { id: 'san fernando montes', nombre: 'San Fernando', municipioId: 'montes' },
+  { id: 'san lorenzo', nombre: 'San Lorenzo', municipioId: 'montes' },
+
+  // Ribero
+  { id: 'cariaco', nombre: 'Cariaco (Villa Frontado)', municipioId: 'ribero' },
+  { id: 'catuaro', nombre: 'Catuaro', municipioId: 'ribero' },
+  { id: 'rendon', nombre: 'Rendón', municipioId: 'ribero' },
+  { id: 'santa cruz ribero', nombre: 'Santa Cruz', municipioId: 'ribero' },
+  { id: 'santa maria ribero', nombre: 'Santa María', municipioId: 'ribero' },
+
+  // Sucre (Sucre)
+  { id: 'altagracia cumana', nombre: 'Altagracia Cumaná', municipioId: 'sucre sucre' },
+  { id: 'santa ines cumana', nombre: 'Santa Inés Cumaná', municipioId: 'sucre sucre' },
+  { id: 'valentin valiente cumana', nombre: 'Valentín Valiente Cumaná', municipioId: 'sucre sucre' },
+  { id: 'ayacucho cumana', nombre: 'Ayacucho Cumaná', municipioId: 'sucre sucre' },
+  { id: 'san juan sucre', nombre: 'San Juan', municipioId: 'sucre sucre' },
+  { id: 'raul leoni sucre', nombre: 'Raúl Leoni', municipioId: 'sucre sucre' },
+  { id: 'gran mariscal', nombre: 'Gran Mariscal', municipioId: 'sucre sucre' },
+
+  // Valdez
+  { id: 'cristobal colon', nombre: 'Cristóbal Colón', municipioId: 'valdez' },
+  { id: 'bideau', nombre: 'Bideau', municipioId: 'valdez' },
+  { id: 'punta de piedras', nombre: 'Punta de Piedras', municipioId: 'valdez' },
+  { id: 'guiria', nombre: 'Güiria', municipioId: 'valdez' },
+
+  // Andrés Bello
+  { id: 'cordero', nombre: 'Cordero', municipioId: 'andres bello tachira' },
+
+  // Antonio Rómulo Costa
+  { id: 'las mesas', nombre: 'Las Mesas', municipioId: 'antonio romulo costa' },
+
+  // Ayacucho
+  { id: 'san juan de colon', nombre: 'San Juan de Colón', municipioId: 'ayacucho' },
+  { id: 'san pedro del rio', nombre: 'San Pedro del Río', municipioId: 'ayacucho' },
+
+  // Bolívar
+  { id: 'san antonio del tachira', nombre: 'San Antonio del Táchira', municipioId: 'bolivar tachira' },
+  { id: 'palotal', nombre: 'Palotal', municipioId: 'bolivar tachira' },
+
+  // Cárdenas
+  { id: 'tariba', nombre: 'Táriba', municipioId: 'cardenas' },
+  { id: 'la florida cardenas', nombre: 'La Florida', municipioId: 'cardenas' },
+
+  // Córdoba
+  { id: 'santa ana del tachira', nombre: 'Santa Ana del Táchira', municipioId: 'cordoba' },
+
+  // Fernández Feo
+  { id: 'san rafael del pinal', nombre: 'San Rafael del Piñal', municipioId: 'fernandez feo' },
+  { id: 'santo domingo fernandez feo', nombre: 'Santo Domingo', municipioId: 'fernandez feo' },
+
+  // Francisco de Miranda
+  { id: 'san jose de bolivar', nombre: 'San José de Bolívar', municipioId: 'francisco de miranda tachira' },
+
+  // García de Hevia
+  { id: 'la fria', nombre: 'La Fría', municipioId: 'garcia de hevia' },
+  { id: 'boca de grita', nombre: 'Boca de Grita', municipioId: 'garcia de hevia' },
+  { id: 'jose antonio paez garcia de hevia', nombre: 'José Antonio Páez', municipioId: 'garcia de hevia' },
+
+  // Guásimos
+  { id: 'palmira guasimos', nombre: 'Palmira', municipioId: 'guasimos' },
+
+  // Independencia
+  { id: 'capacho nuevo', nombre: 'Capacho Nuevo', municipioId: 'independencia tachira' },
+  { id: 'juan german roscio', nombre: 'Juan Germán Roscio', municipioId: 'independencia tachira' },
+
+  // Jáuregui
+  { id: 'la grita', nombre: 'La Grita', municipioId: 'jauregui' },
+  { id: 'emilio constantino guerrero', nombre: 'Emilio Constantino Guerrero', municipioId: 'jauregui' },
+  { id: 'monsenor miguel antonio salas', nombre: 'Monseñor Miguel Antonio Salas', municipioId: 'jauregui' },
+
+  // José María Vargas
+  { id: 'el cobre', nombre: 'El Cobre', municipioId: 'jose maria vargas' },
+
+  // Junín
+  { id: 'rubio', nombre: 'Rubio', municipioId: 'junin' },
+  { id: 'bramon', nombre: 'Bramón', municipioId: 'junin' },
+  { id: 'la petrolea', nombre: 'La Petrólea', municipioId: 'junin' },
+  { id: 'quinimari', nombre: 'Quinimarí', municipioId: 'junin' },
+
+  // Libertad
+  { id: 'capacho viejo', nombre: 'Capacho Viejo', municipioId: 'libertad tachira' },
+  { id: 'cipriano castro', nombre: 'Cipriano Castro', municipioId: 'libertad tachira' },
+  { id: 'potosi', nombre: 'Potosí', municipioId: 'libertad tachira' },
+
+  // Libertador
+  { id: 'abejales', nombre: 'Abejales', municipioId: 'libertador tachira' },
+  { id: 'san joaquin de navay', nombre: 'San Joaquín de Navay', municipioId: 'libertador tachira' },
+  { id: 'doradas', nombre: 'Doradas', municipioId: 'libertador tachira' },
+  { id: 'emeterio ochoa', nombre: 'Emeterio Ochoa', municipioId: 'libertador tachira' },
+
+  // Lobatera
+  { id: 'lobatera', nombre: 'Lobatera', municipioId: 'lobatera' },
+  { id: 'constitucion', nombre: 'Constitución', municipioId: 'lobatera' },
+
+  // Michelena
+  { id: 'michelena', nombre: 'Michelena', municipioId: 'michelena' },
+
+  // Panamericano
+  { id: 'coloncito', nombre: 'Coloncito', municipioId: 'panamericano' },
+  { id: 'la palmita', nombre: 'La Palmita', municipioId: 'panamericano' },
+
+  // Pedro María Ureña
+  { id: 'urena', nombre: 'Ureña', municipioId: 'pedro maria urena' },
+  { id: 'nueva arcadia', nombre: 'Nueva Arcadia', municipioId: 'pedro maria urena' },
+
+  // Rafael Urdaneta
+  { id: 'delicias', nombre: 'Delicias', municipioId: 'rafael urdaneta' },
+
+  // Samuel Darío Maldonado
+  { id: 'la tendida', nombre: 'La Tendida', municipioId: 'samuel dario maldonado' },
+
+  // San Cristóbal
+  { id: 'san cristobal san cristobal', nombre: 'San Cristóbal', municipioId: 'san cristobal' },
+  { id: 'francisco romero lobo', nombre: 'Francisco Romero Lobo', municipioId: 'san cristobal' },
+  { id: 'la concordia', nombre: 'La Concordia', municipioId: 'san cristobal' },
+  { id: 'pedro maria morantes', nombre: 'Pedro María Morantes', municipioId: 'san cristobal' },
+  { id: 'juan vicente gomez', nombre: 'Juan Vicente Gómez', municipioId: 'san cristobal' },
+  { id: 'lobatera san cristobal', nombre: 'Lobatera', municipioId: 'san cristobal' },
+  { id: 'constitucion san cristobal', nombre: 'Constitución', municipioId: 'san cristobal' },
+
+  // San Judas Tadeo
+  { id: 'umuquena', nombre: 'Umuquena', municipioId: 'san judas tadeo' },
+
+  // Seboruco
+  { id: 'seboruco', nombre: 'Seboruco', municipioId: 'seboruco' },
+
+  // Simón Rodríguez
+  { id: 'san simon simon rodriguez tachira', nombre: 'San Simón', municipioId: 'simon rodriguez tachira' },
+
+  // Sucre
+  { id: 'queniquea', nombre: 'Queniquea', municipioId: 'sucre tachira' },
+  { id: 'san pedro del rio sucre tachira', nombre: 'San Pedro del Río', municipioId: 'sucre tachira' },
+
+  // Torbes
+  { id: 'san josecito', nombre: 'San Josecito', municipioId: 'torbes' },
+
+  // Uribante
+  { id: 'pregonero', nombre: 'Pregonero', municipioId: 'uribante' },
+  { id: 'cardenas', nombre: 'Cárdenas', municipioId: 'uribante' },
+  { id: 'potosi uribante', nombre: 'Potosí', municipioId: 'uribante' },
+  { id: 'juan pablo penalosa', nombre: 'Juan Pablo Peñalosa', municipioId: 'uribante' },
+
+  // Andrés Bello
+  { id: 'santa isabel', nombre: 'Santa Isabel', municipioId: 'andres bello trujillo' },
+  { id: 'araguaney', nombre: 'Araguaney', municipioId: 'andres bello trujillo' },
+
+  // Boconoíto
+  { id: 'bocono', nombre: 'Boconó', municipioId: 'boconoito' },
+  { id: 'el carmen boconoito', nombre: 'El Carmen', municipioId: 'boconoito' },
+  { id: 'mosquey', nombre: 'Mosquey', municipioId: 'boconoito' },
+  { id: 'ayacucho boconoito', nombre: 'Ayacucho', municipioId: 'boconoito' },
+  { id: 'burbusay', nombre: 'Burbusay', municipioId: 'boconoito' },
+  { id: 'general ribas', nombre: 'General Ribas', municipioId: 'boconoito' },
+  { id: 'guaramacal', nombre: 'Guaramacal', municipioId: 'boconoito' },
+  { id: 'vega de guaramacal', nombre: 'Vega de Guaramacal', municipioId: 'boconoito' },
+  { id: 'mozo', nombre: 'Mozo', municipioId: 'boconoito' },
+
+  // Bolívar
+  { id: 'sabana grande', nombre: 'Sabana Grande', municipioId: 'bolivar trujillo' },
+  { id: 'cheregue', nombre: 'Cheregüé', municipioId: 'bolivar trujillo' },
+  { id: 'granados', nombre: 'Granados', municipioId: 'bolivar trujillo' },
+
+  // Candelaria
+  { id: 'chejende', nombre: 'Chejendé', municipioId: 'candelaria' },
+  { id: 'arnoldo gabaldon', nombre: 'Arnoldo Gabaldón', municipioId: 'candelaria' },
+  { id: 'bolivia', nombre: 'Bolivia', municipioId: 'candelaria' },
+  { id: 'carrillo', nombre: 'Carrillo', municipioId: 'candelaria' },
+  { id: 'cegarra', nombre: 'Cegarra', municipioId: 'candelaria' },
+
+  // Carache
+  { id: 'carache', nombre: 'Carache', municipioId: 'carache' },
+  { id: 'la concepcion', nombre: 'La Concepción', municipioId: 'carache' },
+  { id: 'cuicas', nombre: 'Cuicas', municipioId: 'carache' },
+  { id: 'panamericana', nombre: 'Panamericana', municipioId: 'carache' },
+  { id: 'santa cruz carache', nombre: 'Santa Cruz', municipioId: 'carache' },
+
+  // Escuque
+  { id: 'escuque', nombre: 'Escuque', municipioId: 'escuque' },
+  { id: 'la union escuque', nombre: 'La Unión', municipioId: 'escuque' },
+  { id: 'santa apolonia escuque', nombre: 'Santa Apolonia', municipioId: 'escuque' },
+  { id: 'el progreso', nombre: 'El Progreso', municipioId: 'escuque' },
+
+  // Jose Felipe Márquez Cañizales
+  { id: 'el socorro jose felipe marquez canizales', nombre: 'El Socorro', municipioId: 'jose felipe marquez canizales' },
+  { id: 'los caprichos', nombre: 'Los Caprichos', municipioId: 'jose felipe marquez canizales' },
+  { id: 'antonio jose de sucre jose felipe marquez canizales', nombre: 'Antonio José de Sucre', municipioId: 'jose felipe marquez canizales' },
+
+  // Juan Vicente Campo Elías
+  { id: 'campo elias juan vicente campo elias', nombre: 'Campo Elías', municipioId: 'juan vicente campo elias' },
+  { id: 'arnoldo gabaldon juan vicente campo elias', nombre: 'Arnoldo Gabaldón', municipioId: 'juan vicente campo elias' },
+
+  // La Ceiba
+  { id: 'santa apolonia la ceiba', nombre: 'Santa Apolonia', municipioId: 'la ceiba' },
+
+  // Miranda
+  { id: 'el dividive', nombre: 'El Dividive', municipioId: 'miranda trujillo' },
+  { id: 'agua santa', nombre: 'Agua Santa', municipioId: 'miranda trujillo' },
+  { id: 'agua caliente', nombre: 'Agua Caliente', municipioId: 'miranda trujillo' },
+  { id: 'el cenizo', nombre: 'El Cenizo', municipioId: 'miranda trujillo' },
+  { id: 'valerita', nombre: 'Valerita', municipioId: 'miranda trujillo' },
+
+  // Monte Carmelo
+  { id: 'monte carmelo', nombre: 'Monte Carmelo', municipioId: 'monte carmelo' },
+  { id: 'buena vista monte carmelo', nombre: 'Buena Vista', municipioId: 'monte carmelo' },
+
+  // Motatán
+  { id: 'motatan', nombre: 'Motatán', municipioId: 'motatan' },
+  { id: 'el bano', nombre: 'El Baño', municipioId: 'motatan' },
+  { id: 'jalisco', nombre: 'Jalisco', municipioId: 'motatan' },
+
+  // Pampán
+  { id: 'pampan', nombre: 'Pampán', municipioId: 'pampan' },
+  { id: 'flor de patria', nombre: 'Flor de Patria', municipioId: 'pampan' },
+  { id: 'la paz', nombre: 'La Paz', municipioId: 'pampan' },
+  { id: 'santa ana pampan', nombre: 'Santa Ana', municipioId: 'pampan' },
+
+  // Pampanito
+  { id: 'pampanito', nombre: 'Pampanito', municipioId: 'pampanito' },
+  { id: 'la concepcion pampanito', nombre: 'La Concepción', municipioId: 'pampanito' },
+  { id: 'pampanito ii', nombre: 'Pampanito II', municipioId: 'pampanito' },
+
+  // Rafael Rangel
+  { id: 'betijoque', nombre: 'Betijoque', municipioId: 'rafael rangel' },
+  { id: 'jose gregorio hernandez', nombre: 'José Gregorio Hernández', municipioId: 'rafael rangel' },
+  { id: 'la pueblita', nombre: 'La Pueblita', municipioId: 'rafael rangel' },
+  { id: 'los cedros', nombre: 'Los Cedros', municipioId: 'rafael rangel' },
+
+  // San Rafael de Carvajal
+  { id: 'carvajal', nombre: 'Carvajal', municipioId: 'san rafael de carvajal' },
+  { id: 'campo alegre', nombre: 'Campo Alegre', municipioId: 'san rafael de carvajal' },
+  { id: 'antonio nicolas briceno', nombre: 'Antonio Nicolás Briceño', municipioId: 'san rafael de carvajal' },
+  { id: 'jose leonardo suarez', nombre: 'José Leonardo Suárez', municipioId: 'san rafael de carvajal' },
+
+  // Sucre
+  { id: 'sabana de mendoza', nombre: 'Sabana de Mendoza', municipioId: 'sucre trujillo' },
+  { id: 'junin', nombre: 'Junín', municipioId: 'sucre trujillo' },
+  { id: 'valmore rodriguez', nombre: 'Valmore Rodríguez', municipioId: 'sucre trujillo' },
+  { id: 'el paraiso sucre trujillo', nombre: 'El Paraíso', municipioId: 'sucre trujillo' },
+
+  // Trujillo
+  { id: 'trujillo', nombre: 'Trujillo', municipioId: 'trujillo' },
+  { id: 'la quebrada', nombre: 'La Quebrada', municipioId: 'trujillo' },
+  { id: 'jajo', nombre: 'Jajó', municipioId: 'trujillo' },
+  { id: 'la mesa de esnujaque', nombre: 'La Mesa de Esnujaque', municipioId: 'trujillo' },
+  { id: 'santiago', nombre: 'Santiago', municipioId: 'trujillo' },
+  { id: 'tuname', nombre: 'Tuñame', municipioId: 'trujillo' },
+
+  // Urdaneta
+  { id: 'la beatriz', nombre: 'La Beatriz', municipioId: 'urdaneta trujillo' },
+  { id: 'la puerta', nombre: 'La Puerta', municipioId: 'urdaneta trujillo' },
+  { id: 'mendoza fria', nombre: 'Mendoza Fría', municipioId: 'urdaneta trujillo' },
+
+  // Valera
+  { id: 'valera', nombre: 'Valera', municipioId: 'valera' },
+  { id: 'juan ignacio montilla', nombre: 'Juan Ignacio Montilla', municipioId: 'valera' },
+  { id: 'la beatriz valera', nombre: 'La Beatriz', municipioId: 'valera' },
+  { id: 'la puerta valera', nombre: 'La Puerta', municipioId: 'valera' },
+  { id: 'mendoza del valle de momboy', nombre: 'Mendoza del Valle de Momboy', municipioId: 'valera' },
+  { id: 'mercedes diaz', nombre: 'Mercedes Díaz', municipioId: 'valera' },
+  { id: 'san luis valera', nombre: 'San Luis', municipioId: 'valera' },
+
+  // Vargas
+  { id: 'caraballeda', nombre: 'Caraballeda', municipioId: 'vargas' },
+  { id: 'carayaca', nombre: 'Carayaca', municipioId: 'vargas' },
+  { id: 'carlos soublette', nombre: 'Carlos Soublette', municipioId: 'vargas' },
+  { id: 'caruao', nombre: 'Caruao', municipioId: 'vargas' },
+  { id: 'catia la mar', nombre: 'Catia La Mar', municipioId: 'vargas' },
+  { id: 'el junko', nombre: 'El Junko', municipioId: 'vargas' },
+  { id: 'la guaira', nombre: 'La Guaira', municipioId: 'vargas' },
+  { id: 'macuto', nombre: 'Macuto', municipioId: 'vargas' },
+  { id: 'maiquetia', nombre: 'Maiquetía', municipioId: 'vargas' },
+  { id: 'naiguata', nombre: 'Naiguatá', municipioId: 'vargas' },
+  { id: 'urimare', nombre: 'Urimare', municipioId: 'vargas' },
+
+  // Arístides Bastidas
+  { id: 'san pablo aristides bastidas', nombre: 'San Pablo', municipioId: 'aristides bastidas' },
+
+  // Bolívar
+  { id: 'aroa', nombre: 'Aroa', municipioId: 'bolivar yaracuy' },
+
+  // Bruzual
+  { id: 'chivacoa', nombre: 'Chivacoa', municipioId: 'bruzual yaracuy' },
+  { id: 'campo elias bruzual yaracuy', nombre: 'Campo Elías', municipioId: 'bruzual yaracuy' },
+
+  // Cocorote
+  { id: 'cocorote', nombre: 'Cocorote', municipioId: 'cocorote' },
+
+  // Independencia
+  { id: 'independencia independencia yaracuy', nombre: 'Independencia', municipioId: 'independencia yaracuy' },
+
+  // José Antonio Páez
+  { id: 'sabana de parra', nombre: 'Sabana de Parra', municipioId: 'jose antonio paez' },
+
+  // La Trinidad
+  { id: 'boraure', nombre: 'Boraure', municipioId: 'la trinidad' },
+
+  // Manuel Monge
+  { id: 'yumare', nombre: 'Yumare', municipioId: 'manuel monge' },
+
+  // Nirgua
+  { id: 'nirgua', nombre: 'Nirgua', municipioId: 'nirgua' },
+  { id: 'salom', nombre: 'Salom', municipioId: 'nirgua' },
+  { id: 'temerla', nombre: 'Temerla', municipioId: 'nirgua' },
+
+  // Peña
+  { id: 'san andres', nombre: 'San Andrés', municipioId: 'pena' },
+
+  // San Felipe
+  { id: 'san felipe', nombre: 'San Felipe', municipioId: 'san felipe' },
+  { id: 'albarico', nombre: 'Albarico', municipioId: 'san felipe' },
+  { id: 'san javier', nombre: 'San Javier', municipioId: 'san felipe' },
+
+  // Sucre
+  { id: 'guama', nombre: 'Guama', municipioId: 'sucre yaracuy' },
+
+  // Urachiche
+  { id: 'urachiche', nombre: 'Urachiche', municipioId: 'urachiche' },
+
+  // Veroes
+  { id: 'farriar', nombre: 'Farriar', municipioId: 'veroes' },
+  { id: 'el guayabo', nombre: 'El Guayabo', municipioId: 'veroes' },
+
+  // Almirante Padilla
+  { id: 'el toro', nombre: 'El Toro', municipioId: 'almirante padilla' },
+  { id: 'san carlos', nombre: 'San Carlos', municipioId: 'almirante padilla' },
+
+  // Baralt
+  { id: 'san timoteo', nombre: 'San Timoteo', municipioId: 'baralt' },
+  { id: 'mene grande', nombre: 'Mene Grande', municipioId: 'baralt' },
+  { id: 'bartolome de las casas', nombre: 'Bartolomé de las Casas', municipioId: 'baralt' },
+
+  // Cabimas
+  { id: 'cabimas', nombre: 'Cabimas', municipioId: 'cabimas' },
+  { id: 'ambrosio', nombre: 'Ambrosio', municipioId: 'cabimas' },
+  { id: 'carmen herrera', nombre: 'Carmen Herrera', municipioId: 'cabimas' },
+  { id: 'la rosa', nombre: 'La Rosa', municipioId: 'cabimas' },
+  { id: 'german rios linares', nombre: 'Germán Ríos Linares', municipioId: 'cabimas' },
+  { id: 'san benito', nombre: 'San Benito', municipioId: 'cabimas' },
+  { id: 'romulo betancourt cabimas', nombre: 'Rómulo Betancourt', municipioId: 'cabimas' },
+
+  // Catatumbo
+  { id: 'encontrados', nombre: 'Encontrados', municipioId: 'catatumbo' },
+  { id: 'urribarri', nombre: 'Urribarrí', municipioId: 'catatumbo' },
+
+  // Colón
+  { id: 'san carlos del zulia', nombre: 'San Carlos del Zulia', municipioId: 'colon' },
+  { id: 'moralito', nombre: 'Moralito', municipioId: 'colon' },
+  { id: 'santa barbara colon', nombre: 'Santa Bárbara', municipioId: 'colon' },
+  { id: 'santa cruz del zulia', nombre: 'Santa Cruz del Zulia', municipioId: 'colon' },
+  { id: 'urribarri colon', nombre: 'Urribarrí', municipioId: 'colon' },
+
+  // Francisco Javier Pulgar
+  { id: 'el batey', nombre: 'El Batey', municipioId: 'francisco javier pulgar' },
+
+  // Jesús Enrique Lossada
+  { id: 'la concepcion jesus enrique lossada', nombre: 'La Concepción', municipioId: 'jesus enrique lossada' },
+  { id: 'san jose jesus enrique lossada', nombre: 'San José', municipioId: 'jesus enrique lossada' },
+  { id: 'mariano parra leon', nombre: 'Mariano Parra León', municipioId: 'jesus enrique lossada' },
+  { id: 'jose ramon yepez', nombre: 'José Ramón Yépez', municipioId: 'jesus enrique lossada' },
+
+  // Jesús María Semprún
+  { id: 'el carmelo', nombre: 'El Carmelo', municipioId: 'jesus maria semprun' },
+  { id: 'marcelino briceno', nombre: 'Marcelino Briceño', municipioId: 'jesus maria semprun' },
+  { id: 'potosi jesus maria semprun', nombre: 'Potosí', municipioId: 'jesus maria semprun' },
+
+  // La Cañada de Urdaneta
+  { id: 'la concepcion la canada de urdaneta', nombre: 'La Concepción', municipioId: 'la canada de urdaneta' },
+  { id: 'jose cenobio urribarri', nombre: 'José Cenobio Urribarrí', municipioId: 'la canada de urdaneta' },
+
+  // Lagunillas
+  { id: 'ciudad ojeda', nombre: 'Ciudad Ojeda', municipioId: 'lagunillas' },
+  { id: 'olegario villalobos', nombre: 'Olegario Villalobos', municipioId: 'lagunillas' },
+  { id: 'san miguel lagunillas', nombre: 'San Miguel', municipioId: 'lagunillas' },
+  { id: 'venezuela', nombre: 'Venezuela', municipioId: 'lagunillas' },
+
+  // Machiques de Perijá
+  { id: 'machiques', nombre: 'Machiques', municipioId: 'machiques de perija' },
+  { id: 'libertad machiques de perija', nombre: 'Libertad', municipioId: 'machiques de perija' },
+  { id: 'rio negro machiques de perija', nombre: 'Río Negro', municipioId: 'machiques de perija' },
+  { id: 'san jose de perija', nombre: 'San José de Perijá', municipioId: 'machiques de perija' },
+
+  // Mara
+  { id: 'san rafael del mojan', nombre: 'San Rafael del Moján', municipioId: 'mara' },
+  { id: 'la sierrita', nombre: 'La Sierrita', municipioId: 'mara' },
+  { id: 'las parcelas', nombre: 'Las Parcelas', municipioId: 'mara' },
+  { id: 'luis de vicente', nombre: 'Luis de Vicente', municipioId: 'mara' },
+  { id: 'monsenor arturo alvarez', nombre: 'Monseñor Arturo Álvarez', municipioId: 'mara' },
+
+  // Maracaibo
+  { id: 'maracaibo', nombre: 'Maracaibo', municipioId: 'maracaibo' },
+  { id: 'antonio borjas romero', nombre: 'Antonio Borjas Romero', municipioId: 'maracaibo' },
+  { id: 'bolivar maracaibo', nombre: 'Bolívar', municipioId: 'maracaibo' },
+  { id: 'cacique mara', nombre: 'Cacique Mara', municipioId: 'maracaibo' },
+  { id: 'caracciolo parra perez', nombre: 'Caracciolo Parra Pérez', municipioId: 'maracaibo' },
+  { id: 'cecilio acosta maracaibo', nombre: 'Cecilio Acosta', municipioId: 'maracaibo' },
+  { id: 'chiquinquira maracaibo', nombre: 'Chiquinquirá', municipioId: 'maracaibo' },
+  { id: 'coquivacoa', nombre: 'Coquivacoa', municipioId: 'maracaibo' },
+  { id: 'cristo de aranza', nombre: 'Cristo de Aranza', municipioId: 'maracaibo' },
+  { id: 'idelfonzo vasquez', nombre: 'Idelfonzo Vásquez', municipioId: 'maracaibo' },
+  { id: 'juana de avila', nombre: 'Juana de Ávila', municipioId: 'maracaibo' },
+  { id: 'luis hurtado higuera', nombre: 'Luis Hurtado Higuera', municipioId: 'maracaibo' },
+  { id: 'manuel dagnino', nombre: 'Manuel Dagnino', municipioId: 'maracaibo' },
+  { id: 'olegario villalobos maracaibo', nombre: 'Olegario Villalobos', municipioId: 'maracaibo' },
+  { id: 'raul leoni maracaibo', nombre: 'Raúl Leoni', municipioId: 'maracaibo' },
+  { id: 'santa lucia maracaibo', nombre: 'Santa Lucía', municipioId: 'maracaibo' },
+  { id: 'venancio pulgar', nombre: 'Venancio Pulgar', municipioId: 'maracaibo' },
+  { id: 'san isidro', nombre: 'San Isidro', municipioId: 'maracaibo' },
+
+  // Miranda
+  { id: 'los puertos de altagracia', nombre: 'Los Puertos de Altagracia', municipioId: 'miranda zulia' },
+  { id: 'jose ramon yepez miranda zulia', nombre: 'José Ramón Yépez', municipioId: 'miranda zulia' },
+
+  // Guajira
+  { id: 'sinamaica', nombre: 'Sinamaica', municipioId: 'guajira' },
+  { id: 'alta guajira', nombre: 'Alta Guajira', municipioId: 'guajira' },
+  { id: 'elias sanchez rubio guajira', nombre: 'Elías Sánchez Rubio', municipioId: 'guajira' },
+  { id: 'guajira', nombre: 'Guajira', municipioId: 'guajira' },
+
+  // Mara
+  { id: 'san fernando mara zulia', nombre: 'San Fernando', municipioId: 'mara zulia' },
+  { id: 'el real mara zulia', nombre: 'El Real', municipioId: 'mara zulia' },
+
+  // Maracaibo
+  { id: 'san francisco maracaibo zulia', nombre: 'San Francisco', municipioId: 'maracaibo zulia' },
+  { id: 'el bajo', nombre: 'El Bajo', municipioId: 'maracaibo zulia' },
+  { id: 'domitila flores', nombre: 'Domitila Flores', municipioId: 'maracaibo zulia' },
+  { id: 'francisco ochoa', nombre: 'Francisco Ochoa', municipioId: 'maracaibo zulia' },
+  { id: 'los cortijos', nombre: 'Los Cortijos', municipioId: 'maracaibo zulia' },
+  { id: 'mariano parra leon maracaibo zulia', nombre: 'Mariano Parra León', municipioId: 'maracaibo zulia' },
+
+  // Miranda
+  { id: 'santa rita', nombre: 'Santa Rita', municipioId: 'miranda zulia 2' },
+  { id: 'el mene', nombre: 'El Mene', municipioId: 'miranda zulia 2' },
+  { id: 'jose cenobio urribarri miranda zulia 2', nombre: 'José Cenobio Urribarrí', municipioId: 'miranda zulia 2' },
+  { id: 'pedro lucas urribarri', nombre: 'Pedro Lucas Urribarrí', municipioId: 'miranda zulia 2' },
+
+  // Rosario de Perijá
+  { id: 'tia juana', nombre: 'Tía Juana', municipioId: 'rosario de perija' },
+  { id: 'jose gregorio hernandez rosario de perija', nombre: 'José Gregorio Hernández', municipioId: 'rosario de perija' },
+  { id: 'la paz rosario de perija', nombre: 'La Paz', municipioId: 'rosario de perija' },
+
+  // San Francisco
+  { id: 'bobures', nombre: 'Bobures', municipioId: 'san francisco zulia' },
+  { id: 'el batey san francisco zulia', nombre: 'El Batey', municipioId: 'san francisco zulia' },
+  { id: 'guzman guillermo san francisco zulia', nombre: 'Guzmán Guillermo', municipioId: 'san francisco zulia' },
+  { id: 'ricaurte', nombre: 'Ricaurte', municipioId: 'san francisco zulia' },
+
+  // Santa Rita
+  { id: 'bachaquero', nombre: 'Bachaquero', municipioId: 'santa rita' },
+  { id: 'mene grande santa rita', nombre: 'Mene Grande', municipioId: 'santa rita' },
+  { id: 'libertad santa rita', nombre: 'Libertad', municipioId: 'santa rita' },
+
+  // Dependencias Federales
+  { id: 'archipielago los monjes', nombre: 'Archipiélago Los Monjes', municipioId: 'dependencias federales' },
+  { id: 'isla la tortuga', nombre: 'Isla La Tortuga', municipioId: 'dependencias federales' },
+  { id: 'isla la sola', nombre: 'Isla La Sola', municipioId: 'dependencias federales' },
+  { id: 'islas los testigos', nombre: 'Islas Los Testigos', municipioId: 'dependencias federales' },
+  { id: 'isla de patos', nombre: 'Isla de Patos', municipioId: 'dependencias federales' },
+  { id: 'isla de aves', nombre: 'Isla de Aves', municipioId: 'dependencias federales' },
+  { id: 'archipielago los roques', nombre: 'Archipiélago Los Roques', municipioId: 'dependencias federales' },
+  { id: 'isla la blanquilla', nombre: 'Isla La Blanquilla', municipioId: 'dependencias federales' },
+  { id: 'isla de margarita', nombre: 'Isla de Margarita', municipioId: 'dependencias federales' },
+  { id: 'isla de coche', nombre: 'Isla de Coche', municipioId: 'dependencias federales' },
+  { id: 'isla de cubagua', nombre: 'Isla de Cubagua', municipioId: 'dependencias federales' },
+
+  // Guayana Esequiba
+  { id: 'alto esequibo', nombre: 'Alto Esequibo', municipioId: 'guayana esequiba' },
+  { id: 'bajo esequibo', nombre: 'Bajo Esequibo', municipioId: 'guayana esequiba' },
+  { id: 'cuyunimazaruni', nombre: 'Cuyuní-Mazaruni', municipioId: 'guayana esequiba' },
+  { id: 'islas esequibodemerara occidental', nombre: 'Islas Esequibo-Demerara Occidental', municipioId: 'guayana esequiba' },
+  { id: 'pomeroonsupenaam', nombre: 'Pomeroon-Supenaam', municipioId: 'guayana esequiba' },
+  { id: 'potarosiparuni', nombre: 'Potaro-Siparuni', municipioId: 'guayana esequiba' },
+  { id: 'takutualto esequibo', nombre: 'Takutu-Alto Esequibo', municipioId: 'guayana esequiba' },
 ];

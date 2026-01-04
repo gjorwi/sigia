@@ -88,16 +88,17 @@ export default function NuevoHospital() {
       />
       <div className="py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+          <button
+            onClick={() => router.replace('/administrador/hospitales')}
+            className="mb-6 inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Volver
+          </button>
           <div className="md:flex md:items-center md:justify-between mb-6">
             <div className="flex-1 min-w-0">
               <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate">
-                <button 
-                  onClick={() => router.replace('/administrador/hospitales')} 
-                  className="mr-3 text-gray-500 hover:text-gray-700"
-                >
-                  <ArrowLeft className="h-6 w-6 inline" />
-                </button>
-                Atras
+                Nuevo Hospital
               </h2>
             </div>
             <div className="mt-4 flex md:mt-0 md:ml-4">

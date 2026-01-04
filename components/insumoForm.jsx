@@ -28,10 +28,10 @@ export default function InsumoForm({ onSubmit, id, formData, onFormDataChange })
   // Presentaciones según tipo
   const getPresentaciones = () => {
     const tipo = (formData?.tipo || '').toLowerCase();
-    if (tipo === 'farmaceutico') {
+    if (tipo === 'medicamento') {
       return insumoPresentacionFarmaceutica;
     }
-    if (tipo === 'medico' || tipo === 'quirurgico') {
+    if (tipo === 'medico/quirurgico') {
       return insumoPresentacionMedicaQuirurgica;
     }
     return [];

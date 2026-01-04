@@ -8,11 +8,73 @@ import { provincias } from '@/constantes/provincias';
 import { municipios } from '@/constantes/municipios';
 import { parroquias } from '@/constantes/parroquias';
 
+// Normaliza texto a slug (minúscula, sin acentos)
+const toSlug = (text) => {
+  if (!text) return '';
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+};
+
+// Busca el ID correcto en las constantes comparando por slug
+const findMatchingId = (value, items) => {
+  if (!value) return '';
+  const slug = toSlug(value);
+  // Primero buscar coincidencia exacta por id
+  let match = items.find(item => item.id === value);
+  if (match) return match.id;
+  // Luego buscar por slug del id (coincidencia exacta)
+  match = items.find(item => toSlug(item.id) === slug);
+  if (match) return match.id;
+  // Luego buscar por slug del nombre (coincidencia exacta)
+  match = items.find(item => toSlug(item.nombre) === slug);
+  if (match) return match.id;
+  // Buscar ID que empiece con el slug (para casos como "arismendi" -> "arismendi sucre")
+  match = items.find(item => toSlug(item.id).startsWith(slug + ' ') || toSlug(item.id) === slug);
+  if (match) return match.id;
+  // Buscar nombre que empiece con el slug
+  match = items.find(item => toSlug(item.nombre).startsWith(slug));
+  if (match) return match.id;
+  // Si no encuentra, devolver el valor original
+  return value;
+};
 
 export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,menu }) {
   const [errors, setErrors] = useState({});
   const [filteredMunicipios, setFilteredMunicipios] = useState(municipios);
   const [filteredParroquias, setFilteredParroquias] = useState(parroquias);
+  const [isNormalizing, setIsNormalizing] = useState(false);
+
+  // Normalizar valores de estado/municipio/parroquia cuando cambian desde el backend
+  useEffect(() => {
+    if (formData.estado || formData.municipio || formData.parroquia) {
+      const normalizedEstado = findMatchingId(formData.estado, provincias);
+      const filteredMuns = municipios.filter(m => m.provinciaId === normalizedEstado);
+      const normalizedMunicipio = findMatchingId(formData.municipio, filteredMuns.length ? filteredMuns : municipios);
+      const filteredPars = parroquias.filter(p => p.municipioId === normalizedMunicipio);
+      const normalizedParroquia = findMatchingId(formData.parroquia, filteredPars.length ? filteredPars : parroquias);
+      
+      // Actualizar listas filtradas inmediatamente
+      if (filteredMuns.length) setFilteredMunicipios(filteredMuns);
+      if (filteredPars.length) setFilteredParroquias(filteredPars);
+      
+      if (normalizedEstado !== formData.estado || 
+          normalizedMunicipio !== formData.municipio || 
+          normalizedParroquia !== formData.parroquia) {
+        setIsNormalizing(true);
+        onFormDataChange({
+          ...formData,
+          estado: normalizedEstado,
+          municipio: normalizedMunicipio,
+          parroquia: normalizedParroquia
+        });
+        // Resetear flag después de un tick
+        setTimeout(() => setIsNormalizing(false), 0);
+      }
+    }
+  }, [formData.estado, formData.municipio, formData.parroquia]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -43,35 +105,39 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
 
   // Update filtered municipalities when province changes
   useEffect(() => {
+    // No ejecutar durante la normalización
+    if (isNormalizing) return;
+    
     if (formData.estado) {
       const filtered = municipios.filter(m => m.provinciaId === formData.estado);
       setFilteredMunicipios(filtered);
-      // Reset municipio when province changes
-      
     } else {
       setFilteredMunicipios([]);
     }
-  }, [formData.estado]);
+  }, [formData.estado, isNormalizing]);
   
   // Update filtered parroquias when municipality changes
   useEffect(() => {
+    // No ejecutar durante la normalización
+    if (isNormalizing) return;
+    
     if (formData.municipio) {
-      // alert(formData.municipio);
       const filtered = parroquias.filter(p => p.municipioId === formData.municipio);
       setFilteredParroquias(filtered);
     } else {
       setFilteredParroquias([]);
     }
-  }, [formData.municipio]);
+  }, [formData.municipio, isNormalizing]);
 
   const handleChangeEstado = (e) => {
     const { value } = e.target;
 
+    // Solo resetear municipio/parroquia si no estamos normalizando
     onFormDataChange({
       ...formData,
       estado: value,
-      municipio: '',
-      parroquia: '' // Reset parroquia when municipio changes
+      municipio: isNormalizing ? formData.municipio : '',
+      parroquia: isNormalizing ? formData.parroquia : ''
     });
   };
   const handleChangeMunicipio = (e) => {
@@ -107,6 +173,9 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
       onSubmit(formData);
     }
   };
+
+  // Debug render
+  console.log('Render - formData.municipio:', formData.municipio, 'filteredMunicipios.length:', filteredMunicipios.length);
     
   return (
     <form id={id} onSubmit={handleSubmit} className="divide-y divide-gray-200">
@@ -276,7 +345,10 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
               id="municipio"
               name="municipio"
               value={formData.municipio||''}
-              onChange={handleChange}
+              onChange={(e) => {
+                console.log('Municipio onChange:', e.target.value);
+                handleChange(e);
+              }}
               className={`block w-full px-4 capitalize py-2 text-gray-700 text-base border ${
                 errors.municipio 
                   ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
@@ -284,11 +356,15 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
               } rounded-md shadow-sm transition duration-150 ease-in-out bg-white`}
             >
               <option value="">Seleccione...</option>
-              {filteredMunicipios.map((municipio) => (
-                <option key={municipio.id} value={municipio.id}>
-                  {municipio.nombre}
-                </option>
-              ))}
+              {filteredMunicipios.map((municipio) => {
+                const isSelected = municipio.id === formData.municipio;
+                if (isSelected) console.log('Municipio seleccionado encontrado:', municipio);
+                return (
+                  <option key={municipio.id} value={municipio.id}>
+                    {municipio.nombre}
+                  </option>
+                );
+              })}
             </select>
             {errors.municipio && (
               <p className="mt-1 text-sm text-red-600">{errors.municipio}</p>

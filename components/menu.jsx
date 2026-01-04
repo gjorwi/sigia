@@ -18,7 +18,8 @@ import {
   Warehouse,
   User,
   ChevronDown,
-  House
+  House,
+  Wrench
 } from 'lucide-react';
 import nombreRutas from '@/constantes/nombreRutas';
 
@@ -111,6 +112,7 @@ export default function Menu() {
     { name: 'Sedes', icon: House, href: '/administrador/sedes', current: false },
     { name: 'Hospitales', icon: Hospital, href: '/administrador/hospitales', current: false },
     { name: 'Insumos', icon: Package, href: '/administrador/insumos', current: false },
+    { name: 'Herramientas', icon: Wrench, href: '/administrador/herramientas', current: false },
     { name: 'Usuarios', icon: Users, href: '/administrador/usuarios', current: false },
     // { name: 'Configuración', icon: Settings, href: '/administrador/configuracion', current: false },
   ];

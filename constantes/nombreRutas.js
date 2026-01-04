@@ -44,6 +44,9 @@ const nombreRutas = {
     '/administrador/reportes/pacientes': 'Reporte de Pacientes',
     '/administrador/reportes/traza': 'Reporte de Traza Insumo',
     '/administrador/reportes/general': 'Reporte General',
+    '/administrador/herramientas': 'Herramientas',
+    '/administrador/herramientas/comparar-insumos': 'Comparar Insumos',
+    '/administrador/sedes': 'Gestión de Sedes',
 };
 
 export default nombreRutas;
