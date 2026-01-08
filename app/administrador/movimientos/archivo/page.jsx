@@ -382,7 +382,8 @@ export default function Despachos() {
     let fallidos = 0;
     const errores = [];
 
-    for (const insumo of resultadosComparacion.noRegistrados) {
+    for (let i = 0; i < resultadosComparacion.noRegistrados.length; i++) {
+      const insumo = resultadosComparacion.noRegistrados[i];
       try {
         const codigo = generarCodigoUnico();
         const tipo = detectarTipoInsumo(insumo.tipo_insumo);
@@ -412,6 +413,11 @@ export default function Despachos() {
           errores.push(`${insumo.descripcion}: ${result.mensaje}`);
         } else {
           exitosos++;
+        }
+
+        // Delay de 500ms entre solicitudes para evitar rate limit
+        if (i < resultadosComparacion.noRegistrados.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
       } catch (error) {
         fallidos++;

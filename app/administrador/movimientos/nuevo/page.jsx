@@ -317,11 +317,11 @@ export default function NuevoDespacho() {
                           value={searchTerm}
                           onChange={handleSearchChange}
                           placeholder="Ingrese el número de rif"
-                          className={`block w-full px-4 py-2 text-base border ${
+                          className={`block w-full px-4 py-2 text-base bg-white text-gray-900 border ${
                             searchError 
                               ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                               : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
-                          } rounded-md shadow-sm placeholder-gray-400`}
+                          } rounded-md shadow-sm placeholder-gray-400 disabled:bg-gray-50 disabled:text-gray-900`}
                           disabled={searching || hospitalFound}
                         />
                       </div>

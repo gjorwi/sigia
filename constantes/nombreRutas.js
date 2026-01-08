@@ -47,6 +47,10 @@ const nombreRutas = {
     '/administrador/herramientas': 'Herramientas',
     '/administrador/herramientas/comparar-insumos': 'Comparar Insumos',
     '/administrador/sedes': 'Gestión de Sedes',
+    '/administrador/sedes/nuevo': 'Registrar Sede',
+    '/administrador/sedes/editar': 'Editar Sede',
+    '/administrador/sedes/activar': 'Activar/Desactivar Sedes',
+    '/administrador/sedes/eliminar': 'Eliminar Sedes',
 };
 
 export default nombreRutas;

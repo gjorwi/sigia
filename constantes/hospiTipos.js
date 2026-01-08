@@ -1,4 +1,5 @@
 export const tipos = [
+    { id: 'aus', nombre: 'AUS' },
     { id: 'almacen', nombre: 'Almacén' },
     { id: 'hospital_tipo1', nombre: 'Hospital tipo 1' },
     { id: 'hospital_tipo2', nombre: 'Hospital tipo 2' },

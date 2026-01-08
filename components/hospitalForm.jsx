@@ -194,7 +194,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
                 name="rif"
                 value={formData.rif||''}
                 onChange={handleChange}
-                className={`block w-full uppercase px-4 py-2 text-base border placeholder-gray-400 ${
+                className={`block w-full uppercase px-4 py-2 text-base bg-white text-gray-900 border placeholder-gray-400 ${
                   errors.rif 
                     ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                     : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
@@ -218,7 +218,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
                 name="cod_sicm"
                 value={formData.cod_sicm||''}
                 onChange={handleChange}
-                className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
+                className={`block w-full px-4 py-2 text-base bg-white text-gray-900 border placeholder-gray-400 ${
                   errors.cod_sicm 
                     ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                     : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
@@ -242,7 +242,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
                 name="nombre"
                 value={formData.nombre||''}
                 onChange={handleChange}
-                className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
+                className={`block w-full px-4 py-2 text-base bg-white text-gray-900 border placeholder-gray-400 ${
                   errors.nombre 
                     ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                     : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
@@ -264,7 +264,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
               name="tipo"
               value={formData.tipo||''}
               onChange={handleChange}
-              className={`block w-full px-4 capitalize py-[11px] text-gray-700 text-base border ${
+              className={`block w-full px-4 capitalize py-[11px] text-gray-900 text-base border ${
                 errors.tipo 
                   ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                   : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
@@ -292,7 +292,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
               name="dependencia"
               value={formData.dependencia||''}
               onChange={handleChange}
-              className={`block w-full px-4 capitalize py-2 text-gray-700 text-base border ${
+              className={`block w-full px-4 capitalize py-2 text-gray-900 text-base border ${
                 errors.dependencia 
                   ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                   : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
@@ -319,7 +319,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
               name="estado"
               value={formData.estado||''}
               onChange={(e)=>{handleChange(e);handleChangeEstado(e)}}
-              className={`block w-full px-4 capitalize py-2 text-gray-700 text-base border ${
+              className={`block w-full px-4 capitalize py-2 text-gray-900 text-base border ${
                 errors.estado 
                   ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                   : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
@@ -349,7 +349,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
                 console.log('Municipio onChange:', e.target.value);
                 handleChange(e);
               }}
-              className={`block w-full px-4 capitalize py-2 text-gray-700 text-base border ${
+              className={`block w-full px-4 capitalize py-2 text-gray-900 text-base border ${
                 errors.municipio 
                   ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                   : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
@@ -380,7 +380,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
               name="parroquia"
               value={formData.parroquia||''}
               onChange={handleChange}
-              className={`block w-full px-4 capitalize py-2 text-gray-700 text-base border ${
+              className={`block w-full px-4 capitalize py-2 text-gray-900 text-base border ${
                 errors.parroquia 
                   ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                   : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
@@ -410,7 +410,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
                 name="email"
                 value={formData.email||''}
                 onChange={handleChange}
-                className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
+                className={`block w-full px-4 py-2 text-base bg-white text-gray-900 border placeholder-gray-400 ${
                   errors.email 
                     ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                     : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
@@ -434,7 +434,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
                 name="nombre_contacto"
                 value={formData.nombre_contacto||''}
                 onChange={handleChange}
-                className={`block w-full px-4 capitalize py-2 text-base border placeholder-gray-400 ${
+                className={`block w-full px-4 capitalize py-2 text-base bg-white text-gray-900 border placeholder-gray-400 ${
                   errors.nombre_contacto 
                     ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                     : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
@@ -458,7 +458,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
                 name="email_contacto"
                 value={formData.email_contacto||''}
                 onChange={handleChange}
-                className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
+                className={`block w-full px-4 py-2 text-base bg-white text-gray-900 border placeholder-gray-400 ${
                   errors.email_contacto 
                     ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                     : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
@@ -483,7 +483,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
                 name="telefono"
                 value={formData.telefono||''}
                 onChange={handleChange}
-                className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
+                className={`block w-full px-4 py-2 text-base bg-white text-gray-900 border placeholder-gray-400 ${
                   errors.telefono 
                     ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                     : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
@@ -507,7 +507,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
                 name="direccion"
                 value={formData.direccion||''}
                 onChange={handleChange}
-                className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
+                className={`block w-full px-4 py-2 text-base bg-white text-gray-900 border placeholder-gray-400 ${
                   errors.direccion 
                     ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                     : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
@@ -533,7 +533,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
                   name="lat"
                   value={formData.ubicacion?.lat ?? ''}
                   onChange={handleChange}
-                  className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
+                  className={`block w-full px-4 py-2 text-base bg-white text-gray-900 border placeholder-gray-400 ${
                     errors.lat 
                       ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                       : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
@@ -552,7 +552,7 @@ export default function HospitalForm({ onSubmit, id, formData, onFormDataChange,
                   name="lng"
                   value={formData.ubicacion?.lng ?? ''}
                   onChange={handleChange}
-                  className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
+                  className={`block w-full px-4 py-2 text-base bg-white text-gray-900 border placeholder-gray-400 ${
                     errors.lng 
                       ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                       : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
