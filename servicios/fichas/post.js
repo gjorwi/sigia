@@ -26,6 +26,7 @@ export const postGenerarFicha = async (hospitalId, token) => {
   try {
     const response = await axios.post(`${config.URL_API}ficha-insumos/generar/${hospitalId}`, {}, {
       headers: {
+        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       }
     });

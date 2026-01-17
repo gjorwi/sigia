@@ -77,10 +77,17 @@ export default function EditarUsuario() {
     if (!user?.token) return;
     const fetchHospitals = async () => {
       try {
-        const response = await getHospitales(user?.token);
-        console.log('response.data: ' + JSON.stringify(response.data,null,2));
-        if (response.data&&response.data.data) {
-          setHospitals(response.data.data);
+        const result = await getHospitales(user?.token);
+        console.log('getHospitales result: ' + JSON.stringify(result, null, 2));
+        if (result?.autenticacion === 1 || result?.autenticacion === 2) {
+          showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+          logout();
+          router.replace('/');
+          return;
+        }
+        const hospitalsData = result?.data?.data || result?.data || result;
+        if (Array.isArray(hospitalsData)) {
+          setHospitals(hospitalsData);
         }
       } catch (error) {
         console.error('Error al cargar hospitales:', error);

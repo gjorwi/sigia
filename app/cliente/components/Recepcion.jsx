@@ -4,11 +4,9 @@ import { useState, useEffect } from 'react';
 import { Package, CheckCircle, AlertCircle, Clock, Search, Truck, CheckCircle2, CheckCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getMovimientosRecepcion, getMovimientos } from '@/servicios/despachos/get';
-import { getMovimientosPacientes } from '@/servicios/pacientes/get';
 import { useRouter } from 'next/navigation';
 import Modal from '@/components/Modal';
 import ModalDetallesRecepcion from './ModalDetallesRecepcion';
-import ModalDetallesPaciente from './ModalDetallesPaciente';
 import ModalRegistroRecepcion from './ModalRegistroRecepcion';
 import ModalMensaje from './ModalMensaje';
 import { postMovimientosRecepcion } from '@/servicios/despachos/post';
@@ -20,7 +18,7 @@ const Recepcion = () => {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [recepciones, setRecepciones] = useState([]);
-  const [tipoVista, setTipoVista] = useState('recepcion'); // 'recepcion', 'despacho' o 'pacientes'
+  const [tipoVista, setTipoVista] = useState('recepcion'); // 'recepcion', 'despacho'
   const [paginacion, setPaginacion] = useState({
     currentPage: 1,
     totalPages: 1,
@@ -38,17 +36,55 @@ const Recepcion = () => {
     isOpen: false,
     recepcion: null
   });
-  const [modalDetallesPaciente, setModalDetallesPaciente] = useState({
-    isOpen: false,
-    despacho: null
-  });
   const [modalRegistrar, setModalRegistrar] = useState({
     isOpen: false,
     recepcion: null,
-    insumosRecibidos: {} // {insumoId: {recibido: boolean, lotes: {loteId: {recibido: boolean, cantidadRecibida: number}}}}
+    insumosRecibidos: {} // {insumoId: {recibido: boolean, lotes: {loteId: {recibido: boolean, cantidadRecibida: number}}}, lotesManuales: [{numero_lote, fecha_vencimiento, cantidadRecibida}]}}
   });
   const showMessage = (title, message, type = 'info', time = null) => {
     setModal({ isOpen: true, title, message, type, time });
+  };
+
+  const agregarLineaLoteManual = (insumoId) => {
+    setModalRegistrar(prev => {
+      const insumoActual = prev.insumosRecibidos?.[insumoId];
+      const lotesManuales = Array.isArray(insumoActual?.lotesManuales) ? insumoActual.lotesManuales : [];
+      return {
+        ...prev,
+        insumosRecibidos: {
+          ...prev.insumosRecibidos,
+          [insumoId]: {
+            ...insumoActual,
+            lotesManuales: [
+              ...lotesManuales,
+              { numero_lote: '', fecha_vencimiento: '', cantidadRecibida: 0 }
+            ]
+          }
+        }
+      };
+    });
+  };
+
+  const actualizarLineaLoteManual = (insumoId, index, campo, valor) => {
+    setModalRegistrar(prev => {
+      const insumoActual = prev.insumosRecibidos?.[insumoId];
+      const lotesManuales = Array.isArray(insumoActual?.lotesManuales) ? [...insumoActual.lotesManuales] : [];
+      if (!lotesManuales[index]) return prev;
+      lotesManuales[index] = {
+        ...lotesManuales[index],
+        [campo]: campo === 'cantidadRecibida' ? (parseInt(valor) || 0) : valor
+      };
+      return {
+        ...prev,
+        insumosRecibidos: {
+          ...prev.insumosRecibidos,
+          [insumoId]: {
+            ...insumoActual,
+            lotesManuales
+          }
+        }
+      };
+    });
   };
 
   const closeModal = () => {
@@ -69,23 +105,11 @@ const Recepcion = () => {
     });
   };
 
-  const abrirModalDetallesPaciente = (despacho) => {
-    setModalDetallesPaciente({
-      isOpen: true,
-      despacho: despacho
-    });
-  };
-
-  const cerrarModalDetallesPaciente = () => {
-    setModalDetallesPaciente({
-      isOpen: false,
-      despacho: null
-    });
-  };
-
   const abrirModalRegistrar = (recepcion) => {
     // Inicializar el estado de insumos recibidos (todos marcados por defecto)
     const insumosRecibidos = {};
+
+    const tipoAlmacen = user?.sede?.tipo_almacen;
 
     if (recepcion.lotes_grupos) {
       // Agrupar por insumo
@@ -105,7 +129,8 @@ const Recepcion = () => {
       Object.keys(insumosAgrupados).forEach(insumoId => {
         insumosRecibidos[insumoId] = {
           recibido: true,
-          lotes: {}
+          lotes: {},
+          lotesManuales: []
         };
         insumosAgrupados[insumoId].lotes.forEach(loteGrupo => {
           insumosRecibidos[insumoId].lotes[loteGrupo.lote.id] = {
@@ -113,6 +138,39 @@ const Recepcion = () => {
             cantidadRecibida: loteGrupo.cantidad_salida || 0
           };
         });
+      });
+    } else if (tipoAlmacen === 'almacenPrin') {
+      // Nuevo flujo: movimientos pueden venir sin lotes/fechas.
+      // En almacenPrin permitimos capturar lotes manualmente por insumo.
+      const candidatos = [
+        recepcion?.insumos,
+        recepcion?.insumos_detalle,
+        recepcion?.detalle_insumos,
+        recepcion?.items_detalle,
+        recepcion?.items
+      ];
+      const listaInsumos = candidatos.find(arr => Array.isArray(arr)) || [];
+
+      listaInsumos.forEach((item, idx) => {
+        const insumoObj = item?.insumo || item?.producto || item;
+        const insumoId = item?.insumo_id || insumoObj?.id || idx;
+        insumosRecibidos[insumoId] = {
+          recibido: true,
+          lotes: {},
+          lotesManuales: [
+            {
+              numero_lote: '',
+              fecha_vencimiento: '',
+              cantidadRecibida: item?.cantidad_salida || item?.cantidad || 0
+            }
+          ],
+          insumo: {
+            id: insumoId,
+            nombre: insumoObj?.nombre,
+            codigo: insumoObj?.codigo,
+            tipo: insumoObj?.tipo
+          }
+        };
       });
     }
 
@@ -275,6 +333,17 @@ const Recepcion = () => {
           });
         });
       }
+
+      if (Array.isArray(insumo?.lotesManuales)) {
+        insumo.lotesManuales.forEach(lm => {
+          items.push({
+            insumo_id: parseInt(insumoId),
+            numero_lote: lm?.numero_lote || '',
+            fecha_vencimiento: lm?.fecha_vencimiento || '',
+            cantidad: lm?.cantidadRecibida || 0
+          });
+        });
+      }
     });
 
     // Generar fecha actual en formato YYYY-MM-DD
@@ -363,8 +432,6 @@ const Recepcion = () => {
         response = await getMovimientosRecepcion(token, sede_id, page);
       } else if (tipoVista === 'despacho') {
         response = await getMovimientos(token, sede_id);
-      } else if (tipoVista === 'pacientes') {
-        response = await getMovimientosPacientes(token, sede_id);
       }
 
       if (!response.status) {
@@ -389,10 +456,7 @@ const Recepcion = () => {
             itemsPerPage: response.data.per_page || 10
           });
         } else {
-          // Para despachos y pacientes (sin paginación)
-          if (tipoVista === 'pacientes') {
-            console.log('Datos de pacientes recibidos:', response.data);
-          }
+          // Para despachos (sin paginación)
           setRecepciones(response.data);
           setPaginacion({
             currentPage: 1,
@@ -488,8 +552,7 @@ const Recepcion = () => {
         <div className="flex flex-col md:flex-row md:items-center gap-4">
           <h2 className="text-xl font-semibold text-white">
             {tipoVista === 'recepcion' ? 'Recepción de Movimientos' :
-              tipoVista === 'despacho' ? 'Despachos Realizados' :
-                'Salidas a Pacientes'}
+              'Despachos Realizados'}
           </h2>
 
           {/* Selector de tipo de vista */}
@@ -512,15 +575,6 @@ const Recepcion = () => {
             >
               Despachos
             </button>
-            <button
-              onClick={() => setTipoVista('pacientes')}
-              className={`flex-1 md:flex-none whitespace-nowrap px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${tipoVista === 'pacientes'
-                  ? 'bg-green-600 text-white shadow-sm'
-                  : 'text-gray-300 hover:text-white hover:bg-white/10'
-                }`}
-            >
-              Pacientes
-            </button>
           </div>
         </div>
 
@@ -532,8 +586,7 @@ const Recepcion = () => {
             type="text"
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             placeholder={`Buscar ${tipoVista === 'recepcion' ? 'recepción' :
-                tipoVista === 'despacho' ? 'despacho' :
-                  'despacho a paciente'
+                'despacho'
               }...`}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -557,8 +610,7 @@ const Recepcion = () => {
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                     {tipoVista === 'recepcion' ? 'Origen' :
-                      tipoVista === 'despacho' ? 'Sede Destino' :
-                        'Paciente'}
+                      'Sede Destino'}
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                     Estado
@@ -584,8 +636,7 @@ const Recepcion = () => {
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mb-4"></div>
                     <p className="text-white/70">Cargando {
                       tipoVista === 'recepcion' ? 'recepciones' :
-                        tipoVista === 'despacho' ? 'despachos' :
-                          'despachos a pacientes'
+                        'despachos'
                     }...</p>
                   </div>
                 </td>
@@ -595,17 +646,12 @@ const Recepcion = () => {
                 <td colSpan="6" className="px-6 py-12 text-center">
                   <p className="text-white/50">No se encontraron {
                     tipoVista === 'recepcion' ? 'recepciones' :
-                      tipoVista === 'despacho' ? 'despachos' :
-                        'despachos a pacientes'
+                      'despachos'
                   }</p>
                 </td>
               </tr>
             ) : (
               recepciones.map((recepcion, index) => {
-                // Debug para pacientes
-                if (tipoVista === 'pacientes' && index === 0) {
-                  console.log('Estructura de recepcion para pacientes:', recepcion);
-                }
                 return (
                   <tr key={recepcion.id || index} className="hover:bg-white/5">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
@@ -617,28 +663,13 @@ const Recepcion = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
                       {tipoVista === 'recepcion'
                         ? (recepcion.origen_hospital?.nombre || recepcion.origen || 'N/A')
-                        : tipoVista === 'despacho'
-                          ? (recepcion.destino_sede?.nombre || recepcion.destino || 'N/A')
-                          : (
-                            <div>
-                              <div className="font-medium text-white">
-                                {recepcion.paciente_nombres || 'Sin nombre'} {recepcion.paciente_apellidos || ''}
-                              </div>
-                              <div className="text-xs text-gray-400">
-                                Cédula: {recepcion.paciente_cedula || 'No especificada'}
-                              </div>
-                            </div>
-                          )
-                      }
+                        : (recepcion.destino_sede?.nombre || recepcion.destino || 'N/A')}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {getStatusBadge(recepcion.estado)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
-                      {tipoVista === 'pacientes'
-                        ? (recepcion.insumos_despachados?.length || 0)
-                        : (recepcion.lotes_grupos?.length || recepcion.items || 0)
-                      }
+                      {recepcion.lotes_grupos?.length || recepcion.items || 0}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
                       {recepcion.cantidad_salida_total || recepcion.total || recepcion.cantidad_total_items || 0}
@@ -652,11 +683,7 @@ const Recepcion = () => {
                   </button> */}
                       <button
                         onClick={() => {
-                          if (tipoVista === 'pacientes') {
-                            abrirModalDetallesPaciente(recepcion);
-                          } else {
-                            abrirModalDetalles(recepcion);
-                          }
+                          abrirModalDetalles(recepcion);
                         }}
                         className="text-white bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded cursor-pointer hover:text-white mr-3"
                       >
@@ -775,14 +802,6 @@ const Recepcion = () => {
         formatDate={formatDate}
       />
 
-      {/* Modal de Detalles de Paciente */}
-      <ModalDetallesPaciente
-        isOpen={modalDetallesPaciente.isOpen}
-        despacho={modalDetallesPaciente.despacho}
-        onClose={cerrarModalDetallesPaciente}
-        formatDate={formatDate}
-      />
-
       {/* Modal de Registro */}
       <ModalRegistroRecepcion
         isOpen={modalRegistrar.isOpen}
@@ -792,6 +811,8 @@ const Recepcion = () => {
         onToggleInsumo={toggleInsumoRegistrar}
         onToggleLote={toggleLoteRegistrar}
         onUpdateCantidad={actualizarCantidadLote}
+        onAddManualLote={agregarLineaLoteManual}
+        onUpdateManualLote={actualizarLineaLoteManual}
         onConfirmar={confirmarRegistro}
         formatDate={formatDate}
         loading={loading}

@@ -8,14 +8,18 @@ export default function SelectHospiModal({ isOpen, onClose, onSelect, hospitals,
 
   useEffect(() => {
     let hospitalsData = [];
-    if (hospitals&&tipo) {
-      if(tipo==='administrador'){
+    if (hospitals) {
+      if (!tipo) {
+        hospitalsData = hospitals || [];
+      } else if(tipo==='administrador'){
         hospitalsData = hospitals?.filter(hospital => hospital.tipo === 'almacen');
       }else if(tipo==='despachos'){
         // Para despachos, mostrar todos los hospitales
         hospitalsData = hospitals || [];
       }else{
-        hospitalsData = hospitals?.filter(hospital => hospital.tipo.includes('hospital'));
+        hospitalsData = hospitals?.filter(hospital =>
+          hospital.tipo?.includes('hospital') || hospital.tipo?.includes('aus')
+        );
       }
       
     }
@@ -30,13 +34,17 @@ export default function SelectHospiModal({ isOpen, onClose, onSelect, hospitals,
     if (!term) {
       // Restaurar la lista filtrada según el tipo
       let hospitalsData = [];
-      if (hospitals && tipo) {
-        if (tipo === 'administrador') {
+      if (hospitals) {
+        if (!tipo) {
+          hospitalsData = hospitals || [];
+        } else if (tipo === 'administrador') {
           hospitalsData = hospitals?.filter(hospital => hospital.tipo === 'almacen');
         } else if (tipo === 'despachos' || tipo === 'insumos por vencer') {
           hospitalsData = hospitals || [];
         } else {
-          hospitalsData = hospitals?.filter(hospital => hospital.tipo.includes('hospital'));
+          hospitalsData = hospitals?.filter(hospital =>
+            hospital.tipo?.includes('hospital') || hospital.tipo?.includes('AUS')
+          );
         }
       }
       setFilteredHospitals(hospitalsData);
@@ -57,13 +65,17 @@ export default function SelectHospiModal({ isOpen, onClose, onSelect, hospitals,
     setSearchTerm('');
     // Restaurar la lista filtrada según el tipo
     let hospitalsData = [];
-    if (hospitals && tipo) {
-      if (tipo === 'administrador') {
+    if (hospitals) {
+      if (!tipo) {
+        hospitalsData = hospitals || [];
+      } else if (tipo === 'administrador') {
         hospitalsData = hospitals?.filter(hospital => hospital.tipo === 'almacen');
       } else if (tipo === 'despachos' || tipo === 'insumos por vencer') {
         hospitalsData = hospitals || [];
       } else {
-        hospitalsData = hospitals?.filter(hospital => hospital.tipo.includes('hospital'));
+        hospitalsData = hospitals?.filter(hospital =>
+          hospital.tipo?.includes('hospital') || hospital.tipo?.includes('AUS')
+        );
       }
     }
     setFilteredHospitals(hospitalsData);

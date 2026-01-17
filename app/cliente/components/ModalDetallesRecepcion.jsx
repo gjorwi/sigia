@@ -183,16 +183,21 @@ const ModalDetallesRecepcion = ({ isOpen, recepcion, onClose, formatDate }) => {
                         }`}>
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
-                              <div className="text-sm font-medium text-gray-900 flex items-center">
-                                Lote: {loteGrupo.lote?.numero_lote}
-                                {loteGrupo.discrepancia && (
-                                  <AlertTriangle className="w-4 h-4 ml-2 text-red-500" />
-                                )}
-                              </div>
+                              {loteGrupo.lote?.numero_lote && (
+                                <div className="text-sm font-medium text-gray-900 flex items-center">
+                                  Lote: {loteGrupo.lote?.numero_lote}
+                                  {loteGrupo.discrepancia && (
+                                    <AlertTriangle className="w-4 h-4 ml-2 text-red-500" />
+                                  )}
+                                </div>
+                              )}
                               <div className="text-xs text-gray-500 mt-1">
-                                ID: {loteGrupo.lote?.id} | 
-                                Vence: {loteGrupo.lote?.fecha_vencimiento ? 
-                                  new Date(loteGrupo.lote.fecha_vencimiento).toLocaleDateString('es-VE', { timeZone: 'UTC' }) : 'N/A'}
+                                <div>ID: {loteGrupo.lote?.id}</div>
+                                {loteGrupo.lote?.fecha_vencimiento && (
+                                  <div>
+                                    Vence: {new Date(loteGrupo.lote.fecha_vencimiento).toLocaleDateString('es-VE', { timeZone: 'UTC' })}
+                                  </div>
+                                )}
                               </div>
                               <div className="text-xs mt-1">
                                 <span className="font-medium text-gray-700">Salida:</span> 

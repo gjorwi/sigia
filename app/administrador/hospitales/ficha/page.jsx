@@ -1,12 +1,12 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Save, Loader2, Search, Plus, X, UserSearch, FileText, CheckSquare } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, Search, UserSearch, FileText } from 'lucide-react';
 import Modal from '@/components/Modal';
 import { getHospitalById } from '@/servicios/hospitales/get';
 import { postFicha, postGenerarFicha } from '@/servicios/fichas/post';
 import { getInsumos } from '@/servicios/insumos/get';
-import { getFichaById } from '@/servicios/fichas/get';
+import { getFichaHospitalById } from '@/servicios/fichas/get';
 import { useAuth } from '@/contexts/AuthContext';
 const initialFormData = {
   nombre: '',
@@ -29,10 +29,8 @@ export default function EditarUsuario() {
   const [searchError, setSearchError] = useState('');
   const [dataSetForm, setDataSetForm] = useState(initialFormData);
   const [hospitalFound, setHospitalFound] = useState(false);
-  const [showInsumosModal, setShowInsumosModal] = useState(false);
   const [insumosFicha, setInsumosFicha] = useState([]);
-  const [selectedInsumos, setSelectedInsumos] = useState([]);
-  const [insumosDisponibles, setInsumosDisponibles] = useState([]);
+  const [insumosSearchTerm, setInsumosSearchTerm] = useState('');
   const [tieneFicha, setTieneFicha] = useState(false);
   const [generandoFicha, setGenerandoFicha] = useState(false);
   const [modal, setModal] = useState({
@@ -108,13 +106,13 @@ export default function EditarUsuario() {
 
   const verificarFicha = async (hospitalId, token) => {
     try {
-      const result = await getFichaById(hospitalId, token);
+      const result = await getFichaHospitalById(hospitalId, token);
       console.log('Resultado de verificar ficha:', JSON.stringify(result, null, 2));
       
       // Solo establecer tieneFicha como true si hay datos válidos
-      if (result.success && result.data && result.data.insumos && result.data.insumos.length > 0) {
+      if (result.status && result.data && result.data.data && result.data.data.length > 0) {
         setTieneFicha(true);
-        setInsumosFicha(result.data.insumos);
+        setInsumosFicha(result.data.data);
       } else {
         setTieneFicha(false);
         setInsumosFicha([]);
@@ -131,6 +129,7 @@ export default function EditarUsuario() {
     setGenerandoFicha(true);
     try {
       const result = await postGenerarFicha(dataSetForm.id, token);
+      console.log("Resultado generar ficha: "+JSON.stringify(result, null, 2));
       if (!result.status) {
         if(result.autenticacion==1||result.autenticacion==2){
           showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
@@ -164,38 +163,17 @@ export default function EditarUsuario() {
     setHospitalFound(false);
     setTieneFicha(false);
     setInsumosFicha([]);
-  };
-  const agregarInsumos = () => {
-    setInsumosFicha(prev => {
-      // Actualizar cantidades de insumos existentes o agregar nuevos
-      const updated = [...prev];
-      selectedInsumos.forEach(selected => {
-        const existingIndex = updated.findIndex(i => i.id === selected.id);
-        if (existingIndex >= 0) {
-          updated[existingIndex].cantidad += selected.cantidad;
-        } else {
-          updated.push({ ...selected });
-        }
-      });
-      return updated;
-    });
-    setSelectedInsumos([]);
-    setShowInsumosModal(false);
+    setInsumosSearchTerm('');
   };
 
-  const handleQuantityChange = (e, insumo) => {
-    const cantidad = parseInt(e.target.value) || 0;
-    setSelectedInsumos(prev => {
-      const exists = prev.some(i => i.id === insumo.id);
-      if (cantidad > 0) {
-        return exists
-          ? prev.map(i => i.id === insumo.id ? { ...i, cantidad } : i)
-          : [...prev, { ...insumo, cantidad }];
-      } else {
-        return prev.filter(i => i.id !== insumo.id);
-      }
-    });
-  };
+  const filteredInsumosFicha = insumosFicha.filter((item) => {
+    const term = String(insumosSearchTerm || '').toLowerCase().trim();
+    if (!term) return true;
+    const codigo = String(item?.insumo?.codigo || '').toLowerCase();
+    const nombre = String(item?.insumo?.nombre || '').toLowerCase();
+    const descripcion = String(item?.insumo?.descripcion || '').toLowerCase();
+    return codigo.includes(term) || nombre.includes(term) || descripcion.includes(term);
+  });
 
   return (
     <>
@@ -358,34 +336,52 @@ export default function EditarUsuario() {
                     <div>
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="text-lg font-medium text-gray-900">Insumos del Hospital</h3>
-                        <button
-                          type="button"
-                          onClick={() => setShowInsumosModal(true)}
-                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                        >
-                          <Plus className="-ml-1 mr-2 h-4 w-4" />
-                          Agregar Insumos
-                        </button>
                       </div>
-                      {insumosFicha.length > 0 ? (
+
+                      <div className="mb-4">
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Search className="h-4 w-4 text-gray-400" />
+                          </div>
+                          <input
+                            type="text"
+                            value={insumosSearchTerm}
+                            onChange={(e) => setInsumosSearchTerm(e.target.value)}
+                            placeholder="Buscar por código, nombre o descripción"
+                            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                      </div>
+
+                      {filteredInsumosFicha.length > 0 ? (
                         <div className="bg-white shadow overflow-hidden sm:rounded-md">
                           <ul className="divide-y divide-gray-200">
-                            {insumosFicha.map((insumo) => (
-                              <li key={insumo.id}>
+                            {filteredInsumosFicha.map((item) => (
+                              <li key={item.id}>
                                 <div className="px-4 py-4 flex items-center justify-between">
-                                  <div>
-                                    <p className="text-sm font-medium text-gray-900">{insumo.nombre}</p>
-                                    <p className="text-sm text-gray-500">Cantidad: {insumo.cantidad}</p>
+                                  <div className="min-w-0 flex-1">
+                                    <p className="text-sm font-medium text-gray-900 truncate">
+                                      {item?.insumo?.nombre}
+                                    </p>
+                                    <p className="text-xs text-gray-500 truncate">Código: {item?.insumo?.codigo}</p>
+                                    <p className="text-xs text-gray-500">Cantidad: {item?.cantidad ?? 0}</p>
                                   </div>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setInsumosFicha(prev => prev.filter(i => i.id !== insumo.id));
-                                    }}
-                                    className="text-red-600 hover:text-red-800"
-                                  >
-                                    <X className="h-5 w-5" />
-                                  </button>
+
+                                  <div className="ml-4 flex items-center gap-4">
+                                    <label className="inline-flex items-center">
+                                      <input
+                                        type="checkbox"
+                                        checked={Boolean(item?.status)}
+                                        onChange={(e) => {
+                                          const checked = e.target.checked;
+                                          setInsumosFicha(prev => prev.map(i => (
+                                            i.id === item.id ? { ...i, status: checked } : i
+                                          )));
+                                        }}
+                                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                      />
+                                    </label>
+                                  </div>
                                 </div>
                               </li>
                             ))}
@@ -396,67 +392,6 @@ export default function EditarUsuario() {
                           <p className="text-gray-500">No hay insumos en la ficha</p>
                         </div>
                       )}
-                    </div>
-                  )}
-
-                  {/* Modal para agregar insumos */}
-                  {showInsumosModal && (
-                    <div className="fixed inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                      <div id="modal" className="flex items-end justify-center bg-black/50 min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0" onClick={(e) => closeModal(e)}>
-                        {/* <div className="fixed inset-0 " aria-hidden="true" onClick={() => setShowInsumosModal(false)}></div> */}
-                        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                        <div className="inline-block align-bottom bg-white z-50 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6 md:ml-64">
-                          <div>
-                            <div className="mt-3 text-center sm:mt-5">
-                              <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                                Agregar Insumos
-                              </h3>
-                              <div className="mt-4">
-                                <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                                  <ul className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
-                                    {insumosDisponibles.map((insumo) => (
-                                      <li key={insumo.id} className="px-4 py-4">
-                                        <div className="flex items-center justify-between">
-                                          <div className="flex-1">
-                                            <p className="text-sm font-medium text-gray-900">{insumo.nombre}</p>
-                                          </div>
-                                          <div className="flex items-center">
-                                            <input
-                                              type="text"
-                                              inputMode="numeric"
-                                              pattern="[0-9]*"
-                                              className="w-20 px-2 py-1 border text-gray-700 border-gray-300 rounded-md text-sm text-right"
-                                              value={selectedInsumos.find(i => i.id === insumo.id)?.cantidad || ''}
-                                              placeholder="0"
-                                              onChange={(e) => handleQuantityChange(e, insumo)}
-                                            />
-                                          </div>
-                                        </div>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-                            <button
-                              type="button"
-                              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:col-start-2 sm:text-sm"
-                              onClick={() => agregarInsumos()}
-                            >
-                              Agregar seleccionados
-                            </button>
-                            <button
-                              type="button"
-                              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm"
-                              onClick={() => setShowInsumosModal(false)}
-                            >
-                              Cancelar
-                            </button>
-                          </div>
-                        </div>
-                      </div>
                     </div>
                   )}
                 </div>

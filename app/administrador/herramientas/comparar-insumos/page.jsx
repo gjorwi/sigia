@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Download, FileSpreadsheet, Save, X, Upload } from 'lucide-react';
+import { ArrowLeft, Download, FileSpreadsheet, Save, Settings, X, Upload } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import Modal from '@/components/Modal';
 import InsumoForm from '@/components/insumoForm';
@@ -30,6 +30,16 @@ export default function CompararInsumos() {
   const [loadingRegistro, setLoadingRegistro] = useState(false);
   const [generandoExcel, setGenerandoExcel] = useState(false);
   const [registrandoTodos, setRegistrandoTodos] = useState(false);
+  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+  const [excelConfig, setExcelConfig] = useState({
+    headerRow: 5,
+    dataStartRow: 6,
+    campos: {
+      item: { headerMatch: 'ITEM', col: '' },
+      descripcion: { headerMatch: 'DESCRIPCION', col: '' },
+      tipo_insumo: { headerMatch: 'TIPO DE INSUMO', col: '' }
+    }
+  });
 
   const showMessage = (title, message, type = 'info', time = null) => {
     setModal({ isOpen: true, title, message, type, time });
@@ -37,6 +47,29 @@ export default function CompararInsumos() {
 
   const closeModal = () => {
     setModal(prev => ({ ...prev, isOpen: false }));
+  };
+
+  const columnLetterToIndex = (col) => {
+    const raw = String(col || '').trim();
+    if (!raw) return -1;
+    if (/^\d+$/.test(raw)) return Math.max(0, Number(raw) - 1);
+    const letters = raw.toUpperCase().replace(/[^A-Z]/g, '');
+    if (!letters) return -1;
+    let result = 0;
+    for (let i = 0; i < letters.length; i++) {
+      result = result * 26 + (letters.charCodeAt(i) - 64);
+    }
+    return result - 1;
+  };
+
+  const normalizeHeader = (value) => String(value || '').trim().toUpperCase();
+
+  const resolveColumnIndex = (headers, fieldConfig) => {
+    const byCol = columnLetterToIndex(fieldConfig?.col);
+    if (byCol >= 0) return byCol;
+    const match = normalizeHeader(fieldConfig?.headerMatch);
+    if (!match) return -1;
+    return headers.findIndex(h => normalizeHeader(h).includes(match));
   };
 
   const handleFileChange = (e) => {
@@ -252,50 +285,104 @@ export default function CompararInsumos() {
     const { token } = user;
     const { postInsumo } = await import('@/servicios/insumos/post');
 
+    const postInsumoConBackoff = async (data) => {
+      let lastResult = null;
+      for (let intento = 0; intento < 3; intento++) {
+        lastResult = await postInsumo(data, token);
+        if (!lastResult?.rateLimitError) return lastResult;
+        const waitMs = 1000 * Math.pow(2, intento);
+        await new Promise(resolve => setTimeout(resolve, waitMs));
+      }
+      return lastResult;
+    };
+
     let exitosos = 0;
     let fallidos = 0;
     const errores = [];
 
-    for (let i = 0; i < resultadosComparacion.noRegistrados.length; i++) {
-      const insumo = resultadosComparacion.noRegistrados[i];
-      try {
-        const codigo = generarCodigoUnico();
-        const tipo = detectarTipoInsumo(insumo.tipo_insumo);
-        const presentacion = detectarPresentacion(insumo.descripcion, tipo);
+    const batchSize = 20;
+    let pendientes = [...resultadosComparacion.noRegistrados];
+    let registradosAcumulados = [...(resultadosComparacion.registrados || [])];
 
-        const formData = {
-          codigo: codigo,
-          nombre: insumo.descripcion || '',
-          tipo: tipo,
-          presentacion: presentacion,
-          unidad_medida: 'unidad',
-          cantidad_por_paquete: 1,
-          descripcion: insumo.descripcion || ''
-        };
+    while (pendientes.length > 0) {
+      const lote = pendientes.slice(0, batchSize);
+      const restantesDespuesDelLote = pendientes.slice(batchSize);
 
-        const result = await postInsumo(formData, token);
+      const registradosEnLote = [];
+      const fallidosEnLote = [];
 
-        if (!result.status) {
-          if (result.autenticacion === 1 || result.autenticacion === 2) {
-            showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
-            logout();
-            router.replace('/');
-            setRegistrandoTodos(false);
-            return;
+      for (let i = 0; i < lote.length; i++) {
+        const insumo = lote[i];
+        try {
+          const codigo = generarCodigoUnico();
+          const tipo = detectarTipoInsumo(insumo.tipo_insumo);
+          const presentacion = detectarPresentacion(insumo.descripcion, tipo);
+
+          const formData = {
+            codigo: codigo,
+            nombre: insumo.descripcion || '',
+            tipo: tipo,
+            presentacion: presentacion,
+            unidad_medida: 'unidad',
+            cantidad_por_paquete: 1,
+            descripcion: insumo.descripcion || ''
+          };
+
+          const result = await postInsumoConBackoff(formData);
+
+          if (!result.status) {
+            if (result.autenticacion === 1 || result.autenticacion === 2) {
+              showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+              logout();
+              router.replace('/');
+              setRegistrandoTodos(false);
+              return;
+            }
+            fallidos++;
+            errores.push(`${insumo.descripcion}: ${result.mensaje}`);
+            fallidosEnLote.push(insumo);
+          } else {
+            exitosos++;
+            registradosEnLote.push({
+              ...insumo,
+              coincidencia: null,
+              similitud: 0
+            });
           }
-          fallidos++;
-          errores.push(`${insumo.descripcion}: ${result.mensaje}`);
-        } else {
-          exitosos++;
-        }
 
-        // Delay de 500ms entre solicitudes para evitar rate limit
-        if (i < resultadosComparacion.noRegistrados.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 500));
+          // Delay entre solicitudes dentro del lote
+          if (i < lote.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 1200));
+          }
+        } catch (error) {
+          fallidos++;
+          errores.push(`${insumo.descripcion}: Error inesperado`);
+          fallidosEnLote.push(insumo);
         }
-      } catch (error) {
-        fallidos++;
-        errores.push(`${insumo.descripcion}: Error inesperado`);
+      }
+
+      registradosAcumulados = [...registradosAcumulados, ...registradosEnLote];
+      pendientes = [...fallidosEnLote, ...restantesDespuesDelLote];
+
+      setResultadosComparacion(prev => ({
+        ...prev,
+        noRegistrados: pendientes,
+        registrados: registradosAcumulados
+      }));
+
+      if (pendientes.length > 0) {
+        const confirmacionLote = window.confirm(
+          `Lote completado.\n\n` +
+          `Registrados: ${registradosEnLote.length}\n` +
+          `Fallidos: ${fallidosEnLote.length}\n` +
+          `Pendientes: ${pendientes.length}\n\n` +
+          `¿Desea continuar con los siguientes ${Math.min(batchSize, pendientes.length)} insumo(s)?`
+        );
+        if (!confirmacionLote) {
+          showMessage('Información', `Proceso detenido. Registrados: ${exitosos}. Pendientes: ${pendientes.length}.`, 'info', 6000);
+          setRegistrandoTodos(false);
+          return;
+        }
       }
     }
 
@@ -303,18 +390,6 @@ export default function CompararInsumos() {
 
     if (fallidos === 0) {
       showMessage('Éxito', `Se registraron ${exitosos} insumo(s) correctamente`, 'success', 4000);
-      setResultadosComparacion(prev => ({
-        ...prev,
-        noRegistrados: [],
-        registrados: [
-          ...prev.registrados,
-          ...prev.noRegistrados.map(item => ({
-            ...item,
-            coincidencia: null,
-            similitud: 0
-          }))
-        ]
-      }));
     } else if (exitosos === 0) {
       showMessage('Error', `No se pudo registrar ningún insumo. Errores: ${errores.slice(0, 3).join(', ')}`, 'error', 6000);
     } else {
@@ -444,22 +519,35 @@ export default function CompararInsumos() {
       
       const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
       
-      if (jsonData.length < 5) {
-        showMessage('Error', 'El archivo no tiene el formato esperado (fila 5 no encontrada)', 'error', 4000);
+      const headerRowIndex = Number(excelConfig.headerRow) - 1;
+      const dataStartRowIndex = Number(excelConfig.dataStartRow) - 1;
+
+      if (!Number.isFinite(headerRowIndex) || headerRowIndex < 0 || headerRowIndex >= jsonData.length) {
+        showMessage('Error', 'La fila de encabezados configurada no existe en el archivo', 'error', 4000);
         return;
       }
 
-      const headers = jsonData[4].map(h => String(h).trim());
-      const itemIndex = headers.findIndex(h => h.toUpperCase().includes('ITEM'));
-      const descripcionIndex = headers.findIndex(h => h.toUpperCase().includes('DESCRIPCION') || h.toUpperCase().includes('MATERIAL'));
-      const tipoInsumoIndex = headers.findIndex(h => h.toUpperCase().includes('TIPO') && h.toUpperCase().includes('INSUMO'));
+      if (!Number.isFinite(dataStartRowIndex) || dataStartRowIndex < 0 || dataStartRowIndex >= jsonData.length) {
+        showMessage('Error', 'La fila de inicio de datos configurada no existe en el archivo', 'error', 4000);
+        return;
+      }
+
+      if (dataStartRowIndex <= headerRowIndex) {
+        showMessage('Error', 'La fila de inicio de datos debe ser mayor que la fila de encabezados', 'error', 4000);
+        return;
+      }
+
+      const headers = (jsonData[headerRowIndex] || []).map(h => String(h).trim());
+      const itemIndex = resolveColumnIndex(headers, excelConfig.campos.item);
+      const descripcionIndex = resolveColumnIndex(headers, excelConfig.campos.descripcion);
+      const tipoInsumoIndex = resolveColumnIndex(headers, excelConfig.campos.tipo_insumo);
 
       if (itemIndex === -1 || descripcionIndex === -1) {
-        showMessage('Error', 'No se encontraron las columnas ITEM y DESCRIPCION en la fila 5', 'error', 4000);
+        showMessage('Error', 'No se encontraron las columnas configuradas para ITEM y DESCRIPCION', 'error', 4000);
         return;
       }
 
-      const insumosArchivo = jsonData.slice(5)
+      const insumosArchivo = jsonData.slice(dataStartRowIndex)
         .map(row => ({
           item: String(row[itemIndex] || '').trim(),
           descripcion: String(row[descripcionIndex] || '').trim(),
@@ -610,6 +698,25 @@ export default function CompararInsumos() {
                     </button>
                     <button
                       type="button"
+                      onClick={() => setIsConfigModalOpen(true)}
+                      className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      title="Configuración"
+                    >
+                      <Settings className="-ml-1 mr-2 h-4 w-4" />
+                      Configuración
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setArchivoComparacion(null);
+                        setResultadosComparacion(null);
+                      }}
+                      className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      Limpiar
+                    </button>
+                    <button
+                      type="button"
                       onClick={compararInsumos}
                       disabled={!archivoComparacion || comparando}
                       className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -629,6 +736,171 @@ export default function CompararInsumos() {
                         </>
                       )}
                     </button>
+                  </div>
+                </div>
+              )}
+
+              {isConfigModalOpen && (
+                <div className="fixed inset-0 z-[10002] overflow-y-auto">
+                  <div
+                    className="fixed inset-0 bg-black/50"
+                    onClick={() => setIsConfigModalOpen(false)}
+                  />
+                  <div className="flex min-h-screen items-center justify-center p-4 text-center">
+                    <div
+                      className="relative w-full max-w-2xl transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="bg-gray-50 px-4 py-3 sm:flex sm:items-center sm:justify-between sm:px-6 sm:py-4 border-b border-gray-200">
+                        <h3 className="text-lg font-medium leading-6 text-gray-900">Configuración de columnas (Excel)</h3>
+                        <button
+                          type="button"
+                          className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                          onClick={() => setIsConfigModalOpen(false)}
+                        >
+                          <span className="sr-only">Cerrar</span>
+                          <X className="h-6 w-6" />
+                        </button>
+                      </div>
+
+                      <div className="bg-white px-4 pt-5 pb-4 sm:p-6">
+                        <p className="text-xs text-gray-600">
+                          Indica en qué fila están los encabezados y desde qué fila inician los datos.
+                          Para cada campo puedes usar el nombre del encabezado (contiene) o una columna (A, B, C... o número 1, 2, 3...).
+                        </p>
+
+                        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Fila de encabezados</label>
+                            <input
+                              type="number"
+                              min="1"
+                              value={excelConfig.headerRow}
+                              onChange={(e) => setExcelConfig(prev => ({ ...prev, headerRow: Number(e.target.value || 1) }))}
+                              className="mt-1 block w-full rounded-md border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Fila inicio de datos</label>
+                            <input
+                              type="number"
+                              min="1"
+                              value={excelConfig.dataStartRow}
+                              onChange={(e) => setExcelConfig(prev => ({ ...prev, dataStartRow: Number(e.target.value || 1) }))}
+                              className="mt-1 block w-full rounded-md border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="mt-4 grid grid-cols-1 gap-4">
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                            <div className="sm:col-span-1">
+                              <label className="block text-sm font-medium text-gray-700">Campo</label>
+                              <div className="mt-1 text-sm text-gray-900">ITEM</div>
+                            </div>
+                            <div className="sm:col-span-1">
+                              <label className="block text-sm font-medium text-gray-700">Encabezado contiene</label>
+                              <input
+                                type="text"
+                                value={excelConfig.campos.item.headerMatch}
+                                onChange={(e) => setExcelConfig(prev => ({
+                                  ...prev,
+                                  campos: { ...prev.campos, item: { ...prev.campos.item, headerMatch: e.target.value } }
+                                }))}
+                                className="mt-1 block w-full rounded-md border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                              />
+                            </div>
+                            <div className="sm:col-span-1">
+                              <label className="block text-sm font-medium text-gray-700">Columna (opcional)</label>
+                              <input
+                                type="text"
+                                placeholder="Ej: A o 1"
+                                value={excelConfig.campos.item.col}
+                                onChange={(e) => setExcelConfig(prev => ({
+                                  ...prev,
+                                  campos: { ...prev.campos, item: { ...prev.campos.item, col: e.target.value } }
+                                }))}
+                                className="mt-1 block w-full rounded-md border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                            <div className="sm:col-span-1">
+                              <label className="block text-sm font-medium text-gray-700">Campo</label>
+                              <div className="mt-1 text-sm text-gray-900">DESCRIPCION</div>
+                            </div>
+                            <div className="sm:col-span-1">
+                              <label className="block text-sm font-medium text-gray-700">Encabezado contiene</label>
+                              <input
+                                type="text"
+                                value={excelConfig.campos.descripcion.headerMatch}
+                                onChange={(e) => setExcelConfig(prev => ({
+                                  ...prev,
+                                  campos: { ...prev.campos, descripcion: { ...prev.campos.descripcion, headerMatch: e.target.value } }
+                                }))}
+                                className="mt-1 block w-full rounded-md border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                              />
+                            </div>
+                            <div className="sm:col-span-1">
+                              <label className="block text-sm font-medium text-gray-700">Columna (opcional)</label>
+                              <input
+                                type="text"
+                                placeholder="Ej: B o 2"
+                                value={excelConfig.campos.descripcion.col}
+                                onChange={(e) => setExcelConfig(prev => ({
+                                  ...prev,
+                                  campos: { ...prev.campos, descripcion: { ...prev.campos.descripcion, col: e.target.value } }
+                                }))}
+                                className="mt-1 block w-full rounded-md border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                            <div className="sm:col-span-1">
+                              <label className="block text-sm font-medium text-gray-700">Campo</label>
+                              <div className="mt-1 text-sm text-gray-900">TIPO DE INSUMO</div>
+                            </div>
+                            <div className="sm:col-span-1">
+                              <label className="block text-sm font-medium text-gray-700">Encabezado contiene</label>
+                              <input
+                                type="text"
+                                value={excelConfig.campos.tipo_insumo.headerMatch}
+                                onChange={(e) => setExcelConfig(prev => ({
+                                  ...prev,
+                                  campos: { ...prev.campos, tipo_insumo: { ...prev.campos.tipo_insumo, headerMatch: e.target.value } }
+                                }))}
+                                className="mt-1 block w-full rounded-md border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                              />
+                            </div>
+                            <div className="sm:col-span-1">
+                              <label className="block text-sm font-medium text-gray-700">Columna (opcional)</label>
+                              <input
+                                type="text"
+                                placeholder="Ej: C o 3"
+                                value={excelConfig.campos.tipo_insumo.col}
+                                onChange={(e) => setExcelConfig(prev => ({
+                                  ...prev,
+                                  campos: { ...prev.campos, tipo_insumo: { ...prev.campos.tipo_insumo, col: e.target.value } }
+                                }))}
+                                className="mt-1 block w-full rounded-md border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-200 gap-2">
+                        <button
+                          type="button"
+                          className="inline-flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                          onClick={() => setIsConfigModalOpen(false)}
+                        >
+                          Guardar
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}

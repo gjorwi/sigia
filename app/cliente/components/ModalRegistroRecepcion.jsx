@@ -12,6 +12,8 @@ const ModalRegistroRecepcion = ({
   onToggleInsumo, 
   onToggleLote, 
   onUpdateCantidad,
+  onAddManualLote,
+  onUpdateManualLote,
   onConfirmar,
   formatDate 
 }) => {
@@ -113,14 +115,19 @@ const ModalRegistroRecepcion = ({
                                 className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded flex-shrink-0 mt-0.5"
                               />
                               <label htmlFor={`registro-lote-${insumoId}-${loteGrupo.lote.id}`} className="flex-1 min-w-0">
-                                <div className="text-sm font-medium text-gray-900">
-                                  Lote: {loteGrupo.lote?.numero_lote}
-                                </div>
+                                {loteGrupo.lote?.numero_lote && (
+                                  <div className="text-sm font-medium text-gray-900">
+                                    Lote: {loteGrupo.lote?.numero_lote}
+                                  </div>
+                                )}
                                 <div className="text-xs text-gray-500 mt-1 space-y-1">
                                   <div>ID: {loteGrupo.lote?.id}</div>
                                   <div>Enviado: <span className="font-medium">{loteGrupo.cantidad_salida}</span></div>
-                                  <div>Vence: {loteGrupo.lote?.fecha_vencimiento ? 
-                                    new Date(loteGrupo.lote.fecha_vencimiento).toLocaleDateString('es-VE', { timeZone: 'UTC' }) : 'N/A'}</div>
+                                  {loteGrupo.lote?.fecha_vencimiento && (
+                                    <div>
+                                      Vence: {new Date(loteGrupo.lote.fecha_vencimiento).toLocaleDateString('es-VE', { timeZone: 'UTC' })}
+                                    </div>
+                                  )}
                                 </div>
                               </label>
                             </div>
@@ -143,6 +150,88 @@ const ModalRegistroRecepcion = ({
                   </div>
                 ));
               })()}
+            </div>
+          )}
+
+          {!recepcion?.lotes_grupos && insumosRecibidos && Object.keys(insumosRecibidos).length > 0 && (
+            <div className="space-y-4">
+              {Object.entries(insumosRecibidos).map(([insumoId, data]) => (
+                <div key={insumoId} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 space-y-2 sm:space-y-0">
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        id={`registro-insumo-manual-${insumoId}`}
+                        checked={data?.recibido || false}
+                        onChange={() => onToggleInsumo(insumoId)}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded flex-shrink-0"
+                      />
+                      <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Package className="w-4 h-4 text-indigo-600" />
+                      </div>
+                      <label htmlFor={`registro-insumo-manual-${insumoId}`} className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-gray-900 truncate">
+                          {data?.insumo?.nombre || data?.insumo?.codigo || `Insumo ${insumoId}`}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          #{data?.insumo?.codigo || 'N/A'} | {data?.insumo?.tipo || 'N/A'}
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="ml-4 sm:ml-11 space-y-2">
+                    {(data?.lotesManuales || []).map((lm, idx) => (
+                      <div key={idx} className="bg-white p-3 rounded border border-gray-200">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                          <div>
+                            <label className="block text-xs text-gray-600 mb-1">Número de lote</label>
+                            <input
+                              type="text"
+                              value={lm?.numero_lote || ''}
+                              onChange={(e) => onUpdateManualLote(insumoId, idx, 'numero_lote', e.target.value)}
+                              disabled={!data?.recibido}
+                              className="w-full px-2 py-2 text-sm border text-gray-700 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-400"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-600 mb-1">Fecha de vencimiento</label>
+                            <input
+                              type="date"
+                              value={lm?.fecha_vencimiento || ''}
+                              onChange={(e) => onUpdateManualLote(insumoId, idx, 'fecha_vencimiento', e.target.value)}
+                              disabled={!data?.recibido}
+                              className="w-full px-2 py-2 text-sm border text-gray-700 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-400"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-600 mb-1">Cantidad recibida</label>
+                            <input
+                              type="number"
+                              min="0"
+                              value={lm?.cantidadRecibida || 0}
+                              onChange={(e) => onUpdateManualLote(insumoId, idx, 'cantidadRecibida', e.target.value)}
+                              disabled={!data?.recibido}
+                              className="w-full px-2 py-2 text-sm border text-gray-700 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-400"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    <div>
+                      <button
+                        type="button"
+                        onClick={() => onAddManualLote(insumoId)}
+                        disabled={!data?.recibido}
+                        className="px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-md hover:bg-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Agregar lote
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

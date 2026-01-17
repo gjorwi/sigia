@@ -129,9 +129,9 @@ export default function NuevoInsumo() {
             <InsumoForm 
               id="insumo-form" 
               onSubmit={handleSubmit} 
-              loading={loading}
               formData={formData}
               onFormDataChange={setFormData}
+              loading={loading}
             />
           </div>
         </div>

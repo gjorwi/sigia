@@ -22,7 +22,7 @@ const insumoPresentacionMedicaQuirurgica = [
   { id: 2, idPresentacion: 'equipo', nombre: 'Equipo' }
 ];
 
-export default function InsumoForm({ onSubmit, id, formData, onFormDataChange }) {
+export default function InsumoForm({ onSubmit, id, formData, onFormDataChange, loading }) {
   const [errors, setErrors] = useState({});
   const [showCantidadPorPaquete, setShowCantidadPorPaquete] = useState(false);
   // Presentaciones según tipo
@@ -95,6 +95,7 @@ export default function InsumoForm({ onSubmit, id, formData, onFormDataChange })
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (loading) return;
     if (validateForm()) {
       onSubmit(formData);
     }

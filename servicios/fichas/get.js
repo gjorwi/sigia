@@ -26,3 +26,23 @@ export const getFichaById = async (id, token) => {
     return errorData;
   }
 };
+
+export const getFichaHospitalById = async (id, token) => {
+  try {
+    const response = await axios.get(`${config.URL_API}ficha-insumos/hospital/${id}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    const errorData = {
+      success: false,
+      message: "Cliente-Server Error al obtener la ficha",
+      data: null
+    }
+    return errorData;
+  }
+};

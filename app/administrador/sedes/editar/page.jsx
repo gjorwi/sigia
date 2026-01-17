@@ -13,6 +13,7 @@ const initialFormData = {
   tipo_almacen:'',
 };
 const tipo=[
+  {idSede:'almacenAUS',nombre:'Alamacen AUS'},
   {idSede:'almacenCent',nombre:'Alamacen Central'},
   {idSede:'almacenPrin',nombre:'Alamacen Principal'},
   {idSede:'almacenFarm',nombre:'Almacen Farmacia'},

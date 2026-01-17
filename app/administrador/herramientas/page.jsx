@@ -13,6 +13,13 @@ export default function Herramientas() {
       icono: FileSpreadsheet,
       ruta: '/administrador/herramientas/comparar-insumos',
       color: 'bg-blue-500'
+    },
+    {
+      nombre: 'Eliminar duplicados (por código)',
+      descripcion: 'Elimine filas duplicadas en un Excel usando solo el campo código',
+      icono: FileSpreadsheet,
+      ruta: '/administrador/herramientas/depurar-duplicados-codigo',
+      color: 'bg-blue-500'
     }
   ];
 

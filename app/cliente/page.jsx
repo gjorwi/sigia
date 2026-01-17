@@ -5,19 +5,14 @@ import { useRouter } from 'next/navigation';
 import {
   Package,
   Truck,
-  ClipboardList,
-  PlusCircle,
   AlertCircle,
   BarChart3,
-  FileText,
   Send
 } from 'lucide-react';
 
 // Importar componentes
 import Recepcion from './components/Recepcion';
 import Tracking from './components/Tracking';
-import Inventario from './components/Inventario';
-import Registro from './components/Registro';
 import Reportes from './components/Reportes';
 import { useAuth } from '@/contexts/AuthContext';
 import { getStats } from '@/servicios/estadisticas/get';
@@ -123,25 +118,34 @@ export default function ClientePage() {
       trend: 'Despachos',
       trendType: 'neutral'
     },
-    {
-      id: 3,
-      name: 'Insumos en falla',
-      value: estadisticas?.resumen_faltantes?.total_problemas || 0,
-      icon: AlertCircle,
-      color: 'bg-orange-500',
-      trend: 'Insumos en falla',
-      trendType: 'up'
-    },
-    {
-      id: 4,
-      name: 'Pacientes',
-      value: estadisticas?.resumen_pacientes?.total_despachos || 0,
-      icon: AlertCircle,
-      color: 'bg-yellow-500',
-      trend: 'Despachados',
-      trendType: 'warning'
-    },
+    ...(user?.sede?.tipo_almacen === 'almacenAUS'
+      ? []
+      : [
+          {
+            id: 3,
+            name: 'Insumos en falla',
+            value: estadisticas?.resumen_faltantes?.total_problemas || 0,
+            icon: AlertCircle,
+            color: 'bg-orange-500',
+            trend: 'Insumos en falla',
+            trendType: 'up'
+          },
+          {
+            id: 4,
+            name: 'Pacientes',
+            value: estadisticas?.resumen_pacientes?.total_despachos || 0,
+            icon: AlertCircle,
+            color: 'bg-yellow-500',
+            trend: 'Despachados',
+            trendType: 'warning'
+          },
+        ]),
   ];
+
+  const statsGridColsLgClass =
+    stats.length >= 4 ? 'lg:grid-cols-4' :
+      stats.length === 3 ? 'lg:grid-cols-3' :
+        'lg:grid-cols-2';
 
   return (
     <>
@@ -180,7 +184,7 @@ export default function ClientePage() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-4">
+        <div className={`grid grid-cols-1 gap-5 sm:grid-cols-2 ${statsGridColsLgClass} mb-4`}>
           {stats.map((stat) => (
             <div key={stat.id} className="overflow-hidden rounded-2xl bg-white/10 backdrop-blur-lg border border-white/10 p-6 shadow-lg">
               <div className="flex items-center">
@@ -209,7 +213,7 @@ export default function ClientePage() {
           ))}
         </div>
         {/* Navegación entre secciones */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 p-2 bg-white backdrop-blur-lg border border-white/10 rounded-lg">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 p-2 bg-white backdrop-blur-lg border border-white/10 rounded-lg">
           <button
             className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${menuActivo === 'recepcion'
               ? 'bg-indigo-600 text-white'
@@ -222,33 +226,6 @@ export default function ClientePage() {
               <Package className="h-5 w-5" />
             </div>
             <span className="font-medium">Movimientos</span>
-          </button>
-          <button
-            className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${menuActivo === 'registro'
-              ? 'bg-purple-600 text-white'
-              : 'bg-purple-500/15 text-gray-800 hover:bg-purple-500/30'
-              }`}
-            onClick={() => setMenuActivo('registro')}
-          >
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${menuActivo === 'registro' ? 'bg-white/20' : 'bg-purple-500/90 text-white'
-              }`}>
-              <PlusCircle className="h-5 w-5" />
-            </div>
-            <span className="font-medium">Registro/Despacho</span>
-          </button>
-
-          <button
-            className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${menuActivo === 'inventario'
-              ? 'bg-green-600 text-white'
-              : 'bg-green-500/10 text-gray-800 hover:bg-green-500/30'
-              }`}
-            onClick={() => setMenuActivo('inventario')}
-          >
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${menuActivo === 'inventario' ? 'bg-white/20' : 'bg-green-500/90 text-white'
-              }`}>
-              <ClipboardList className="h-5 w-5" />
-            </div>
-            <span className="font-medium">Inventario</span>
           </button>
           {/* Mostrar Seguimiento solo para almacén principal */}
           {user?.sede?.tipo_almacen === 'almacenPrin' ? (
@@ -287,8 +264,6 @@ export default function ClientePage() {
       <div className="mt-2">
         {menuActivo === "recepcion" && <Recepcion />}
         {menuActivo === "tracking" && <Tracking />}
-        {menuActivo === "inventario" && <Inventario setMenuActivo={setMenuActivo} />}
-        {menuActivo === "registro" && <Registro />}
         {menuActivo === "reportes" && <Reportes />}
       </div>
     </>

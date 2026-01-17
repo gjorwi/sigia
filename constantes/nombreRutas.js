@@ -46,6 +46,7 @@ const nombreRutas = {
     '/administrador/reportes/general': 'Reporte General',
     '/administrador/herramientas': 'Herramientas',
     '/administrador/herramientas/comparar-insumos': 'Comparar Insumos',
+    '/administrador/herramientas/depurar-duplicados-codigo': 'Eliminar duplicados (por código)',
     '/administrador/sedes': 'Gestión de Sedes',
     '/administrador/sedes/nuevo': 'Registrar Sede',
     '/administrador/sedes/editar': 'Editar Sede',
