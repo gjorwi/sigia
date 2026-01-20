@@ -15,8 +15,12 @@ const ModalRegistroRecepcion = ({
   onAddManualLote,
   onUpdateManualLote,
   onConfirmar,
-  formatDate 
+  formatDate,
+  userSedeTipo,
+  onRemoveManualLote
 }) => {
+  const esOrigenAUS = recepcion?.origen_sede?.tipo_almacen === 'almacenAUS';
+  const permitirLotesManuales = userSedeTipo === 'almacenPrin' && esOrigenAUS;
   if (!isOpen || typeof document === 'undefined') return null;
 
   return createPortal(
@@ -56,7 +60,7 @@ const ModalRegistroRecepcion = ({
             </p>
           </div>
 
-          {recepcion?.lotes_grupos && (
+          {recepcion?.lotes_grupos && !permitirLotesManuales && (
             <div className="space-y-4">
               {(() => {
                 // Agrupar lotes por insumo
@@ -153,7 +157,7 @@ const ModalRegistroRecepcion = ({
             </div>
           )}
 
-          {!recepcion?.lotes_grupos && insumosRecibidos && Object.keys(insumosRecibidos).length > 0 && (
+          {(permitirLotesManuales || !recepcion?.lotes_grupos) && insumosRecibidos && Object.keys(insumosRecibidos).length > 0 && (
             <div className="space-y-4">
               {Object.entries(insumosRecibidos).map(([insumoId, data]) => (
                 <div key={insumoId} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
@@ -182,7 +186,7 @@ const ModalRegistroRecepcion = ({
 
                   <div className="ml-4 sm:ml-11 space-y-2">
                     {(data?.lotesManuales || []).map((lm, idx) => (
-                      <div key={idx} className="bg-white p-3 rounded border border-gray-200">
+                      <div key={idx} className="bg-white p-3 rounded border border-gray-200 relative">
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
                           <div>
                             <label className="block text-xs text-gray-600 mb-1">Número de lote</label>
@@ -216,6 +220,14 @@ const ModalRegistroRecepcion = ({
                             />
                           </div>
                         </div>
+                        <button
+                          type="button"
+                          onClick={() => onRemoveManualLote && onRemoveManualLote(insumoId, idx)}
+                          disabled={!data?.recibido}
+                          className="absolute top-2 right-2 inline-flex items-center px-2 py-1 text-xs font-medium text-red-600 bg-red-50 rounded hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Eliminar
+                        </button>
                       </div>
                     ))}
 

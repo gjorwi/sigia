@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Save, Loader2, Search, UserSearch } from 'lucide-react';
 import Modal from '@/components/Modal';
+import PasswordInput from '@/components/PasswordInput';
 import { getUserById } from '@/servicios/users/get';
 import { putChangePassword } from '@/servicios/users/put';
 
@@ -267,20 +268,22 @@ export default function Clave() {
                           <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                             <dt className="text-sm font-medium text-gray-500">Nueva contraseña</dt>
                             <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                              <input
-                                type="password"
+                              <PasswordInput
+                                id="newPassword"
+                                name="newPassword"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 placeholder="Mínimo 6 caracteres"
+                                className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                               />
                             </dd>
                           </div>
                           <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                             <dt className="text-sm font-medium text-gray-500">Confirmar contraseña</dt>
                             <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                              <input
-                                type="password"
+                              <PasswordInput
+                                id="confirmPassword"
+                                name="confirmPassword"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"

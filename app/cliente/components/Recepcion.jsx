@@ -87,6 +87,25 @@ const Recepcion = () => {
     });
   };
 
+  const eliminarLineaLoteManual = (insumoId, index) => {
+    setModalRegistrar(prev => {
+      const insumoActual = prev.insumosRecibidos?.[insumoId];
+      const lotesManuales = Array.isArray(insumoActual?.lotesManuales) ? [...insumoActual.lotesManuales] : [];
+      if (index < 0 || index >= lotesManuales.length) return prev;
+      lotesManuales.splice(index, 1);
+      return {
+        ...prev,
+        insumosRecibidos: {
+          ...prev.insumosRecibidos,
+          [insumoId]: {
+            ...insumoActual,
+            lotesManuales
+          }
+        }
+      };
+    });
+  };
+
   const closeModal = () => {
     setModal(prev => ({ ...prev, isOpen: false }));
   };
@@ -112,33 +131,64 @@ const Recepcion = () => {
     const tipoAlmacen = user?.sede?.tipo_almacen;
 
     if (recepcion.lotes_grupos) {
-      // Agrupar por insumo
-      const insumosAgrupados = recepcion.lotes_grupos.reduce((acc, loteGrupo) => {
-        const insumoId = loteGrupo?.lote?.insumo?.id;
-        if (!acc[insumoId]) {
-          acc[insumoId] = {
-            insumo: loteGrupo?.lote?.insumo,
-            lotes: []
-          };
-        }
-        acc[insumoId].lotes.push(loteGrupo);
-        return acc;
-      }, {});
+      // Si el movimiento viene con lotes pero su origen es un almacenAUS y
+      // la sede del usuario es almacenPrin (sede central), entonces no
+      // mostramos los lotes "fake" y permitimos capturar lotes manuales.
+      const esOrigenAUS = recepcion?.origen_sede?.tipo_almacen === 'almacenAUS';
+      if (tipoAlmacen === 'almacenPrin' && esOrigenAUS) {
+        // Agrupar por insumo y crear una entrada manual por insumo con la cantidad total
+        const insumosAgrupados = recepcion.lotes_grupos.reduce((acc, loteGrupo) => {
+          const insumoId = loteGrupo?.lote?.insumo?.id;
+          if (!acc[insumoId]) {
+            acc[insumoId] = {
+              insumo: loteGrupo?.lote?.insumo,
+              total: 0
+            };
+          }
+          acc[insumoId].total += loteGrupo.cantidad_salida || 0;
+          return acc;
+        }, {});
 
-      // Marcar todos como recibidos por defecto con cantidades originales
-      Object.keys(insumosAgrupados).forEach(insumoId => {
-        insumosRecibidos[insumoId] = {
-          recibido: true,
-          lotes: {},
-          lotesManuales: []
-        };
-        insumosAgrupados[insumoId].lotes.forEach(loteGrupo => {
-          insumosRecibidos[insumoId].lotes[loteGrupo.lote.id] = {
+        Object.keys(insumosAgrupados).forEach(insumoId => {
+          const item = insumosAgrupados[insumoId];
+          insumosRecibidos[insumoId] = {
             recibido: true,
-            cantidadRecibida: loteGrupo.cantidad_salida || 0
+            lotes: {},
+            lotesManuales: [
+              { numero_lote: '', fecha_vencimiento: '', cantidadRecibida: item.total || 0 }
+            ],
+            insumo: item.insumo
           };
         });
-      });
+      } else {
+        // Agrupar por insumo
+        const insumosAgrupados = recepcion.lotes_grupos.reduce((acc, loteGrupo) => {
+          const insumoId = loteGrupo?.lote?.insumo?.id;
+          if (!acc[insumoId]) {
+            acc[insumoId] = {
+              insumo: loteGrupo?.lote?.insumo,
+              lotes: []
+            };
+          }
+          acc[insumoId].lotes.push(loteGrupo);
+          return acc;
+        }, {});
+
+        // Marcar todos como recibidos por defecto con cantidades originales
+        Object.keys(insumosAgrupados).forEach(insumoId => {
+          insumosRecibidos[insumoId] = {
+            recibido: true,
+            lotes: {},
+            lotesManuales: []
+          };
+          insumosAgrupados[insumoId].lotes.forEach(loteGrupo => {
+            insumosRecibidos[insumoId].lotes[loteGrupo.lote.id] = {
+              recibido: true,
+              cantidadRecibida: loteGrupo.cantidad_salida || 0
+            };
+          });
+        });
+      }
     } else if (tipoAlmacen === 'almacenPrin') {
       // Nuevo flujo: movimientos pueden venir sin lotes/fechas.
       // En almacenPrin permitimos capturar lotes manualmente por insumo.
@@ -689,7 +739,7 @@ const Recepcion = () => {
                       >
                         Detalles
                       </button>
-                      {(recepcion.estado === 'entregado' || (user?.sede?.tipo_almacen !== 'almacenPrin' && recepcion.estado === 'despachado' && !recepcion.paciente_nombres)) && (
+                      {(recepcion.estado === 'entregado' || (user?.sede?.tipo_almacen !== 'almacenPrin' && recepcion.estado === 'despachado' && !recepcion.paciente_nombres) || (recepcion.estado === 'pendiente' && user?.sede?.hospital_id)) && (
                         <button
                           onClick={() => abrirModalRegistrar(recepcion)}
                           className="text-green-400 hover:text-green-300"
@@ -816,6 +866,8 @@ const Recepcion = () => {
         onConfirmar={confirmarRegistro}
         formatDate={formatDate}
         loading={loading}
+        userSedeTipo={user?.sede?.tipo_almacen}
+        onRemoveManualLote={eliminarLineaLoteManual}
       />
     </div>
   );

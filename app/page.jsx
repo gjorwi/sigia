@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { postLogin } from '@/servicios/login/post';
+import PasswordInput from '@/components/PasswordInput';
 import Modal from '@/components/Modal';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -149,16 +150,15 @@ export default function LoginPageVariant() {
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                   <svg className="h-5 w-5 text-indigo-200" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" /></svg>
                 </span>
-                <input
+                <PasswordInput
                   id="password"
                   name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="block w-full pl-10 pr-4 py-2 rounded-xl bg-white/20 border border-white/30 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-fuchsia-400 focus:border-transparent transition shadow-md backdrop-blur-sm"
-                  placeholder="Jorge1234*."
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  required
+                  placeholder="Jorge1234*."
+                  className="block w-full pl-10 pr-4 py-2 rounded-xl bg-white/20 border border-white/30 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-fuchsia-400 focus:border-transparent transition shadow-md backdrop-blur-sm"
                 />
               </div>
             </div>

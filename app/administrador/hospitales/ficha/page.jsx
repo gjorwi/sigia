@@ -7,6 +7,8 @@ import { getHospitalById } from '@/servicios/hospitales/get';
 import { postFicha, postGenerarFicha } from '@/servicios/fichas/post';
 import { getInsumos } from '@/servicios/insumos/get';
 import { getFichaHospitalById } from '@/servicios/fichas/get';
+import { deleteFichaHospital } from '@/servicios/fichas/delete';
+import ConfirmModal from '@/components/ConfirmModal';
 import { useAuth } from '@/contexts/AuthContext';
 const initialFormData = {
   nombre: '',
@@ -33,6 +35,8 @@ export default function EditarUsuario() {
   const [insumosSearchTerm, setInsumosSearchTerm] = useState('');
   const [tieneFicha, setTieneFicha] = useState(false);
   const [generandoFicha, setGenerandoFicha] = useState(false);
+  const [isDeletingFicha, setIsDeletingFicha] = useState(false);
+  const [confirm, setConfirm] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
   const [modal, setModal] = useState({
     isOpen: false,
     title: '',
@@ -150,6 +154,40 @@ export default function EditarUsuario() {
       setGenerandoFicha(false);
     }
   };
+
+  const handleEliminarFicha = () => {
+    setConfirm({
+      isOpen: true,
+      title: 'Eliminar ficha',
+      message: `¿Desea eliminar la ficha de insumos asociada al hospital "${dataSetForm?.nombre}"?`,
+      onConfirm: async () => {
+        setConfirm(prev => ({ ...prev, isOpen: false }));
+        const { token } = user;
+        setIsDeletingFicha(true);
+        try {
+          const result = await deleteFichaHospital(dataSetForm.id, token);
+          if (!result?.status) {
+            if (result?.autenticacion === 1 || result?.autenticacion === 2) {
+              showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+              logout();
+              router.replace('/');
+              return;
+            }
+            showMessage('Error', result?.mensaje || 'Error al eliminar la ficha de insumos', 'error', 4000);
+            return;
+          }
+          showMessage('Éxito', result?.mensaje || 'Ficha eliminada correctamente', 'success', 3000);
+          setTieneFicha(false);
+          setInsumosFicha([]);
+        } catch (error) {
+          console.error('Error al eliminar ficha:', error);
+          showMessage('Error', 'Error al eliminar la ficha de insumos', 'error', 4000);
+        } finally {
+          setIsDeletingFicha(false);
+        }
+      }
+    });
+  };
   
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -186,6 +224,16 @@ export default function EditarUsuario() {
           message={modal.message} 
           type={modal.type} 
           time={modal.time}
+        />
+        <ConfirmModal
+          isOpen={confirm.isOpen}
+          title={confirm.title}
+          message={confirm.message}
+          onConfirm={confirm.onConfirm}
+          onCancel={() => setConfirm(prev => ({ ...prev, isOpen: false }))}
+          confirmText="Eliminar"
+          cancelText="Cancelar"
+          loading={isDeletingFicha}
         />
         <div className="py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
@@ -336,6 +384,19 @@ export default function EditarUsuario() {
                     <div>
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="text-lg font-medium text-gray-900">Insumos del Hospital</h3>
+                        <div>
+                          <button
+                            type="button"
+                            onClick={handleEliminarFicha}
+                            disabled={isDeletingFicha}
+                            className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                          >
+                            {isDeletingFicha ? (
+                              <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4" />
+                            ) : null}
+                            {isDeletingFicha ? 'Eliminando...' : 'Eliminar Ficha'}
+                          </button>
+                        </div>
                       </div>
 
                       <div className="mb-4">

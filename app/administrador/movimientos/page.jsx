@@ -13,6 +13,7 @@ export default function Movimientos() {
   const [movimientos, setMovimientos] = useState([]);
   const [movimientosFiltrados, setMovimientosFiltrados] = useState([]);
   const [expandedItems, setExpandedItems] = useState({});
+  const [tipoConsulta, setTipoConsulta] = useState('despacho');
   const [filtros, setFiltros] = useState({
     busqueda: '',
     estado: '',
@@ -35,10 +36,19 @@ export default function Movimientos() {
   // Efecto para aplicar filtros
   useEffect(() => {
     aplicarFiltros();
-  }, [movimientos, filtros]);
+  }, [movimientos, filtros, tipoConsulta]);
 
   const aplicarFiltros = () => {
     let movimientosFiltrados = [...movimientos];
+
+    // Filtro por tipo de consulta (despacho / ingreso) usando RegExp
+    if (tipoConsulta) {
+      const escapeRegExp = (str) => String(str).replace(/[.*+?^${}()|[\\]\\]/g, '\\$&');
+      const pattern = new RegExp(escapeRegExp(tipoConsulta), 'i');
+      movimientosFiltrados = movimientosFiltrados.filter(mov =>
+        typeof mov?.tipo_movimiento === 'string' && pattern.test(mov.tipo_movimiento)
+      );
+    }
 
     // Filtro por búsqueda de texto
     if (filtros.busqueda.trim()) {
@@ -171,6 +181,34 @@ export default function Movimientos() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Selector tipo de consulta */}
+          <div className="mt-6 flex justify-center">
+            <div className="inline-flex rounded-md shadow-sm" role="group">
+              <button
+                type="button"
+                onClick={() => setTipoConsulta('despacho')}
+                className={`px-6 py-2 text-sm font-medium border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors ${
+                  tipoConsulta === 'despacho'
+                    ? 'bg-indigo-600 text-white border-indigo-600'
+                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                Despacho
+              </button>
+              <button
+                type="button"
+                onClick={() => setTipoConsulta('ingreso')}
+                className={`px-6 py-2 text-sm font-medium border border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors ${
+                  tipoConsulta === 'ingreso'
+                    ? 'bg-indigo-600 text-white border-indigo-600'
+                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                Ingreso
+              </button>
             </div>
           </div>
 

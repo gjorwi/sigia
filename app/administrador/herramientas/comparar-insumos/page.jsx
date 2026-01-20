@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Download, FileSpreadsheet, Save, Settings, X, Upload } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import Modal from '@/components/Modal';
+import ConfirmModal from '@/components/ConfirmModal';
 import InsumoForm from '@/components/insumoForm';
 import { useAuth } from '@/contexts/AuthContext';
 import { getInsumos } from '@/servicios/insumos/get';
@@ -21,6 +22,10 @@ export default function CompararInsumos() {
     type: 'info',
     time: null
   });
+  const [confirmVisible, setConfirmVisible] = useState(false);
+  const [confirmTitle, setConfirmTitle] = useState('');
+  const [confirmMessage, setConfirmMessage] = useState('');
+  const confirmResolverRef = useRef(null);
   const [archivoComparacion, setArchivoComparacion] = useState(null);
   const [comparando, setComparando] = useState(false);
   const [resultadosComparacion, setResultadosComparacion] = useState(null);
@@ -43,6 +48,27 @@ export default function CompararInsumos() {
 
   const showMessage = (title, message, type = 'info', time = null) => {
     setModal({ isOpen: true, title, message, type, time });
+  };
+
+  const showConfirm = (title, message) => {
+    setConfirmTitle(title || 'Confirmar');
+    setConfirmMessage(message || '¿Desea continuar?');
+    setConfirmVisible(true);
+    return new Promise((resolve) => {
+      confirmResolverRef.current = resolve;
+    });
+  };
+
+  const handleConfirmOk = () => {
+    setConfirmVisible(false);
+    if (confirmResolverRef.current) confirmResolverRef.current(true);
+    confirmResolverRef.current = null;
+  };
+
+  const handleConfirmCancel = () => {
+    setConfirmVisible(false);
+    if (confirmResolverRef.current) confirmResolverRef.current(false);
+    confirmResolverRef.current = null;
   };
 
   const closeModal = () => {
@@ -270,7 +296,8 @@ export default function CompararInsumos() {
       return;
     }
 
-    const confirmacion = window.confirm(
+    const confirmacion = await showConfirm(
+      'Confirmar registro',
       `¿Está seguro de registrar ${resultadosComparacion.noRegistrados.length} insumo(s) automáticamente?\n\n` +
       `Se registrarán con:\n` +
       `- Código único autogenerado\n` +
@@ -371,14 +398,15 @@ export default function CompararInsumos() {
       }));
 
       if (pendientes.length > 0) {
-        const confirmacionLote = window.confirm(
+        const continuar = await showConfirm(
+          'Continuar registro',
           `Lote completado.\n\n` +
           `Registrados: ${registradosEnLote.length}\n` +
           `Fallidos: ${fallidosEnLote.length}\n` +
           `Pendientes: ${pendientes.length}\n\n` +
           `¿Desea continuar con los siguientes ${Math.min(batchSize, pendientes.length)} insumo(s)?`
         );
-        if (!confirmacionLote) {
+        if (!continuar) {
           showMessage('Información', `Proceso detenido. Registrados: ${exitosos}. Pendientes: ${pendientes.length}.`, 'info', 6000);
           setRegistrandoTodos(false);
           return;
@@ -628,6 +656,15 @@ export default function CompararInsumos() {
         message={modal.message} 
         type={modal.type} 
         time={modal.time}
+      />
+      <ConfirmModal
+        isOpen={confirmVisible}
+        title={confirmTitle}
+        message={confirmMessage}
+        onConfirm={handleConfirmOk}
+        onCancel={handleConfirmCancel}
+        confirmText="Continuar"
+        cancelText="Cancelar"
       />
 
       <div className="flex-1 flex flex-col">

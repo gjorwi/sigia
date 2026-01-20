@@ -184,19 +184,18 @@ export default function Perfil() {
                                         Contraseña Actual
                                     </label>
                                     <div className="relative rounded-md shadow-sm">
-                                        <input
+                                        <PasswordInput
                                             id="currentPassword"
                                             name="currentPassword"
-                                            type="password"
-                                            autoComplete="current-password"
                                             value={formData.currentPassword}
                                             onChange={handleChange}
+                                            autoComplete="current-password"
+                                            placeholder="Contraseña actual"
                                             className={`block w-full px-4 py-3 rounded-lg border text-white placeholder-white/40 ${
                                                 errors.currentPassword 
                                                     ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                                                     : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
                                             } shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-1 transition duration-150`}
-                                            placeholder="Contraseña actual"
                                         />
                                         <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                             <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -220,19 +219,18 @@ export default function Perfil() {
                                             Nueva Contraseña
                                         </label>
                                         <div className="relative rounded-md shadow-sm">
-                                            <input
+                                            <PasswordInput
                                                 id="newPassword"
                                                 name="newPassword"
-                                                type="password"
-                                                autoComplete="new-password"
                                                 value={formData.newPassword}
                                                 onChange={handleChange}
+                                                autoComplete="new-password"
+                                                placeholder="Nueva contraseña"
                                                 className={`block w-full px-4 py-3 rounded-lg border text-white placeholder-white/40 ${
                                                     errors.newPassword 
                                                         ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                                                         : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
                                                 } shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-1 transition duration-150`}
-                                                placeholder="Nueva contraseña"
                                             />
                                             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                                 <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -255,19 +253,18 @@ export default function Perfil() {
                                             Confirmar Contraseña
                                         </label>
                                         <div className="relative rounded-md shadow-sm">
-                                            <input
+                                            <PasswordInput
                                                 id="confirmPassword"
                                                 name="confirmPassword"
-                                                type="password"
-                                                autoComplete="new-password"
                                                 value={formData.confirmPassword}
                                                 onChange={handleChange}
+                                                autoComplete="new-password"
+                                                placeholder="Confirmar contraseña"
                                                 className={`block w-full px-4 py-3 rounded-lg border text-white placeholder-white/40 ${
                                                     errors.confirmPassword 
                                                         ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                                                         : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
                                                 } shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-1 transition duration-150`}
-                                                placeholder="Confirmar contraseña"
                                             />
                                             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                                 <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">

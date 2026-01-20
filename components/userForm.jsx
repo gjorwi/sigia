@@ -364,13 +364,12 @@ export default function UserForm({menu, setSelectedHospital,setSelectedSede,setA
                     Contraseña *
                   </label>
                   <div className="mt-1">
-                    <input
-                      type="password"
-                      placeholder="Ej: Jc123456.."
+                    <PasswordInput
                       id="password"
                       name="password"
                       value={formData.password||''}
                       onChange={handleChange}
+                      placeholder="Ej: Jc123456.."
                       className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
                         errors.password 
                           ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
@@ -389,13 +388,12 @@ export default function UserForm({menu, setSelectedHospital,setSelectedSede,setA
                     Confirmar Contraseña *
                   </label>
                   <div className="mt-1">
-                    <input
-                      type="password"
-                      placeholder="Ej: Jc123456.."
+                    <PasswordInput
                       id="confirm_password"
                       name="confirm_password"
                       value={formData.confirm_password||''}
                       onChange={handleChange}
+                      placeholder="Ej: Jc123456.."
                       className={`block w-full px-4 py-2 text-base border placeholder-gray-400 ${
                         errors.confirm_password 
                           ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 

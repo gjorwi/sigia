@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { Filter, Hospital } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import LoadingSpinner from '@/components/LoadingSpinner';
+ 
 
 export default function Hospitales() {
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function Hospitales() {
   const [allHospitales, setAllHospitales] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  
   const [displayedCount, setDisplayedCount] = useState(10); // Cantidad inicial a mostrar
   const observerTarget = useRef(null);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -46,6 +48,8 @@ export default function Hospitales() {
     setModal(prev => ({ ...prev, isOpen: false }));
   };
 
+  
+
   const handleGetHospitales = async () => {
     setIsLoading(true);
     const response = await getHospitales(user.token);
@@ -65,6 +69,8 @@ export default function Hospitales() {
     setHospitales(response?.data);
     setIsLoading(false);
   };
+
+  
 
   const uniqueSorted = (values) => {
     return Array.from(
@@ -225,6 +231,7 @@ export default function Hospitales() {
         type={modal.type} 
         time={modal.time}
       />
+      
       <div className="py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
           {/* <h1 className="text-2xl font-semibold text-gray-900">Gestión de Hospitales</h1> */}
@@ -342,16 +349,18 @@ export default function Hospitales() {
                                 </div>
                               </div>
                               <div className="ml-4 flex-shrink-0">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    selectHospital(hospital);
-                                    router.push('/administrador/hospitales/editar');
-                                  }}
-                                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                  Editar
-                                </button>
+                                <div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-end">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      selectHospital(hospital);
+                                      router.push('/administrador/hospitales/editar');
+                                    }}
+                                    className="inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  >
+                                    Editar
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
