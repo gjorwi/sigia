@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Download, FileSpreadsheet, Save, Settings, X, Upload } from 'lucide-react';
 import * as XLSX from 'xlsx';
@@ -9,6 +9,7 @@ import ConfirmModal from '@/components/ConfirmModal';
 import InsumoForm from '@/components/insumoForm';
 import { useAuth } from '@/contexts/AuthContext';
 import { getInsumos } from '@/servicios/insumos/get';
+import { putInsumo } from '@/servicios/insumos/put';
 import { provincias } from '@/constantes/provincias';
 
 export default function CompararInsumos() {
@@ -35,8 +36,14 @@ export default function CompararInsumos() {
   const [loadingRegistro, setLoadingRegistro] = useState(false);
   const [generandoExcel, setGenerandoExcel] = useState(false);
   const [registrandoTodos, setRegistrandoTodos] = useState(false);
+  const [actualizandoTodos, setActualizandoTodos] = useState(false);
+  const [actualizandoInsumos, setActualizandoInsumos] = useState({});
+  const [busqueda, setBusqueda] = useState('');
+  const [soloNo100, setSoloNo100] = useState(false);
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+  const [hojasDisponibles, setHojasDisponibles] = useState([]);
   const [excelConfig, setExcelConfig] = useState({
+    sheetName: '',
     headerRow: 5,
     dataStartRow: 6,
     campos: {
@@ -75,6 +82,301 @@ export default function CompararInsumos() {
     setModal(prev => ({ ...prev, isOpen: false }));
   };
 
+  const busquedaNorm = useMemo(() => String(busqueda || '').trim().toLowerCase(), [busqueda]);
+
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+  const getHttpStatus = (res) => res?.response?.status ?? res?.status;
+
+  const shouldRetryUpdate = (res) => {
+    const status = getHttpStatus(res);
+    if (status === 429) return true;
+    if (status === 408) return true;
+    if (status >= 500 && status <= 599) return true;
+    if (res?.code && String(res.code).toUpperCase().includes('ECONN')) return true;
+    if (res?.message && String(res.message).toLowerCase().includes('timeout')) return true;
+    return false;
+  };
+
+  const putInsumoConBackoff = async (payload, token) => {
+    let last = null;
+    const maxRetries = 3;
+    const baseMs = 1000;
+
+    for (let intento = 0; intento <= maxRetries; intento++) {
+      last = await putInsumo(payload, token);
+
+      const status = getHttpStatus(last);
+      const ok = last?.status && status !== 500;
+      if (ok) return last;
+
+      if (!shouldRetryUpdate(last)) return last;
+
+      if (intento === maxRetries) return last;
+
+      const jitter = Math.floor(Math.random() * 250);
+      const waitMs = baseMs * Math.pow(2, intento) + jitter;
+      await sleep(waitMs);
+    }
+    return last;
+  };
+
+  const isNot100 = (value) => {
+    const n = Number(String(value ?? '').replace('%', '').trim());
+    if (!Number.isFinite(n)) return true;
+    return n < 100;
+  };
+
+  const buildDupGroupTag = (item) => {
+    if (!isNot100(item?.similitud)) return '';
+
+    const rawKey = String(item?.item ?? '').trim() || String(item?.coincidencia?.codigo ?? '').trim();
+    if (!rawKey) return '';
+
+    const key = rawKey
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9_-]/g, '');
+
+    if (!key) return '';
+    return ` (DUPG:${key})`;
+  };
+
+  const registradosFiltrados = useMemo(() => {
+    const base = resultadosComparacion?.registrados || [];
+    const withIndex = base.map((item, originalIndex) => ({ item, originalIndex }));
+    return withIndex.filter(({ item }) => {
+      if (soloNo100 && !isNot100(item?.similitud)) return false;
+      if (!busquedaNorm) return true;
+      const haystack = [
+        item?.item,
+        item?.descripcion,
+        item?.coincidencia?.nombre,
+        item?.coincidencia?.codigo
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(busquedaNorm);
+    });
+  }, [resultadosComparacion, busquedaNorm, soloNo100]);
+
+  const noRegistradosFiltrados = useMemo(() => {
+    const base = resultadosComparacion?.noRegistrados || [];
+    const withIndex = base.map((item, originalIndex) => ({ item, originalIndex }));
+    return withIndex.filter(({ item }) => {
+      if (soloNo100 && !isNot100(item?.similitud)) return false;
+      if (!busquedaNorm) return true;
+      const haystack = [
+        item?.item,
+        item?.descripcion,
+        item?.mejorCoincidencia?.nombre,
+        item?.mejorCoincidencia?.codigo
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(busquedaNorm);
+    });
+  }, [resultadosComparacion, busquedaNorm, soloNo100]);
+
+  const actualizarInsumoRegistrado = async (idx) => {
+    if (!resultadosComparacion?.registrados?.[idx]) return;
+    const target = resultadosComparacion.registrados[idx];
+    const coincidencia = target?.coincidencia;
+    const nuevoNombre = String(target?.descripcion || '').trim();
+
+    if (!coincidencia?.id) {
+      showMessage('Error', 'No se encontró el ID del insumo a actualizar', 'error', 3500);
+      return;
+    }
+    if (!nuevoNombre) {
+      showMessage('Error', 'El nombre nuevo (descripción del Excel) está vacío', 'error', 3500);
+      return;
+    }
+
+    const confirmacion = await showConfirm(
+      'Confirmar actualización',
+      `¿Desea actualizar el insumo del sistema?\n\n` +
+      `Actual: ${String(coincidencia.nombre || '').trim()}\n` +
+      `Nuevo: ${nuevoNombre}`
+    );
+    if (!confirmacion) return;
+
+    setActualizandoInsumos(prev => ({ ...prev, [coincidencia.id]: true }));
+    try {
+      const { token } = user;
+      const payload = { ...coincidencia, nombre: nuevoNombre, id: coincidencia.id };
+      const result = await putInsumoConBackoff(payload, token);
+
+      const status = getHttpStatus(result);
+      if (status === 429) {
+        showMessage(
+          'Límite alcanzado',
+          'El servidor respondió 429 (demasiadas solicitudes). Espere un momento e intente de nuevo.',
+          'warning',
+          6000
+        );
+        return;
+      }
+
+      if (!result?.status || result?.status === 500) {
+        if (result?.autenticacion === 1 || result?.autenticacion === 2) {
+          showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+          logout();
+          router.replace('/');
+          return;
+        }
+        showMessage('Error', result?.mensaje || 'No se pudo actualizar el insumo', 'error', 4000);
+        return;
+      }
+
+      setResultadosComparacion(prev => {
+        if (!prev) return prev;
+        const next = { ...prev, registrados: [...prev.registrados] };
+        const current = next.registrados[idx];
+        if (!current?.coincidencia) return prev;
+        const descripcionNormalizada = normalizarInsumo(current.descripcion);
+        const nombreNormalizado = normalizarInsumo(nuevoNombre);
+        const nuevaSimilitud = calcularSimilitud(descripcionNormalizada, nombreNormalizado);
+        next.registrados[idx] = {
+          ...current,
+          coincidencia: { ...current.coincidencia, nombre: nuevoNombre },
+          similitud: Number.isFinite(nuevaSimilitud) ? nuevaSimilitud.toFixed(1) : current.similitud
+        };
+        return next;
+      });
+
+      showMessage('Éxito', 'Insumo actualizado correctamente', 'success', 3000);
+    } catch (error) {
+      console.error('Error al actualizar insumo:', error);
+      showMessage('Error', 'Error al actualizar el insumo', 'error', 4000);
+    } finally {
+      setActualizandoInsumos(prev => ({ ...prev, [coincidencia.id]: false }));
+    }
+  };
+
+  const actualizarTodosLosInsumosRegistrados = async () => {
+    if (!resultadosComparacion || resultadosComparacion.registrados.length === 0) {
+      showMessage('Error', 'No hay insumos registrados para actualizar', 'error', 3000);
+      return;
+    }
+
+    const candidates = resultadosComparacion.registrados
+      .map((item, idx) => ({ item, idx }))
+      .filter(({ item }) => item?.coincidencia?.id && String(item?.descripcion || '').trim())
+      .filter(({ item }) => isNot100(item?.similitud));
+
+    if (candidates.length === 0) {
+      showMessage('Error', 'No hay insumos registrados (< 100%) con coincidencia e ID para actualizar', 'error', 3500);
+      return;
+    }
+
+    const confirmacion = await showConfirm(
+      'Confirmar actualización masiva',
+      `¿Está seguro de actualizar ${candidates.length} insumo(s) (solo < 100%)?\n\n` +
+      `Se actualizará el nombre del insumo del sistema con la descripción del Excel.`
+    );
+    if (!confirmacion) return;
+
+    setActualizandoTodos(true);
+    try {
+      const { token } = user;
+      let ok = 0;
+      let fail = 0;
+
+      const batchSize = 20;
+      let pendientes = [...candidates];
+
+      while (pendientes.length > 0) {
+        const lote = pendientes.slice(0, batchSize);
+        const restantesDespuesDelLote = pendientes.slice(batchSize);
+
+        for (let i = 0; i < lote.length; i++) {
+          const { item, idx } = lote[i];
+          const coincidencia = item.coincidencia;
+          const nuevoNombre = String(item.descripcion || '').trim();
+
+          setActualizandoInsumos(prev => ({ ...prev, [coincidencia.id]: true }));
+          const payload = { ...coincidencia, nombre: nuevoNombre, id: coincidencia.id };
+          const result = await putInsumoConBackoff(payload, token);
+
+          const status = getHttpStatus(result);
+          if (status === 429) {
+            showMessage(
+              'Límite alcanzado',
+              'El servidor respondió 429 (demasiadas solicitudes). Espere un momento e intente continuar más tarde.',
+              'warning',
+              6000
+            );
+            fail++;
+            setActualizandoInsumos(prev => ({ ...prev, [coincidencia.id]: false }));
+            await sleep(5000);
+            continue;
+          }
+
+          if (!result?.status || result?.status === 500) {
+            if (result?.autenticacion === 1 || result?.autenticacion === 2) {
+              showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
+              logout();
+              router.replace('/');
+              return;
+            }
+            fail++;
+          } else {
+            ok++;
+            setResultadosComparacion(prev => {
+              if (!prev) return prev;
+              const next = { ...prev, registrados: [...prev.registrados] };
+              const current = next.registrados[idx];
+              if (!current?.coincidencia) return prev;
+              const descripcionNormalizada = normalizarInsumo(current.descripcion);
+              const nombreNormalizado = normalizarInsumo(nuevoNombre);
+              const nuevaSimilitud = calcularSimilitud(descripcionNormalizada, nombreNormalizado);
+              next.registrados[idx] = {
+                ...current,
+                coincidencia: { ...current.coincidencia, nombre: nuevoNombre },
+                similitud: Number.isFinite(nuevaSimilitud) ? nuevaSimilitud.toFixed(1) : current.similitud
+              };
+              return next;
+            });
+          }
+
+          setActualizandoInsumos(prev => ({ ...prev, [coincidencia.id]: false }));
+
+          if (i < lote.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 800));
+          }
+        }
+
+        pendientes = [...restantesDespuesDelLote];
+        if (pendientes.length > 0) {
+          const continuar = await showConfirm(
+            'Continuar actualización',
+            `Lote completado.\n\n` +
+            `Actualizados OK: ${ok}\n` +
+            `Fallidos: ${fail}\n` +
+            `Pendientes: ${pendientes.length}\n\n` +
+            `¿Desea continuar con los siguientes ${Math.min(batchSize, pendientes.length)} insumo(s)?`
+          );
+          if (!continuar) {
+            showMessage('Información', `Proceso detenido. OK: ${ok}. Pendientes: ${pendientes.length}.`, 'info', 6000);
+            return;
+          }
+        }
+      }
+
+      showMessage('Éxito', `Actualización completada. OK: ${ok}, Fallidas: ${fail}`, 'success', 4000);
+    } catch (error) {
+      console.error('Error al actualizar todos los insumos:', error);
+      showMessage('Error', 'Error al actualizar los insumos', 'error', 4000);
+    } finally {
+      setActualizandoTodos(false);
+      setActualizandoInsumos({});
+    }
+  };
+
   const columnLetterToIndex = (col) => {
     const raw = String(col || '').trim();
     if (!raw) return -1;
@@ -103,6 +405,22 @@ export default function CompararInsumos() {
     if (file) {
       setArchivoComparacion(file);
       setResultadosComparacion(null);
+
+      setHojasDisponibles([]);
+      file
+        .arrayBuffer()
+        .then((arrayBuffer) => {
+          const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+          const sheets = workbook?.SheetNames || [];
+          setHojasDisponibles(sheets);
+          setExcelConfig(prev => ({
+            ...prev,
+            sheetName: prev.sheetName || sheets[0] || ''
+          }));
+        })
+        .catch(() => {
+          setHojasDisponibles([]);
+        });
     }
   };
 
@@ -151,9 +469,15 @@ export default function CompararInsumos() {
         .map(nombre => `cantidad ${nombre}`);
 
       const rows = resultadosComparacion.registrados.map(item => {
+        const dupTag = buildDupGroupTag(item);
+        const usarNombreOriginal = isNot100(item?.similitud);
+        const nombreOriginal = String(item?.descripcion ?? '').trim() || String(item?.item ?? '').trim();
+        const nombreBase = usarNombreOriginal
+          ? (nombreOriginal || item.coincidencia?.nombre || '')
+          : (item.coincidencia?.nombre || nombreOriginal || '');
         const row = {
           codigo: item.coincidencia?.codigo || '',
-          nombre: item.coincidencia?.nombre || item.descripcion || ''
+          nombre: `${nombreBase}${dupTag}`
         };
         cantidadColumns.forEach(col => {
           row[col] = '';
@@ -542,8 +866,18 @@ export default function CompararInsumos() {
 
       const arrayBuffer = await archivoComparacion.arrayBuffer();
       const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-      const firstSheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[firstSheetName];
+
+      const selectedSheetName = String(excelConfig.sheetName || '').trim() || workbook.SheetNames[0];
+      if (!selectedSheetName) {
+        showMessage('Error', 'El archivo no contiene hojas para procesar', 'error', 4000);
+        return;
+      }
+      if (!workbook.Sheets?.[selectedSheetName]) {
+        showMessage('Error', `La hoja configurada no existe: ${selectedSheetName}`, 'error', 4000);
+        return;
+      }
+
+      const worksheet = workbook.Sheets[selectedSheetName];
       
       const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
       
@@ -785,7 +1119,7 @@ export default function CompararInsumos() {
                   />
                   <div className="flex min-h-screen items-center justify-center p-4 text-center">
                     <div
-                      className="relative w-full max-w-2xl transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all"
+                      className="relative inline-block w-full max-w-2xl transform overflow-hidden rounded-lg bg-white text-left align-middle shadow-xl transition-all"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="bg-gray-50 px-4 py-3 sm:flex sm:items-center sm:justify-between sm:px-6 sm:py-4 border-b border-gray-200">
@@ -800,13 +1134,38 @@ export default function CompararInsumos() {
                         </button>
                       </div>
 
-                      <div className="bg-white px-4 pt-5 pb-4 sm:p-6">
-                        <p className="text-xs text-gray-600">
-                          Indica en qué fila están los encabezados y desde qué fila inician los datos.
-                          Para cada campo puedes usar el nombre del encabezado (contiene) o una columna (A, B, C... o número 1, 2, 3...).
-                        </p>
+                      <div className="px-4 py-5 sm:p-6">
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
+                          <div className="sm:col-span-3">
+                            <label className="block text-sm font-medium text-gray-700">Hoja a utilizar</label>
+                            {hojasDisponibles.length > 0 ? (
+                              <select
+                                value={excelConfig.sheetName}
+                                onChange={(e) => setExcelConfig(prev => ({ ...prev, sheetName: e.target.value }))}
+                                className="mt-1 block w-full rounded-md border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                              >
+                                {hojasDisponibles.map((name) => (
+                                  <option key={name} value={name}>
+                                    {name}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <input
+                                type="text"
+                                value={excelConfig.sheetName}
+                                onChange={(e) => setExcelConfig(prev => ({ ...prev, sheetName: e.target.value }))}
+                                placeholder="Nombre de la hoja (si el archivo tiene varias)"
+                                className="mt-1 block w-full rounded-md border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                              />
+                            )}
+                            <p className="mt-1 text-xs text-gray-500">
+                              Si el archivo tiene varias hojas, seleccione cuál usar para la comparación.
+                            </p>
+                          </div>
+                        </div>
 
-                        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                           <div>
                             <label className="block text-sm font-medium text-gray-700">Fila de encabezados</label>
                             <input
@@ -817,6 +1176,7 @@ export default function CompararInsumos() {
                               className="mt-1 block w-full rounded-md border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                             />
                           </div>
+
                           <div>
                             <label className="block text-sm font-medium text-gray-700">Fila inicio de datos</label>
                             <input
@@ -984,14 +1344,56 @@ export default function CompararInsumos() {
                     </div>
                   </div>
 
+                  <div className="mb-6">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <input
+                        type="text"
+                        value={busqueda}
+                        onChange={(e) => setBusqueda(e.target.value)}
+                        placeholder="Buscar por item, descripción, nombre o código..."
+                        className="w-full border border-gray-300 text-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <label className="flex items-center gap-2 text-sm text-gray-700 whitespace-nowrap">
+                        <input
+                          type="checkbox"
+                          checked={soloNo100}
+                          onChange={(e) => setSoloNo100(e.target.checked)}
+                          className="h-4 w-4"
+                        />
+                        Mostrar solo &lt; 100%
+                      </label>
+                    </div>
+                  </div>
+
                   <div className="space-y-6">
                     {/* Insumos Registrados */}
                     {resultadosComparacion.registrados.length > 0 && (
                       <div>
-                        <h4 className="text-md font-semibold text-green-700 mb-3">✓ Insumos Registrados</h4>
+                        <div className="flex justify-between items-center mb-3">
+                          <h4 className="text-md font-semibold text-green-700">✓ Insumos Registrados</h4>
+                          <button
+                            type="button"
+                            onClick={actualizarTodosLosInsumosRegistrados}
+                            disabled={actualizandoTodos}
+                            className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                            title="Actualizar todos los insumos registrados"
+                          >
+                            {actualizandoTodos ? (
+                              <>
+                                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Actualizando...
+                              </>
+                            ) : (
+                              <>Actualizar &lt; 100% ({registradosFiltrados.filter(({ item }) => item?.coincidencia?.id && isNot100(item?.similitud)).length})</>
+                            )}
+                          </button>
+                        </div>
                         <div className="space-y-2">
-                          {resultadosComparacion.registrados.map((item, idx) => (
-                            <div key={idx} className="bg-green-50 border border-green-200 rounded-md p-3">
+                          {registradosFiltrados.map(({ item, originalIndex }) => (
+                            <div key={`${item.item}-${originalIndex}`} className="bg-green-50 border border-green-200 rounded-md p-3">
                               <div className="flex justify-between items-start gap-3">
                                 <div className="flex-1">
                                   <p className="text-sm font-medium text-gray-900">{item.descripcion}</p>
@@ -1006,13 +1408,23 @@ export default function CompararInsumos() {
                                     </p>
                                   )}
                                 </div>
-                                <button
-                                  onClick={() => moverANoRegistrados(idx)}
-                                  className="flex-shrink-0 px-3 py-1 text-xs font-medium text-red-700 bg-red-100 hover:bg-red-200 rounded-md transition-colors"
-                                  title="Marcar como no registrado"
-                                >
-                                  ✗ No registrado
-                                </button>
+                                <div className="flex flex-col gap-2">
+                                  <button
+                                    onClick={() => actualizarInsumoRegistrado(originalIndex)}
+                                    disabled={!item.coincidencia?.id || actualizandoInsumos[item.coincidencia?.id]}
+                                    className="flex-shrink-0 px-3 py-1 text-xs font-medium text-indigo-700 bg-indigo-100 hover:bg-indigo-200 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="Actualizar nombre del insumo en el sistema"
+                                  >
+                                    {actualizandoInsumos[item.coincidencia?.id] ? 'Actualizando...' : 'Actualizar'}
+                                  </button>
+                                  <button
+                                    onClick={() => moverANoRegistrados(originalIndex)}
+                                    className="flex-shrink-0 px-3 py-1 text-xs font-medium text-red-700 bg-red-100 hover:bg-red-200 rounded-md transition-colors"
+                                    title="Marcar como no registrado"
+                                  >
+                                    ✗ No registrado
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           ))}
@@ -1048,8 +1460,8 @@ export default function CompararInsumos() {
                           </button>
                         </div>
                         <div className="space-y-2">
-                          {resultadosComparacion.noRegistrados.map((item, idx) => (
-                            <div key={idx} className="bg-red-50 border border-red-200 rounded-md p-3">
+                          {noRegistradosFiltrados.map(({ item, originalIndex }) => (
+                            <div key={`${item.item}-${originalIndex}`} className="bg-red-50 border border-red-200 rounded-md p-3">
                               <div className="flex justify-between items-start gap-3">
                                 <div className="flex-1">
                                   <p className="text-sm font-medium text-gray-900">{item.descripcion}</p>
@@ -1062,7 +1474,7 @@ export default function CompararInsumos() {
                                 </div>
                                 <div className="flex flex-col gap-2">
                                   <button
-                                    onClick={() => moverARegistrados(idx)}
+                                    onClick={() => moverARegistrados(originalIndex)}
                                     className="flex-shrink-0 px-3 py-1 text-xs font-medium text-green-700 bg-green-100 hover:bg-green-200 rounded-md transition-colors"
                                     title="Marcar como registrado"
                                   >

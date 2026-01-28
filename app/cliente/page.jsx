@@ -14,6 +14,8 @@ import {
 import Recepcion from './components/Recepcion';
 import Tracking from './components/Tracking';
 import Reportes from './components/Reportes';
+import Inventario from './components/Inventario';
+import Registro from './components/Registro';
 import { useAuth } from '@/contexts/AuthContext';
 import { getStats } from '@/servicios/estadisticas/get';
 import Modal from '@/components/Modal';
@@ -111,11 +113,11 @@ export default function ClientePage() {
     },
     {
       id: 2,
-      name: 'Total despachos',
+      name: 'Total Movimientos',
       value: estadisticas?.resumen_movimientos?.total || 0,
       icon: Truck,
       color: 'bg-blue-500',
-      trend: 'Despachos',
+      trend: 'Movimientos',
       trendType: 'neutral'
     },
     ...(user?.sede?.tipo_almacen === 'almacenAUS'
@@ -146,6 +148,9 @@ export default function ClientePage() {
     stats.length >= 4 ? 'lg:grid-cols-4' :
       stats.length === 3 ? 'lg:grid-cols-3' :
         'lg:grid-cols-2';
+
+  const esAUS = user?.sede?.tipo_almacen === 'almacenAUS';
+  const navGridColsLgClass = esAUS ? 'lg:grid-cols-3' : 'lg:grid-cols-4';
 
   return (
     <>
@@ -213,7 +218,7 @@ export default function ClientePage() {
           ))}
         </div>
         {/* Navegación entre secciones */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 p-2 bg-white backdrop-blur-lg border border-white/10 rounded-lg">
+        <div className={`grid grid-cols-1 sm:grid-cols-2 ${navGridColsLgClass} gap-4 mb-4 p-2 bg-white backdrop-blur-lg border border-white/10 rounded-lg`}>
           <button
             className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${menuActivo === 'recepcion'
               ? 'bg-indigo-600 text-white'
@@ -227,8 +232,40 @@ export default function ClientePage() {
             </div>
             <span className="font-medium">Movimientos</span>
           </button>
-          {/* Mostrar Seguimiento solo para almacén principal */}
-          {user?.sede?.tipo_almacen === 'almacenPrin' ? (
+
+          {!esAUS && (
+            <button
+              className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${menuActivo === 'inventario'
+                ? 'bg-emerald-600 text-white'
+                : 'bg-emerald-500/15 text-gray-800 hover:bg-emerald-500/30'
+                }`}
+              onClick={() => setMenuActivo('inventario')}
+            >
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${menuActivo === 'inventario' ? 'bg-white/20' : 'bg-emerald-500/90 text-white'
+                }`}>
+                <Package className="h-5 w-5" />
+              </div>
+              <span className="font-medium">Inventario</span>
+            </button>
+          )}
+
+          {!esAUS && (
+            <button
+              className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${menuActivo === 'registro'
+                ? 'bg-purple-600 text-white'
+                : 'bg-purple-500/15 text-gray-800 hover:bg-purple-500/30'
+                }`}
+              onClick={() => setMenuActivo('registro')}
+            >
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${menuActivo === 'registro' ? 'bg-white/20' : 'bg-purple-500/90 text-white'
+                }`}>
+                <Truck className="h-5 w-5" />
+              </div>
+              <span className="font-medium">Registro/Despacho</span>
+            </button>
+          )}
+
+          {esAUS && (
             <button
               className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${menuActivo === 'tracking'
                 ? 'bg-blue-600 text-white'
@@ -242,27 +279,29 @@ export default function ClientePage() {
               </div>
               <span className="font-medium">Seguimiento</span>
             </button>
-          ) : (
-            <button
-              className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${menuActivo === 'reportes'
-                ? 'bg-orange-600 text-white'
-                : 'bg-orange-500/15 text-gray-800 hover:bg-orange-500/30'
-                }`}
-              onClick={() => setMenuActivo('reportes')}
-            >
-              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${menuActivo === 'reportes' ? 'bg-white/20' : 'bg-orange-500/90 text-white'
-                }`}>
-                <BarChart3 className="h-5 w-5" />
-              </div>
-              <span className="font-medium">Reportes</span>
-            </button>
           )}
+
+          <button
+            className={`flex gap-2 items-center justify-start px-4 py-3 rounded-lg transition-all duration-200 group ${menuActivo === 'reportes'
+              ? 'bg-orange-600 text-white'
+              : 'bg-orange-500/15 text-gray-800 hover:bg-orange-500/30'
+              }`}
+            onClick={() => setMenuActivo('reportes')}
+          >
+            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${menuActivo === 'reportes' ? 'bg-white/20' : 'bg-orange-500/90 text-white'
+              }`}>
+              <BarChart3 className="h-5 w-5" />
+            </div>
+            <span className="font-medium">Reportes</span>
+          </button>
         </div>
         {/* ... rest of the component ... */}
 
       </div>
       <div className="mt-2">
         {menuActivo === "recepcion" && <Recepcion />}
+        {menuActivo === "inventario" && <Inventario setMenuActivo={setMenuActivo} />}
+        {menuActivo === "registro" && <Registro />}
         {menuActivo === "tracking" && <Tracking />}
         {menuActivo === "reportes" && <Reportes />}
       </div>

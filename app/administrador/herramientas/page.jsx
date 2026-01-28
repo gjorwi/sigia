@@ -15,17 +15,17 @@ export default function Herramientas() {
       color: 'bg-blue-500'
     },
     {
-      nombre: 'Cargar totales por estado',
-      descripcion: 'Cargue totales por estado desde uno o más Excel a un Excel receptor',
-      icono: FileSpreadsheet,
-      ruta: '/administrador/herramientas/agregar-totales',
-      color: 'bg-blue-500'
-    },
-    {
       nombre: 'Eliminar duplicados (por código)',
       descripcion: 'Elimine filas duplicadas en un Excel usando solo el campo código',
       icono: FileSpreadsheet,
       ruta: '/administrador/herramientas/depurar-duplicados-codigo',
+      color: 'bg-blue-500'
+    },
+    {
+      nombre: 'Cargar totales por estado',
+      descripcion: 'Cargue totales por estado desde uno o más Excel a un Excel receptor',
+      icono: FileSpreadsheet,
+      ruta: '/administrador/herramientas/agregar-totales',
       color: 'bg-blue-500'
     }
   ];

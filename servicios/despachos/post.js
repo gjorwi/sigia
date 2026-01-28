@@ -15,7 +15,11 @@ export const postMovimiento = async (token,data) => {
     return result;
   } catch (error) {
     console.log('Error al despachar:', error);  
-    return error;
+    return {
+      status: false,
+      mensaje: error.response?.data?.mensaje || 'Error al despachar',
+      autenticacion: error.response?.data?.autenticacion||0
+    };
   }
 };
 export const postMovimientoEstados = async (token,file) => {
@@ -31,8 +35,12 @@ export const postMovimientoEstados = async (token,file) => {
     const result = await response.data;
     return result;
   } catch (error) {
-    console.log('Error al despachar:', error);  
-    return error;
+    console.log('Error al importar:', error);  
+    return {
+      status: false,
+      mensaje: error.response?.data?.mensaje || 'Error al importar',
+      autenticacion: error.response?.data?.autenticacion||0
+    };
   }
 };
 
@@ -47,7 +55,11 @@ export const postMovimientosRecepcion = async (token, data) => {
     const result = await response.data;
     return result;
   } catch (error) {
-    console.log('Error al despachar:', error);  
-    return error;
+    console.log('Error al recibir:', error);  
+    return {
+      status: false,
+      mensaje: error.response?.data?.mensaje || 'Error al recibir',
+      autenticacion: error.response?.data?.autenticacion||0
+    };
   }
 };

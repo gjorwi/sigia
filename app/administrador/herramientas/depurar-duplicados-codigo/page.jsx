@@ -53,6 +53,13 @@ export default function DepurarDuplicadosCodigo() {
 
   const normalizeHeader = (value) => String(value || '').trim().toUpperCase();
 
+  const extractDupGroupTag = (value) => {
+    const raw = String(value ?? '');
+    const match = raw.match(/\(\s*DUPG\s*:\s*([^\)]+)\s*\)/i);
+    if (!match) return '';
+    return String(match[1] || '').trim().toUpperCase();
+  };
+
   const resolveColumnIndex = (headers, fieldConfig) => {
     const byCol = columnLetterToIndex(fieldConfig?.col);
     if (byCol >= 0) return byCol;
@@ -109,6 +116,7 @@ export default function DepurarDuplicadosCodigo() {
 
       const headers = (jsonData[headerRowIndex] || []).map(h => String(h).trim());
       const codigoIndex = resolveColumnIndex(headers, excelConfig.campos.codigo);
+      const nombreIndex = headers.findIndex(h => normalizeHeader(h).includes('NOMBRE'));
 
       if (codigoIndex === -1) {
         showMessage('Error', 'No se encontró la columna configurada para CODIGO', 'error', 4000);
@@ -125,13 +133,15 @@ export default function DepurarDuplicadosCodigo() {
       for (let i = 0; i < filasDatos.length; i++) {
         const row = filasDatos[i] || [];
         const codigo = String(row[codigoIndex] ?? '').trim();
+        const nombre = nombreIndex >= 0 ? String(row[nombreIndex] ?? '').trim() : '';
+        const dupTag = extractDupGroupTag(nombre);
 
         if (!codigo) {
           filasDepuradas.push(row);
           continue;
         }
 
-        const key = codigo.toUpperCase();
+        const key = `${codigo.toUpperCase()}${dupTag ? `|DUPG:${dupTag}` : ''}`;
         if (vistos.has(key)) {
           duplicados.add(key);
           continue;

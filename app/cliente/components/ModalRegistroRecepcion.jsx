@@ -12,6 +12,7 @@ const ModalRegistroRecepcion = ({
   onToggleInsumo, 
   onToggleLote, 
   onUpdateCantidad,
+  onUpdateCantidadInsumo,
   onAddManualLote,
   onUpdateManualLote,
   onConfirmar,
@@ -21,6 +22,7 @@ const ModalRegistroRecepcion = ({
 }) => {
   const esOrigenAUS = recepcion?.origen_sede?.tipo_almacen === 'almacenAUS';
   const permitirLotesManuales = userSedeTipo === 'almacenPrin' && esOrigenAUS;
+  const ocultarLotes = userSedeTipo === 'almacenAUS';
   if (!isOpen || typeof document === 'undefined') return null;
 
   return createPortal(
@@ -53,14 +55,57 @@ const ModalRegistroRecepcion = ({
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
           <div className="mb-4">
             <h4 className="text-md font-semibold text-gray-900 mb-3">
-              Confirmar Insumos Recibidos ({recepcion?.lotes_grupos?.length || 0} items)
+              Confirmar Insumos Recibidos ({ocultarLotes ? Object.keys(insumosRecibidos || {}).length : (recepcion?.lotes_grupos?.length || 0)} items)
             </h4>
             <p className="text-sm text-gray-600 mb-4">
               Marca los insumos y lotes que fueron recibidos correctamente. Ajusta las cantidades si es necesario.
             </p>
           </div>
 
-          {recepcion?.lotes_grupos && !permitirLotesManuales && (
+          {ocultarLotes && insumosRecibidos && Object.keys(insumosRecibidos).length > 0 && (
+            <div className="space-y-4">
+              {Object.entries(insumosRecibidos).map(([insumoId, data]) => (
+                <div key={insumoId} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 space-y-2 sm:space-y-0">
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        id={`registro-insumo-aus-${insumoId}`}
+                        checked={data?.recibido || false}
+                        onChange={() => onToggleInsumo(insumoId)}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded flex-shrink-0"
+                      />
+                      <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Package className="w-4 h-4 text-indigo-600" />
+                      </div>
+                      <label htmlFor={`registro-insumo-aus-${insumoId}`} className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-gray-900 truncate">
+                          {data?.insumo?.nombre}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          #{data?.insumo?.codigo} | {data?.insumo?.tipo}
+                        </div>
+                      </label>
+                    </div>
+
+                    <div className="flex items-center space-x-2 sm:ml-4 flex-shrink-0">
+                      <label className="text-xs text-gray-600 flex-shrink-0">Recibido:</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={data?.cantidadRecibida || 0}
+                        onChange={(e) => onUpdateCantidadInsumo && onUpdateCantidadInsumo(insumoId, e.target.value)}
+                        disabled={!data?.recibido}
+                        className="w-28 px-2 py-1 text-sm border text-gray-700 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-400 flex-shrink-0"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {recepcion?.lotes_grupos && !permitirLotesManuales && !ocultarLotes && (
             <div className="space-y-4">
               {(() => {
                 // Agrupar lotes por insumo

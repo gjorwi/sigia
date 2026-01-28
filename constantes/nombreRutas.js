@@ -52,6 +52,7 @@ const nombreRutas = {
     '/administrador/sedes/editar': 'Editar Sede',
     '/administrador/sedes/activar': 'Activar/Desactivar Sedes',
     '/administrador/sedes/eliminar': 'Eliminar Sedes',
+    '/administrador/insumos/eliminar': 'Eliminar Insumos',
 };
 
 export default nombreRutas;

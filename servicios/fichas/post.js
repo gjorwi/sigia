@@ -40,3 +40,41 @@ export const postGenerarFicha = async (hospitalId, token) => {
     };
   }
 };
+
+export const postGenerarTodasLasFichas = async (token) => {
+  try {
+    const response = await axios.post(`${config.URL_API}ficha-insumos/generar-todos`, {}, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error al generar todas las fichas:', error);
+    return {
+      status: false,
+      mensaje: error.response?.data?.mensaje || 'Error al generar todas las fichas de insumos',
+      autenticacion: error.response?.data?.autenticacion
+    };
+  }
+};
+
+export const postActualizarFichaHospital = async (hospitalId, token) => {
+  try {
+    const response = await axios.post(`${config.URL_API}ficha-insumos/hospital/${hospitalId}`, {}, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error al actualizar la ficha del hospital:', error);
+    return {
+      status: false,
+      mensaje: error.response?.data?.mensaje || 'Error al actualizar la ficha de insumos',
+      autenticacion: error.response?.data?.autenticacion
+    };
+  }
+};

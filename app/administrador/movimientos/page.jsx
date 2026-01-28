@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { despachoActions } from '@/constantes/despachoActions';
-import { getMovimientos } from '@/servicios/despachos/get';
+import { getMovimientos, getHistorialMovimientos } from '@/servicios/despachos/get';
 import Modal from '@/components/Modal';
 import { useRouter } from 'next/navigation';
 import { Package, ChevronDown, ChevronUp } from 'lucide-react';
@@ -13,7 +13,7 @@ export default function Movimientos() {
   const [movimientos, setMovimientos] = useState([]);
   const [movimientosFiltrados, setMovimientosFiltrados] = useState([]);
   const [expandedItems, setExpandedItems] = useState({});
-  const [tipoConsulta, setTipoConsulta] = useState('despacho');
+  const [tipoConsulta, setTipoConsulta] = useState('');
   const [filtros, setFiltros] = useState({
     busqueda: '',
     estado: '',
@@ -113,9 +113,10 @@ export default function Movimientos() {
   };
   
   const handleGetMovimientos = async () => {
-    const { token, sede_id } = user;
+    const { token, sede_id, hospital_id } = user;
     console.log("sede_id: "+sede_id);
-    const response = await getMovimientos(token,sede_id);
+    // const response = await getMovimientos(token,hospital_id);
+    const response = await getHistorialMovimientos(token,sede_id);
     if (!response.status) {
       if(response.autenticacion==1||response.autenticacion==2){
         showMessage('Error', 'Su sesión ha expirado', 'error', 4000);

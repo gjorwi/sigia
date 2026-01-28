@@ -23,11 +23,11 @@ export const insumoActions = [
       color: 'bg-green-600/20 hover:bg-green-700/20 focus:ring-green-500 border-green-600',
       href: '/administrador/insumos/activar'
     },
-    // { 
-    //   title: 'Eliminar Insumo', 
-    //   description: 'Eliminar permanentemente un insumo',
-    //   icon: <PackageX className="h-8 w-8 text-white" />,
-    //   color: 'bg-red-600 hover:bg-red-700 focus:ring-red-500',
-    //   href: '/insumos/eliminar'
-    // }
+    { 
+      title: 'Eliminar Insumo', 
+      description: 'Eliminar permanentemente un insumo',
+      icon: <PackageX className="h-8 w-8 text-white" />,
+      color: 'bg-red-600 hover:bg-red-700 focus:ring-red-500',
+      href: '/administrador/insumos/eliminar'
+    }
   ];

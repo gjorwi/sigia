@@ -110,6 +110,29 @@ const Recepcion = () => {
     setModal(prev => ({ ...prev, isOpen: false }));
   };
 
+  const actualizarCantidadInsumo = (insumoId, nuevaCantidad) => {
+    setModalRegistrar(prev => {
+      const cantidadNumerica = parseInt(nuevaCantidad) || 0;
+      const insumoActual = prev.insumosRecibidos?.[insumoId];
+      if (!insumoActual) return prev;
+
+      let recibido = insumoActual.recibido;
+      if (cantidadNumerica > 0 && !recibido) recibido = true;
+
+      return {
+        ...prev,
+        insumosRecibidos: {
+          ...prev.insumosRecibidos,
+          [insumoId]: {
+            ...insumoActual,
+            recibido,
+            cantidadRecibida: cantidadNumerica
+          }
+        }
+      };
+    });
+  };
+
   const abrirModalDetalles = (recepcion) => {
     setModalDetalles({
       isOpen: true,
@@ -129,6 +152,45 @@ const Recepcion = () => {
     const insumosRecibidos = {};
 
     const tipoAlmacen = user?.sede?.tipo_almacen;
+
+    if (tipoAlmacen === 'almacenAUS') {
+      // En almacenAUS los lotes no son reales, por lo tanto se ignoran por completo.
+      // Se trabaja solo con cantidades por insumo.
+      const lotes = Array.isArray(recepcion?.lotes_grupos) ? recepcion.lotes_grupos : [];
+
+      const insumosAgrupados = lotes.reduce((acc, loteGrupo) => {
+        const insumoId = loteGrupo?.lote?.insumo?.id;
+        if (!insumoId) return acc;
+        if (!acc[insumoId]) {
+          acc[insumoId] = {
+            insumo: loteGrupo?.lote?.insumo,
+            total: 0
+          };
+        }
+        acc[insumoId].total += loteGrupo?.cantidad_salida || 0;
+        return acc;
+      }, {});
+
+      Object.keys(insumosAgrupados).forEach(insumoId => {
+        const item = insumosAgrupados[insumoId];
+        const total = item?.total || 0;
+        insumosRecibidos[insumoId] = {
+          recibido: total > 0,
+          cantidadOriginal: total,
+          cantidadRecibida: total,
+          lotes: {},
+          lotesManuales: [],
+          insumo: item?.insumo
+        };
+      });
+
+      setModalRegistrar({
+        isOpen: true,
+        recepcion: recepcion,
+        insumosRecibidos: insumosRecibidos
+      });
+      return;
+    }
 
     if (recepcion.lotes_grupos) {
       // Si el movimiento viene con lotes pero su origen es un almacenAUS y
@@ -243,6 +305,21 @@ const Recepcion = () => {
     setModalRegistrar(prev => {
       const insumoActual = prev.insumosRecibidos[insumoId];
       const nuevoEstadoInsumo = !insumoActual?.recibido;
+
+      const tipoAlmacen = user?.sede?.tipo_almacen;
+      if (tipoAlmacen === 'almacenAUS') {
+        return {
+          ...prev,
+          insumosRecibidos: {
+            ...prev.insumosRecibidos,
+            [insumoId]: {
+              ...insumoActual,
+              recibido: nuevoEstadoInsumo,
+              cantidadRecibida: nuevoEstadoInsumo ? (insumoActual?.cantidadOriginal || 0) : 0
+            }
+          }
+        };
+      }
 
       // Si se deselecciona el insumo padre, deseleccionar todos los lotes hijos
       const nuevosLotes = { ...insumoActual?.lotes };
@@ -369,6 +446,40 @@ const Recepcion = () => {
     const { insumosRecibidos, recepcion } = modalRegistrar;
     const items = [];
 
+    const tipoAlmacen = user?.sede?.tipo_almacen;
+    if (tipoAlmacen === 'almacenAUS') {
+      const lotesGrupos = Array.isArray(recepcion?.lotes_grupos) ? recepcion.lotes_grupos : [];
+
+      Object.keys(insumosRecibidos).forEach(insumoId => {
+        const insumo = insumosRecibidos[insumoId];
+        const cantidadObjetivo = insumo?.recibido ? (parseInt(insumo?.cantidadRecibida) || 0) : 0;
+
+        const lotesDelInsumo = lotesGrupos.filter(lg =>
+          lg?.lote?.insumo?.id?.toString() === insumoId.toString()
+        );
+
+        let restante = cantidadObjetivo;
+        lotesDelInsumo.forEach(lg => {
+          const maxEnviado = lg?.cantidad_salida || 0;
+          const asignada = cantidadObjetivo > 0 ? Math.min(restante, maxEnviado) : 0;
+          restante = Math.max(0, restante - asignada);
+
+          items.push({
+            lote_id: parseInt(lg?.lote?.id),
+            cantidad: asignada
+          });
+        });
+      });
+
+      const fechaActual = new Date().toISOString().split('T')[0];
+      return {
+        movimiento_stock_id: recepcion?.id || null,
+        fecha_recepcion: fechaActual,
+        user_id_receptor: user?.id || null,
+        items: items
+      };
+    }
+
     // Recorrer todos los insumos y sus lotes para generar los items
     Object.keys(insumosRecibidos).forEach(insumoId => {
       const insumo = insumosRecibidos[insumoId];
@@ -414,8 +525,9 @@ const Recepcion = () => {
     setLoading(true);
     const datosEnvio = generarArrayEnvio();
     const { token } = user;
+    console.log('Datos a enviar:', JSON.stringify(datosEnvio, null, 2));
     const response = await postMovimientosRecepcion(token, datosEnvio);
-
+    // console.log('Response postMovimientosRecepcion:', JSON.stringify(response, null, 2));
     if (!response.status) {
       if (response.autenticacion == 1 || response.autenticacion == 2) {
         showMessage('Error', 'Su sesión ha expirado', 'error', 4000);
@@ -739,7 +851,21 @@ const Recepcion = () => {
                       >
                         Detalles
                       </button>
-                      {(recepcion.estado === 'entregado' || (user?.sede?.tipo_almacen !== 'almacenPrin' && recepcion.estado === 'despachado' && !recepcion.paciente_nombres) || (recepcion.estado === 'pendiente' && user?.sede?.hospital_id)) && (
+
+                      {(() => {
+                        const esAUSaCentral =
+                          recepcion?.origen_sede?.tipo_almacen === 'almacenAUS' &&
+                          recepcion?.destino_sede?.tipo_almacen === 'almacenPrin';
+
+                        const bloquearRegistrarPorAUS = tipoVista === 'despacho' && esAUSaCentral;
+
+                        const puedeRegistrarBase =
+                          recepcion.estado === 'entregado' ||
+                          (user?.sede?.tipo_almacen !== 'almacenPrin' && recepcion.estado === 'despachado' && !recepcion.paciente_nombres) ||
+                          (recepcion.estado === 'pendiente' && user?.sede?.hospital_id);
+
+                        return puedeRegistrarBase && !bloquearRegistrarPorAUS;
+                      })() && (
                         <button
                           onClick={() => abrirModalRegistrar(recepcion)}
                           className="text-green-400 hover:text-green-300"
@@ -850,6 +976,7 @@ const Recepcion = () => {
         recepcion={modalDetalles.recepcion}
         onClose={cerrarModalDetalles}
         formatDate={formatDate}
+        userSedeTipo={user?.sede?.tipo_almacen}
       />
 
       {/* Modal de Registro */}
@@ -861,6 +988,7 @@ const Recepcion = () => {
         onToggleInsumo={toggleInsumoRegistrar}
         onToggleLote={toggleLoteRegistrar}
         onUpdateCantidad={actualizarCantidadLote}
+        onUpdateCantidadInsumo={actualizarCantidadInsumo}
         onAddManualLote={agregarLineaLoteManual}
         onUpdateManualLote={actualizarLineaLoteManual}
         onConfirmar={confirmarRegistro}

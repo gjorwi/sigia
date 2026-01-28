@@ -4,7 +4,8 @@ import { createPortal } from 'react-dom';
 import { Package, User, Calendar, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useEffect } from 'react';
 
-const ModalDetallesRecepcion = ({ isOpen, recepcion, onClose, formatDate }) => {
+const ModalDetallesRecepcion = ({ isOpen, recepcion, onClose, formatDate, userSedeTipo }) => {
+  const ocultarLotes = userSedeTipo === 'almacenAUS';
 
   useEffect(() => {
     if (recepcion) {
@@ -99,54 +100,109 @@ const ModalDetallesRecepcion = ({ isOpen, recepcion, onClose, formatDate }) => {
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
             <h4 className="text-md font-semibold text-gray-900 mb-3">Resumen de Cantidades</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">{recepcion?.cantidad_salida_total || 0}</div>
+              <div className="text-sm text-gray-600">Total Salida</div>
+            </div>
+            {recepcion?.estado === 'recibido' && (
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{recepcion?.cantidad_salida_total || 0}</div>
-                <div className="text-sm text-gray-600">Total Salida</div>
+                <div className="text-2xl font-bold text-green-600">{recepcion?.cantidad_entrada_total || 0}</div>
+                <div className="text-sm text-gray-600">Total Entrada</div>
               </div>
-              {recepcion?.estado === 'recibido' && (
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">{recepcion?.cantidad_entrada_total || 0}</div>
-                  <div className="text-sm text-gray-600">Total Entrada</div>
-                </div>
-              )}
+            )}
+            {!ocultarLotes && (
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600">{recepcion?.lotes_grupos?.length || 0}</div>
                 <div className="text-sm text-gray-600">Lotes</div>
               </div>
-              {recepcion?.discrepancia_total && (
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-red-600 flex items-center justify-center">
-                    <AlertTriangle className="w-6 h-6 mr-1" />
-                    ¡Discrepancia!
-                  </div>
-                  <div className="text-sm text-red-600">Revisar cantidades</div>
+            )}
+            {recepcion?.discrepancia_total && (
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-600 flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6 mr-1" />
+                  ¡Discrepancia!
                 </div>
-              )}
-            </div>
+                <div className="text-sm text-red-600">Revisar cantidades</div>
+              </div>
+            )}
           </div>
+        </div>
 
-          {/* Detalle de Insumos y Lotes */}
-          <div className="mb-4">
-            <h4 className="text-md font-semibold text-gray-900 mb-3">
-              Detalle de Insumos y Lotes ({recepcion?.lotes_grupos?.length || 0} items)
-            </h4>
-          </div>
-
-          {recepcion?.lotes_grupos && (
-            <div className="space-y-4">
-              {(() => {
-                // Agrupar lotes por insumo
-                const insumosAgrupados = recepcion.lotes_grupos.reduce((acc, loteGrupo) => {
-                  const insumoId = loteGrupo?.lote?.insumo?.id;
-                  if (!acc[insumoId]) {
-                    acc[insumoId] = {
-                      insumo: loteGrupo?.lote?.insumo,
-                      lotes: []
-                    };
-                  }
-                  acc[insumoId].lotes.push(loteGrupo);
+          {/* Detalle */}
+        <div className="mb-4">
+          <h4 className="text-md font-semibold text-gray-900 mb-3">
+            {ocultarLotes
+              ? `Detalle de Insumos (${Object.keys((recepcion?.lotes_grupos || []).reduce((acc, lg) => {
+                  const insumoId = lg?.lote?.insumo?.id;
+                  if (insumoId) acc[insumoId] = true;
                   return acc;
-                }, {});
+                }, {})).length} items)`
+              : `Detalle de Insumos y Lotes (${recepcion?.lotes_grupos?.length || 0} items)`}
+          </h4>
+        </div>
+
+        {recepcion?.lotes_grupos && ocultarLotes && (
+          <div className="space-y-4">
+            {(() => {
+              const insumosAgrupados = recepcion.lotes_grupos.reduce((acc, loteGrupo) => {
+                const insumoId = loteGrupo?.lote?.insumo?.id;
+                if (!insumoId) return acc;
+                if (!acc[insumoId]) {
+                  acc[insumoId] = {
+                    insumo: loteGrupo?.lote?.insumo,
+                    totalSalida: 0,
+                    totalEntrada: 0
+                  };
+                }
+                acc[insumoId].totalSalida += loteGrupo?.cantidad_salida || 0;
+                acc[insumoId].totalEntrada += loteGrupo?.cantidad_entrada || 0;
+                return acc;
+              }, {});
+
+              return Object.entries(insumosAgrupados).map(([insumoId, data]) => (
+                <div key={insumoId} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                        <Package className="w-4 h-4 text-indigo-600" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-gray-900">
+                          {data.insumo?.nombre}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          #{data.insumo?.codigo} | {data.insumo?.tipo}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-sm font-semibold text-gray-900">
+                      Total: {data.totalSalida}
+                      {recepcion?.estado === 'recibido' && (
+                        <span className="ml-2 text-green-600">/ {data.totalEntrada} recibido</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ));
+            })()}
+          </div>
+        )}
+
+        {recepcion?.lotes_grupos && !ocultarLotes && (
+          <div className="space-y-4">
+            {(() => {
+              // Agrupar lotes por insumo
+              const insumosAgrupados = recepcion.lotes_grupos.reduce((acc, loteGrupo) => {
+                const insumoId = loteGrupo?.lote?.insumo?.id;
+                if (!acc[insumoId]) {
+                  acc[insumoId] = {
+                    insumo: loteGrupo?.lote?.insumo,
+                    lotes: []
+                  };
+                }
+                acc[insumoId].lotes.push(loteGrupo);
+                return acc;
+              }, {});
 
                 return Object.entries(insumosAgrupados).map(([insumoId, data]) => (
                   <div key={insumoId} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
